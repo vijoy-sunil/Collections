@@ -14,7 +14,7 @@
 #ifndef LAMBDA_MGR_H
 #define LAMBDA_MGR_H
 
-namespace Quality {
+namespace QualityCollections {
     // lambda mgr exists to call the lambda function associated with the test case
     struct LambdaMgr {
         LambdaMgr (void (*lambda) (void)) {
@@ -23,5 +23,5 @@ namespace Quality {
 
         ~LambdaMgr (void) {}
     };
-}   // namespace Quality
+}   // namespace QualityCollections
 #endif  // LAMBDA_MGR_H

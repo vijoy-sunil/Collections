@@ -25,11 +25,11 @@
 #define ELAPSED_TIME_CAST               std::chrono::nanoseconds
 #define ELAPSED_TIME_UNIT               "ns"
 // formatting
-#define LINE_LENGTH                     50
-#define LINE_STYLE                      '-'
-#define LINE_BREAK                      std::string (LINE_LENGTH, LINE_STYLE) << std::endl
+#define TEST_DUMP_LINE_LENGTH           50
+#define TEST_DUMP_LINE_STYLE            '-'
+#define TEST_DUMP_LINE_BREAK            std::string (TEST_DUMP_LINE_LENGTH, TEST_DUMP_LINE_STYLE) << std::endl
 
-namespace Quality {
+namespace QualityCollections {
     // test result sink types
     typedef enum {
         TO_CONSOLE = 1,
@@ -91,86 +91,86 @@ namespace Quality {
 
             void dumpSummary (std::ostream& ost, 
                               double elapsed) {
-                ost << LINE_BREAK;
+                ost << TEST_DUMP_LINE_BREAK;
                 ost << "TEST SUMMARY" 
-                    << std::endl;
-                ost << LINE_BREAK;
+                    << "\n"; 
+                ost << TEST_DUMP_LINE_BREAK;
 
                 ost << "TOTAL TESTS: " 
                     << "\t"
                     << "[ " << m_numTests << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "ELAPSED TIME: "
                     << "\t"
                     << "[ " << elapsed << " " << ELAPSED_TIME_UNIT << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "PASSED: "
                     << "\t"
                     << "[ " << m_passedTests.size() << "/" << m_numTests << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "\t\t"
                     << "[ ";
                 for (auto const& id : m_passedTests)
                     ost << id << " ";
                 ost << "]"
-                    << std::endl; 
+                    << "\n"; 
 
                 ost << "FAILED: "
                     << "\t"
                     << "[ " << m_failedTests.size() << "/" << m_numTests << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "\t\t"
                     << "[ ";
                 for (auto const& id : m_failedTests)
                     ost << id << " ";
                 ost << "]"
-                    << std::endl; 
+                    << "\n"; 
 
                 ost << "PENDING: "
                     << "\t"
                     << "[ " << m_pendingTests.size() << "/" << m_numTests << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "\t\t"
                     << "[ ";
                 for (auto const& id : m_pendingTests)
                     ost << id << " ";
                 ost << "]"
-                    << std::endl; 
+                    << "\n";  
 
-                ost << LINE_BREAK;
+                ost << TEST_DUMP_LINE_BREAK;
             }
 
             void dumpTestResult (size_t testId, 
                                  std::ostream& ost,
                                  double elapsed) {
-                ost << LINE_BREAK;
+                ost << TEST_DUMP_LINE_BREAK;
                 
                 ost << "ID: "
                     << "\t\t"
                     << "[ " << testId << " ]"
-                    << std::endl; 
+                    << "\n"; 
 
                 ost << "DESCRIPTION: "
                     << "\t"
                     << "[ " << m_summary[testId].first << " ]"
-                    << std::endl;
+                    << "\n"; 
                 
                 ost << "STATUS: "
                     << "\t"
                     << "[ " << statusToString (m_summary[testId].second) << " ]"
-                    << std::endl;
+                    << "\n"; 
 
                 ost << "ELAPSED TIME: "
                     << "\t"
                     << "[ " << elapsed << " " << ELAPSED_TIME_UNIT << " ]"
-                    << std::endl;
+                    << "\n";
                 
-                ost << LINE_BREAK; 
+                ost << TEST_DUMP_LINE_BREAK; 
             }
 
         public:
@@ -235,7 +235,7 @@ namespace Quality {
                 auto elapsed = std::chrono::duration_cast <ELAPSED_TIME_CAST> (end - begin);
 
                 // update stats
-                m_summary[testId].second == Quality::PASS ? 
+                m_summary[testId].second == PASS ? 
                                             m_passedTests.push_back (testId) : 
                                             m_failedTests.push_back (testId);
 
@@ -251,7 +251,9 @@ namespace Quality {
             }
 
             void runAllTests (void) {
-                // there will be overhead when running all tests due to individual dumps and stats update per test
+                /* there will be significant overhead when running all tests due to individual dumps and stats update per 
+                 * test
+                */
                 auto begin = std::chrono::high_resolution_clock::now();
                 // run all tests
                 for (const auto& [key, val] : m_tests)
@@ -268,5 +270,5 @@ namespace Quality {
     };
     // single instance
     LibTestMgr LTMgr;
-}   // namespace Quality
+}   // namespace QualityCollections
 #endif  // LIB_TEST_MGR_H

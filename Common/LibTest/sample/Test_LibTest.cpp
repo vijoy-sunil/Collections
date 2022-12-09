@@ -16,7 +16,7 @@
 
 int main (void) {
     // init the test
-    LIB_TEST_INIT (Quality::TO_CONSOLE | Quality::TO_FILE);
+    LIB_TEST_INIT (QualityCollections::TO_CONSOLE | QualityCollections::TO_FILE);
 
     // you can either run individual tests by specifying test ids
     LIB_TEST_RUN (2);
@@ -35,13 +35,13 @@ int main (void) {
 // define a test case by specifying test id and test description
 LIB_TEST_CASE (2, "sample pass test") {
     // a test case must return either PASS or FAIL
-    return (1 + 1 == 2) ? Quality::PASS : Quality::FAIL;
+    return (1 + 1 == 2) ? QualityCollections::PASS : QualityCollections::FAIL;
 } 
 
 LIB_TEST_CASE (4, "sample fail test") {
-    return (2 * 1024 == 0) ? Quality::PASS : Quality::FAIL;
+    return (2 * 1024 == 0) ? QualityCollections::PASS : QualityCollections::FAIL;
 } 
 
 LIB_TEST_CASE (6, "sample fail test") {
-    return (10 / 5 == 0) ? Quality::PASS : Quality::FAIL;
+    return (10 / 5 == 0) ? QualityCollections::PASS : QualityCollections::FAIL;
 } 

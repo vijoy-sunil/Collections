@@ -17,9 +17,9 @@
 #include "LibTestMgr.h"
 #include "LambdaMgr.h"
 
-#define LIB_TEST_INIT                       Quality::LTMgr.initLibTestMgr  
+#define LIB_TEST_INIT                       QualityCollections::LTMgr.initLibTestMgr  
 #define LIB_TEST_CASE(id, desc)             MAKE_FN (id);                                       \
-                                            namespace Quality {                                 \
+                                            namespace QualityCollections {                      \
                                             auto LAMBDA_BASE (id) = []() {                      \
                                                 LTMgr.registerTest (FN_BASE (id),               \
                                                                     id,                         \
@@ -29,8 +29,8 @@
                                             }                                                   \
                                             MAKE_FN (id)
         
-#define LIB_TEST_RUN(id)                    Quality::LTMgr.runTest (id)
-#define LIB_TEST_RUN_ALL                    Quality::LTMgr.runAllTests()
+#define LIB_TEST_RUN(id)                    QualityCollections::LTMgr.runTest (id)
+#define LIB_TEST_RUN_ALL                    QualityCollections::LTMgr.runAllTests()
 
 /* The ## provides a way to concatenate actual arguments during macro expansion. If a parameter in the replacement text is 
  * adjacent to a ##, the parameter is replaced by the actual argument, the ## and surrounding white space are removed, and 
@@ -38,5 +38,5 @@
 */
 #define LAMBDA_BASE(id)                     lambda_ ## id
 #define FN_BASE(id)                         test_ ## id
-#define MAKE_FN(id)                         Quality::e_status FN_BASE (id) (void)
+#define MAKE_FN(id)                         QualityCollections::e_status FN_BASE (id) (void)
 #endif  // LIB_TEST_H
