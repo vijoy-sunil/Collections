@@ -21,7 +21,8 @@
 #define BUFFER_DUMP_LINE_STYLE              '~'
 #define BUFFER_DUMP_LINE_BREAK              std::string (BUFFER_DUMP_LINE_LENGTH, BUFFER_DUMP_LINE_STYLE) << std::endl
 
-namespace MemoryCollections {
+namespace Collections {
+namespace Memory {
     typedef enum {
         CIRCULAR_NO_OVERWRITE = 1,
         CIRCULAR_OVERWRITE = 2
@@ -126,6 +127,13 @@ namespace MemoryCollections {
                 }   
                 return data; 
             }
+
+            void flush (std::ostream& ost) {
+                while (!isEmpty())
+                    ost << *pop() << "\n";
+                
+                ost.flush();
+            }
             
             inline T* peekFirst (void) {
                 return isEmpty() ? NULL : m_tail;
@@ -198,5 +206,6 @@ namespace MemoryCollections {
                 ost << BUFFER_DUMP_LINE_BREAK;
             }
     };
-}   // namespace MemoryCollections
+}   // namespace Memory
+}   // namespace Collections
 #endif  // BUFFER_IMPL_H

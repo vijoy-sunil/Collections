@@ -18,7 +18,8 @@
 #include <cassert>
 #include <map>
 
-namespace MemoryCollections {
+namespace Collections {
+namespace Memory {
     class BufferMgr {
         private:
             std::map <size_t, BufferBase*> m_bufferPool;
@@ -85,5 +86,6 @@ namespace MemoryCollections {
             }
     };
     BufferMgr bufferMgr;
-}   // namespace MemoryCollections
+}   // namespace Memory
+}   // namespace Collections
 #endif  // BUFFER_MGR_H

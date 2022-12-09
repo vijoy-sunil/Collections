@@ -29,7 +29,8 @@
 #define TEST_DUMP_LINE_STYLE            '-'
 #define TEST_DUMP_LINE_BREAK            std::string (TEST_DUMP_LINE_LENGTH, TEST_DUMP_LINE_STYLE) << std::endl
 
-namespace QualityCollections {
+namespace Collections {
+namespace Quality {
     // test result sink types
     typedef enum {
         TO_CONSOLE = 1,
@@ -270,5 +271,6 @@ namespace QualityCollections {
     };
     // single instance
     LibTestMgr LTMgr;
-}   // namespace QualityCollections
+}   // namespace Quality
+}   // namespace Collections
 #endif  // LIB_TEST_MGR_H

@@ -2,25 +2,25 @@
 ID: 		[ 2 ]
 DESCRIPTION: 	[ sample pass test ]
 STATUS: 	[ PASSED ]
-ELAPSED TIME: 	[ 375 ns ]
+ELAPSED TIME: 	[ 1084 ns ]
 --------------------------------------------------
 --------------------------------------------------
 ID: 		[ 4 ]
 DESCRIPTION: 	[ sample fail test ]
 STATUS: 	[ FAILED ]
-ELAPSED TIME: 	[ 292 ns ]
+ELAPSED TIME: 	[ 750 ns ]
 --------------------------------------------------
 --------------------------------------------------
 ID: 		[ 6 ]
 DESCRIPTION: 	[ sample fail test ]
 STATUS: 	[ FAILED ]
-ELAPSED TIME: 	[ 333 ns ]
+ELAPSED TIME: 	[ 959 ns ]
 --------------------------------------------------
 --------------------------------------------------
 TEST SUMMARY
 --------------------------------------------------
 TOTAL TESTS: 	[ 3 ]
-ELAPSED TIME: 	[ 1167 ns ]
+ELAPSED TIME: 	[ 3375 ns ]
 PASSED: 	[ 1/3 ]
 		[ 2 ]
 FAILED: 	[ 2/3 ]

@@ -20,7 +20,7 @@
 #define BUFFER_INIT(id,                                                                                     \
                     type,                                                                                   \
                     dataType,                                                                               \
-                    capacity)                   MemoryCollections::bufferMgr.initBuffer <dataType> (id, type, capacity)
+                    capacity)                   Collections::Memory::bufferMgr.initBuffer <dataType> (id, type, capacity)
 
 #define BUFFER_PUSH(id, dataType)               GET_BUFFER (id, dataType)
 #define BUFFER_POP(id, dataType)                GET_BUFFER (id, dataType).pop()
@@ -29,8 +29,8 @@
 #define BUFFER_PEEK_LAST(id, dataType)          GET_BUFFER (id, dataType).peekLast()
 #define BUFFER_AVAILABILITY(id, dataType)       GET_BUFFER (id, dataType).availability()
 
-#define BUFFER_CLOSE(id)                        MemoryCollections::bufferMgr.closeBuffer (id)
-#define BUFFER_CLOSE_ALL                        MemoryCollections::bufferMgr.closeAllBuffers()
+#define BUFFER_CLOSE(id)                        Collections::Memory::bufferMgr.closeBuffer (id)
+#define BUFFER_CLOSE_ALL                        Collections::Memory::bufferMgr.closeAllBuffers()
 
 // default sink for buffer dump is set to cout
 #define BUFFER_DUMP(id, dataType)               GET_BUFFER (id, dataType).dump (std::cout)
@@ -40,9 +40,10 @@
 #define BUFFER_DUMP_CUSTOM(id,                                                                             \
                            dataType,                                                                       \
                            lambda)              GET_BUFFER (id, dataType).dump (std::cout, lambda)
-#define BUFFER_MGR_DUMP                         MemoryCollections::bufferMgr.dump (std::cout)
+#define BUFFER_MGR_DUMP                         Collections::Memory::bufferMgr.dump (std::cout)
 
 // under the hood
-#define GET_BUFFER(id, dataType)                dynamic_cast <MemoryCollections::Buffer <dataType> &>       \
-                                                (*MemoryCollections::bufferMgr.getBuffer (id))                                    
+#define BUFFER_FLUSH(id, dataType, stream)      GET_BUFFER (id, dataType).flush (stream)
+#define GET_BUFFER(id, dataType)                dynamic_cast <Collections::Memory::Buffer <dataType> &>     \
+                                                (*Collections::Memory::bufferMgr.getBuffer (id))                                    
 #endif  // BUFFER_H
