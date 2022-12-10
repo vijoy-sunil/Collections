@@ -1,4 +1,4 @@
-[ 13 ] 2022-12-10 16:21:49 [ INFO ] sample/Test_Logger.cpp test_5 118 1000 a
-[ 13 ] 2022-12-10 16:21:49 [ INFO ] sample/Test_Logger.cpp test_5 119 10.234 John Adams 10.234
-[ 13 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_5 121 test format specifiers like \n \t etc.			does it work?
+[ 13 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 118 1000 a
+[ 13 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 119 10.234 John Adams 10.234
+[ 13 ] 2022-12-10 17:47:11 [ WARN ] sample/Test_Log.cpp test_5 121 test format specifiers like \n \t etc.			does it work?
 guess it does!
