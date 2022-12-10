@@ -1,0 +1,10 @@
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 10,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 9,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 8,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 7,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 6,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 5,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 4,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 3,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 2,10.101000
+[ 9 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_2 69 My name is John Adams 1,10.101000

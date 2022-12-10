@@ -1,0 +1,1 @@
+[ 4 ] 2022-12-10 16:21:49 [ WARN ] sample/Test_Logger.cpp test_1 49 My name is John Adams 123,10.101
