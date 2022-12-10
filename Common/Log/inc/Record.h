@@ -14,6 +14,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+// import buffer from collections to use buffered sink
 #include "../../Buffer/inc/Buffer.h"
 #include <fstream>
 
