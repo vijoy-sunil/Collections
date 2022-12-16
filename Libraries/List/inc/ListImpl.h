@@ -251,6 +251,8 @@ namespace Memory {
 
                 // remove node
                 delete currentNode;
+                // set peek position to NULL since we have removed the node
+                m_peekNode = NULL;
 
                 m_numNodes--;
                 return true;
@@ -272,6 +274,10 @@ namespace Memory {
                 s_Node* currentNode = m_headNode;
                 // if list is empty
                 if (currentNode == NULL)
+                    return;
+
+                // if there is only one node
+                if (m_numNodes == 1)
                     return;
 
                 // swap next and previous pointers
@@ -416,9 +422,10 @@ namespace Memory {
 
                 ost << "LAST USED ID: "
                     << "\t"
-                    << "[ "
-                    << m_nextAvailableId - 1
-                    << " ]"
+                    << "[ ";
+                if (m_nextAvailableId != 0)
+                    ost << m_nextAvailableId - 1;
+                ost << " ]"
                     << "\n";
 
                 ost << "HEAD NODE: "
