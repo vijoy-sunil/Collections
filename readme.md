@@ -1,6 +1,7 @@
 # Collections
 
 ## Directory structure
+<pre>
     Collections
     |-- Common
         |-- Buffer
@@ -8,12 +9,25 @@
     |-- Core          
         |-- List
         |-- Log
+</pre>
 
 ## Namespaces
+<pre>
     Collections
     |-- Memory
-        |-- *Buffer*
-        |-- List
+        |-- <i>Buffer</i>
+        |-- <i>List</i>
     |-- Quality
-        |-- LibTest
-        |-- Log
+        |-- <i>LibTest</i>
+        |-- <i>Log</i>
+</pre>
+
+## Sample code
+
+### Buffer
+
+### LibTest
+
+### List
+
+### Log
