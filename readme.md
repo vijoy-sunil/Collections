@@ -12,7 +12,7 @@
 ## Namespaces
     Collections
     |-- Memory
-        |-- Buffer
+        |-- *Buffer*
         |-- List
     |-- Quality
         |-- LibTest
