@@ -641,7 +641,7 @@ LIB_TEST_CASE (25, "reset empty list") {
 }
 
 int main (void) {
-    LIB_TEST_INIT (Quality::TO_CONSOLE);
+    LIB_TEST_INIT (Quality::TO_CONSOLE | Quality::TO_FILE);
     LIB_TEST_RUN_ALL;
 
     return 0;
