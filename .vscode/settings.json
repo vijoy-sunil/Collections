@@ -81,7 +81,8 @@
         "stack": "cpp",
         "thread": "cpp",
         "variant": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "filesystem": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
