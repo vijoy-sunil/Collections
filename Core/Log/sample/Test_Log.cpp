@@ -12,7 +12,7 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "../inc/Log.h"
-#include "../../LibTest/inc/LibTest.h"
+#include "../../../Common/LibTest/inc/LibTest.h"
 
 using namespace Collections;
 
