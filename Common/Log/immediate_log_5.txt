@@ -1,1 +1,0 @@
-[ 5 ] 2022-12-10 17:47:11 [ ERRO ] sample/Test_Log.cpp test_1 50 My name is John Adams 123,10.101

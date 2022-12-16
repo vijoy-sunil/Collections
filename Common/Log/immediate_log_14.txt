@@ -1,7 +1,0 @@
-[ 14 ] 2022-12-10 17:47:11 [ ERRO ] sample/Test_Log.cpp test_5 133 testing multi line logs without std::endl[ 14 ] 2022-12-10 17:47:11 [ ERRO ] sample/Test_Log.cpp test_5 134 even if i use \n
-[ 14 ] 2022-12-10 17:47:11 [ ERRO ] sample/Test_Log.cpp test_5 135 I am still a different message even though we are on the same line
-[ 14 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 142 count: 1
-[ 14 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 142 count: 2
-[ 14 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 142 count: 3
-[ 14 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 142 count: 4
-[ 14 ] 2022-12-10 17:47:11 [ INFO ] sample/Test_Log.cpp test_5 142 count: 5
