@@ -16,7 +16,7 @@
 
 #include "ListMgr.h"
 
-#define LIST_INIT(id, dataType)                 Collections::Memory::listMgr.initList <dataType> (id)
+#define LIST_INIT(id, dataType)                 Memory::listMgr.initList <dataType> (id)
 
 // 'set' operations
 #define LIST_PEEK_SET(id, dataType)             GET_LIST (id, dataType).peekSet
@@ -45,17 +45,17 @@
 #define LIST_RESET(id, dataType)                GET_LIST (id, dataType).reset()
 #define LIST_SIZE(id, dataType)                 GET_LIST (id, dataType).getSize()
 
-#define LIST_CLOSE(id)                          Collections::Memory::listMgr.closeList (id)
-#define LIST_CLOSE_ALL                          Collections::Memory::listMgr.closeAllLists()
+#define LIST_CLOSE(id)                          Memory::listMgr.closeList (id)
+#define LIST_CLOSE_ALL                          Memory::listMgr.closeAllLists()
 
 #define LIST_DUMP(id, dataType)                 GET_LIST (id, dataType).dump (std::cout)
 #define LIST_DUMP_CUSTOM(id,                                                                                \
                          dataType,                                                                          \
                          lambda)                GET_LIST (id, dataType).dump (std::cout, lambda)
 
-#define LIST_MGR_DUMP                           Collections::Memory::listMgr.dump (std::cout)
+#define LIST_MGR_DUMP                           Memory::listMgr.dump (std::cout)
 
 // under the hood
-#define GET_LIST(id, dataType)                  dynamic_cast <Collections::Memory::List <dataType> &>       \
-                                                (*Collections::Memory::listMgr.getList (id))                                    
+#define GET_LIST(id, dataType)                  dynamic_cast <Memory::List <dataType> &>       \
+                                                (*Memory::listMgr.getList (id))                                    
 #endif  // LIST_H

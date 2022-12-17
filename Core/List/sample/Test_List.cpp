@@ -43,7 +43,7 @@ LIB_TEST_CASE (0, "multiple instances") {
     LIST_CLOSE_ALL;
     LIST_MGR_DUMP;
 
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (1, "add/peek/remove from tail") {
@@ -58,14 +58,14 @@ LIB_TEST_CASE (1, "add/peek/remove from tail") {
     // peek and remove
     for (auto i : output) {
         if (LIST_PEEK_TAIL (1, int) -> data != i) 
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         //LIST_DUMP (1, int);
         LIST_REMOVE_TAIL (1, int);
     }
 
     LIST_CLOSE (1);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (2, "add/peek/remove from head") {
@@ -79,14 +79,14 @@ LIB_TEST_CASE (2, "add/peek/remove from head") {
 
     for (auto i : output) {
         if (LIST_PEEK_HEAD (2, int) -> data != i)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         //LIST_DUMP (2, int);
         LIST_REMOVE_HEAD (2, int);   
     }
 
     LIST_CLOSE (2);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (3, "add before id") {
@@ -100,18 +100,18 @@ LIB_TEST_CASE (3, "add before id") {
     LIST_PEEK_SET (3, int) (0);
     for (auto i : input) {
         if (LIST_ADD_BEFORE (3, int) (i) == false)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }  
     //LIST_DUMP (3, int);
 
     for (auto i : input) {
         if (LIST_PEEK_HEAD (3, int) -> data != i)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         LIST_REMOVE_HEAD (3, int);
     }
     LIST_CLOSE (3);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (4, "add after id") {
@@ -125,18 +125,18 @@ LIB_TEST_CASE (4, "add after id") {
     LIST_PEEK_SET (4, int) (0);
     for (auto i : input) {
         if (LIST_ADD_AFTER (4, int) (i) == false)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }  
     //LIST_DUMP (4, int);
 
     for (auto i : input) {
         if (LIST_PEEK_TAIL (4, int) -> data != i)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         LIST_REMOVE_TAIL (4, int);
     }
     LIST_CLOSE (4);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (5, "add/remove invalid id") {
@@ -148,42 +148,42 @@ LIB_TEST_CASE (5, "add/remove invalid id") {
     LIST_PEEK_SET (5, int) (invalidId);
 
     if (LIST_ADD_AFTER (5, int) (10) == true)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_ADD_BEFORE (5, int) (10) == true)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_REMOVE (5, int) == true)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     LIST_DUMP (5, int);
     LIST_CLOSE (5);
-    return Quality::PASS; 
+    return Quality::Test::PASS; 
 }
 
 LIB_TEST_CASE (6, "peek/remove/dump from empty list") {
     LIST_INIT (6, int);
 
     if (LIST_PEEK_HEAD (6, int) != NULL)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_PEEK_TAIL (6, int) != NULL)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     LIST_PEEK_SET (6, int) (0);
     if (LIST_REMOVE (6, int) != false)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_REMOVE_HEAD (6, int) != false)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_REMOVE_TAIL (6, int) != false)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     LIST_DUMP (6, int);
 
     LIST_CLOSE (6);
-    return Quality::PASS; 
+    return Quality::Test::PASS; 
 }
 
 LIB_TEST_CASE (7, "swap head node with another node") {
@@ -201,10 +201,10 @@ LIB_TEST_CASE (7, "swap head node with another node") {
     LIST_DUMP (7, int);
 
     if (LIST_PEEK_HEAD (7, int) -> data != output_new_head)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     
     LIST_CLOSE (7);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (8, "swap tail node with another node") {
@@ -222,10 +222,10 @@ LIB_TEST_CASE (8, "swap tail node with another node") {
     LIST_DUMP (8, int);
 
     if (LIST_PEEK_TAIL (8, int) -> data != output_new_tail)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     
     LIST_CLOSE (8);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (9, "swap head node with tail node") {
@@ -244,13 +244,13 @@ LIB_TEST_CASE (9, "swap head node with tail node") {
     LIST_DUMP (9, int);
 
     if (LIST_PEEK_HEAD (9, int) -> data != output_new_head)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_PEEK_TAIL (9, int) -> data != output_new_tail)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     
     LIST_CLOSE (9);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (10, "swap nodes with invalid id") {
@@ -259,7 +259,7 @@ LIB_TEST_CASE (10, "swap nodes with invalid id") {
 
     // swap in an empty list, 2 invalid ids
     if (LIST_SWAP (10, int) (swap_ids[0], swap_ids[1]) != false)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     for (auto i : input)
@@ -267,14 +267,14 @@ LIB_TEST_CASE (10, "swap nodes with invalid id") {
 
     // 1 invalid id
     if (LIST_SWAP (10, int) (swap_ids[0], swap_ids[1]) != false)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // 2 valid ids - both the same doesn't fail
     if (LIST_SWAP (10, int) (swap_ids[0], swap_ids[0]) != true)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     
     LIST_CLOSE (10);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (11, "swap non boundary adjacent nodes") {
@@ -307,7 +307,7 @@ LIB_TEST_CASE (11, "swap non boundary adjacent nodes") {
     LIST_DUMP (11, int);    
 
     LIST_CLOSE (11);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (12, "swap non boundary non adjacent nodes") {
@@ -323,7 +323,7 @@ LIB_TEST_CASE (12, "swap non boundary non adjacent nodes") {
     LIST_DUMP (12, int);
 
     LIST_CLOSE (12);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (13, "reverse list") {
@@ -341,13 +341,13 @@ LIB_TEST_CASE (13, "reverse list") {
 
     // peek 
     if (LIST_PEEK_HEAD (13, int) -> data != new_head)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_PEEK_TAIL (13, int) -> data != new_tail)
-        return Quality::FAIL;    
+        return Quality::Test::FAIL;    
 
     LIST_CLOSE (13);
-    return Quality::PASS;    
+    return Quality::Test::PASS;    
 }
 
 LIB_TEST_CASE (14, "reverse list with only 2 nodes") {
@@ -365,13 +365,13 @@ LIB_TEST_CASE (14, "reverse list with only 2 nodes") {
 
     // peek 
     if (LIST_PEEK_HEAD (14, int) -> data != new_head)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_PEEK_TAIL (14, int) -> data != new_tail)
-        return Quality::FAIL;  
+        return Quality::Test::FAIL;  
 
     LIST_CLOSE (14);
-    return Quality::PASS;  
+    return Quality::Test::PASS;  
 }
 
 LIB_TEST_CASE (15, "reverse list with only 1 node") {
@@ -389,13 +389,13 @@ LIB_TEST_CASE (15, "reverse list with only 1 node") {
 
     // peek 
     if (LIST_PEEK_HEAD (15, int) -> data != new_head)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     if (LIST_PEEK_TAIL (15, int) -> data != new_tail)
-        return Quality::FAIL;  
+        return Quality::Test::FAIL;  
 
     LIST_CLOSE (15);
-    return Quality::PASS;  
+    return Quality::Test::PASS;  
 }
 
 LIB_TEST_CASE (16, "reverse empty list") {
@@ -405,7 +405,7 @@ LIB_TEST_CASE (16, "reverse empty list") {
     LIST_DUMP (16, int);
 
     LIST_CLOSE (16);
-    return Quality::PASS;  
+    return Quality::Test::PASS;  
 }
 
 LIB_TEST_CASE (17, "custom types") {
@@ -426,7 +426,7 @@ LIB_TEST_CASE (17, "custom types") {
                                 };
     LIST_DUMP_CUSTOM (17, s_customType, lambda_customType);
     LIST_CLOSE (17);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (18, "list reset") {
@@ -439,10 +439,10 @@ LIB_TEST_CASE (18, "list reset") {
     LIST_RESET (18, int);
     // list size should be zero
     if (LIST_SIZE (18, int) != 0)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     LIST_CLOSE (18);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (19, "list traversal head to tail") {
@@ -460,14 +460,14 @@ LIB_TEST_CASE (19, "list traversal head to tail") {
     int i = 0;
     while (LIST_PEEK_CURRENT (19, int) != NULL) {
         if (LIST_PEEK_CURRENT (19, int) -> data != input[i++])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         // move peek pointer
         LIST_PEEK_SET_NEXT (19, int);
     }
 
     LIST_CLOSE (19);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (20, "list traversal tail to head") {
@@ -485,14 +485,14 @@ LIB_TEST_CASE (20, "list traversal tail to head") {
     int i = 2;
     while (LIST_PEEK_CURRENT (20, int) != NULL) {
         if (LIST_PEEK_CURRENT (20, int) -> data != input[i--])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         // move peek pointer
         LIST_PEEK_SET_PREVIOUS (20, int);
     }
 
     LIST_CLOSE (20);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (21, "list traversal starting at id") {
@@ -511,7 +511,7 @@ LIB_TEST_CASE (21, "list traversal starting at id") {
     int i = 2;
     while (LIST_PEEK_CURRENT (21, int) != NULL) {
         if (LIST_PEEK_CURRENT (21, int) -> data != input[i++])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         // move peek pointer
         LIST_PEEK_SET_NEXT (21, int);
@@ -525,14 +525,14 @@ LIB_TEST_CASE (21, "list traversal starting at id") {
     i = 3;
     while (LIST_PEEK_CURRENT (21, int) != NULL) {
         if (LIST_PEEK_CURRENT (21, int) -> data != input[i--])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         // move peek pointer
         LIST_PEEK_SET_PREVIOUS (21, int);
     }    
 
     LIST_CLOSE (21);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (22, "list traversal empty list") {
@@ -541,20 +541,20 @@ LIB_TEST_CASE (22, "list traversal empty list") {
     // set peek position to tail
     LIST_PEEK_SET_TAIL (22, int);
     if (LIST_PEEK_CURRENT (22, int) != NULL)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // set peek position to head
     LIST_PEEK_SET_HEAD (22, int);
     if (LIST_PEEK_CURRENT (22, int) != NULL)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // set peek position using id
     LIST_PEEK_SET (22, int) (1);
     if (LIST_PEEK_CURRENT (22, int) != NULL)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     LIST_CLOSE (22);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (23, "combining two lists") {
@@ -590,13 +590,13 @@ LIB_TEST_CASE (23, "combining two lists") {
     LIST_PEEK_SET_HEAD (23, int);
     while (LIST_PEEK_CURRENT (23, int) != NULL) {
         if (LIST_PEEK_CURRENT (23, int) -> data != output[i++])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
 
         LIST_PEEK_SET_NEXT (23, int);
     }
 
     LIST_CLOSE (23);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (24, "remove using id") {
@@ -615,12 +615,12 @@ LIB_TEST_CASE (24, "remove using id") {
 
     for (auto i : output) {
         if (LIST_PEEK_HEAD (24, int) -> data != i) 
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
         LIST_REMOVE_HEAD (24, int);
     }
 
     LIST_CLOSE (24);
-    return Quality::PASS;    
+    return Quality::Test::PASS;    
 }
 
 LIB_TEST_CASE (25, "reset empty list") {
@@ -637,11 +637,11 @@ LIB_TEST_CASE (25, "reset empty list") {
     LIST_DUMP (25, int);
 
     LIST_CLOSE (25);
-    return Quality::PASS;    
+    return Quality::Test::PASS;    
 }
 
 int main (void) {
-    LIB_TEST_INIT (Quality::TO_CONSOLE | Quality::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
     LIB_TEST_RUN_ALL;
 
     return 0;
