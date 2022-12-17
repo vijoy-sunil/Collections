@@ -17,13 +17,13 @@
 #include "LibTestMgr.h"
 #include "LambdaMgr.h"
 
-#define LIB_TEST_INIT                       Quality::Test::LTMgr.initLibTestMgr  
+#define LIB_TEST_INIT                       Quality::Test::libTestMgr.initLibTestMgr  
 #define LIB_TEST_CASE(id, desc)             MAKE_FN (id);                                       \
                                             namespace Collections {                             \
                                             namespace Quality {                                 \
                                             namespace Test {                                    \
                                             auto LAMBDA_BASE (id) = []() {                      \
-                                                LTMgr.registerTest (FN_BASE (id),               \
+                                                libTestMgr.registerTest (FN_BASE (id),          \
                                                                     id,                         \
                                                                     desc);                      \
                                             };                                                  \
@@ -33,8 +33,8 @@
                                             }                                                   \
                                             MAKE_FN (id)
         
-#define LIB_TEST_RUN(id)                    Quality::Test::LTMgr.runTest (id)
-#define LIB_TEST_RUN_ALL                    Quality::Test::LTMgr.runAllTests()
+#define LIB_TEST_RUN(id)                    Quality::Test::libTestMgr.runTest (id)
+#define LIB_TEST_RUN_ALL                    Quality::Test::libTestMgr.runAllTests()
 
 /* The ## provides a way to concatenate actual arguments during macro expansion. If a parameter in the replacement text is 
  * adjacent to a ##, the parameter is replaced by the actual argument, the ## and surrounding white space are removed, and 

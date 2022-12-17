@@ -271,7 +271,7 @@ namespace Test {
             }
     };
     // single instance
-    LibTestMgr LTMgr;
+    LibTestMgr libTestMgr;
 }   // namespace Test
 }   // namespace Quality
 }   // namespace Collections
