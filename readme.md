@@ -18,16 +18,31 @@
         |-- <i>Buffer</i>
         |-- <i>List</i>
     |-- Quality
-        |-- <i>LibTest</i>
-        |-- <i>Log</i>
+        |-- Test
+            |-- <i>LibTest</i>
+        |-- Log
+            |-- <i>Log</i>
 </pre>
 
 ## Sample code
+>*see complete usage in respective sample/ directory*
 
 ### Buffer
+<pre>
+
+</pre>
 
 ### LibTest
+<pre>
+
+</pre>
 
 ### List
+<pre>
+
+</pre>
 
 ### Log
+<pre>
+
+</pre>
