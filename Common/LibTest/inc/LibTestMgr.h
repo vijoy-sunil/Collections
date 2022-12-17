@@ -31,6 +31,7 @@
 
 namespace Collections {
 namespace Quality {
+namespace Test {
     // test result sink types
     typedef enum {
         TO_CONSOLE = 1,
@@ -271,6 +272,7 @@ namespace Quality {
     };
     // single instance
     LibTestMgr LTMgr;
+}   // namespace Test
 }   // namespace Quality
 }   // namespace Collections
 #endif  // LIB_TEST_MGR_H
