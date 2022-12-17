@@ -17,14 +17,14 @@
 using namespace Collections;
 
 LIB_TEST_CASE (0, "multiple log instances") {
-    LOG_INIT (0, Log::INFO, Log::TO_CONSOLE);
+    LOG_INIT (0, Quality::Log::INFO, Quality::Log::TO_CONSOLE);
     LOG_INFO (0) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl; 
     LOG_CLOSE (0);
 
-    LOG_INIT (0, Log::WARNING, Log::TO_CONSOLE);
+    LOG_INIT (0, Quality::Log::WARNING, Quality::Log::TO_CONSOLE);
     LOG_WARNING (0) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl;
 
-    LOG_INIT (1, Log::VERBOSE, Log::TO_CONSOLE);
+    LOG_INIT (1, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
     LOG_WARNING (1) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl;
     LOG_WARNING (1) << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
 
@@ -38,11 +38,11 @@ LIB_TEST_CASE (1, "filter log level test") {
     // there are a total of 5 log levels
     const int instances[] = { 2, 3, 4, 5, 6 };
 
-    LOG_INIT (2, Log::NONE, Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (3, Log::INFO, Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (4, Log::WARNING, Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (5, Log::ERROR, Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (6, Log::VERBOSE, Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (2, Quality::Log::NONE, Quality::Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (3, Quality::Log::INFO, Quality::Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (4, Quality::Log::WARNING, Quality::Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (5, Quality::Log::ERROR, Quality::Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (6, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
 
     for (auto i : instances) {
         LOG_INFO (i)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
@@ -58,10 +58,10 @@ LIB_TEST_CASE (2, "sink test") {
     // there are a total of 3 log sinks
     const int instances[] = { 7, 8, 9 };
 
-    LOG_INIT (7, Log::VERBOSE, Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (8, Log::VERBOSE, Log::TO_CONSOLE);
+    LOG_INIT (7, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
+    LOG_INIT (8, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
     // you need to specify buffer capacity for circular buffer sink
-    LOG_INIT (9, Log::VERBOSE, Log::TO_FILE_BUFFER_CIRCULAR, 10);
+    LOG_INIT (9, Quality::Log::VERBOSE, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 10);
 
     for (auto i : instances) {
         int numMessages = 15;
@@ -76,16 +76,16 @@ LIB_TEST_CASE (2, "sink test") {
 }
 
 LIB_TEST_CASE (3, "conditional calls") {
-    LOG_INIT (10, Log::ERROR, Log::TO_CONSOLE);
+    LOG_INIT (10, Quality::Log::ERROR, Quality::Log::TO_CONSOLE);
     int count = 0;
 
     // this code block executes as an info message
-    IF_LOG (10, Log::INFO) {
+    IF_LOG (10, Quality::Log::INFO) {
         for (int i = 0; i < 10; i++)
             count++;
     }
 
-    IF_NOT_LOG (10, Log::WARNING) {
+    IF_NOT_LOG (10, Quality::Log::WARNING) {
         for (int i = 0; i < 10; i++)
             count += 2;
     }
@@ -96,8 +96,8 @@ LIB_TEST_CASE (3, "conditional calls") {
 }
 
 LIB_TEST_CASE (4, "mgr dump") {
-    LOG_INIT (11, Log::VERBOSE, Log::TO_CONSOLE);
-    LOG_INIT (12, Log::INFO, Log::TO_FILE_BUFFER_CIRCULAR, 100);
+    LOG_INIT (11, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
+    LOG_INIT (12, Quality::Log::INFO, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 100);
 
     LOG_MGR_DUMP;
 
@@ -107,7 +107,7 @@ LIB_TEST_CASE (4, "mgr dump") {
 }
 
 LIB_TEST_CASE (5, "special messages") {
-    LOG_INIT (13, Log::VERBOSE, Log::TO_FILE_IMMEDIATE | Log::TO_CONSOLE);
+    LOG_INIT (13, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE | Quality::Log::TO_CONSOLE);
   
     int input_0 = 1000;
     char input_1 = 'a';
@@ -125,7 +125,10 @@ LIB_TEST_CASE (5, "special messages") {
                      << "guess it does!"
                      << std::endl;
 
-    LOG_INIT (14, Log::VERBOSE, Log::TO_FILE_IMMEDIATE | Log::TO_FILE_BUFFER_CIRCULAR | Log::TO_CONSOLE, 5);
+    LOG_INIT (14, Quality::Log::VERBOSE, 
+              Quality::Log::TO_FILE_IMMEDIATE | 
+              Quality::Log::TO_FILE_BUFFER_CIRCULAR | 
+              Quality::Log::TO_CONSOLE, 5);
     /* for all sinks except circular buffer, when you omit std::endl at the end of a log message and start another message
      * it is considered as different log entries (indicated by headers that are appended to the beginning of each message)
      * evn though they are not on the same line.

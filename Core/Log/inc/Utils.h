@@ -20,8 +20,8 @@
 #include <sstream>
 
 namespace Collections {
+namespace Quality {
 namespace Log {
-namespace Utils {
     std::string levelToString (e_level level) {
         std::string result;
         switch (level) {
@@ -74,7 +74,7 @@ namespace Utils {
 
         return header;
     }
-}   // namespace Utils
 }   // namespace Log
+}   // namespace Quality
 }   // namespace Collections
 #endif  // LOG_UTILS_H

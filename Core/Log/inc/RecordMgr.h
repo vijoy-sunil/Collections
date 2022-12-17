@@ -22,6 +22,7 @@
 #define LOG_DUMP_LINE_BREAK                 std::string (LOG_DUMP_LINE_LENGTH, LOG_DUMP_LINE_STYLE) << std::endl
 
 namespace Collections {
+namespace Quality {
 namespace Log {
     class RecordMgr {
         private:
@@ -114,5 +115,6 @@ namespace Log {
     // single instance
     RecordMgr recordMgr;
 }   // namespace Log
+}   // namespace Quality
 }   // namespace Collections
 #endif  // RECORD_MGR_H

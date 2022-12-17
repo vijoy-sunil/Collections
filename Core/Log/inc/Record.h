@@ -19,6 +19,7 @@
 #include <fstream>
 
 namespace Collections {
+namespace Quality {
 namespace Log {
     typedef enum {
         NONE = 0,
@@ -185,5 +186,6 @@ namespace Log {
             }
     };
 }   // namespace Log
+}   // namespace Quality
 }   // namespace Collections
 #endif  // RECORD_H

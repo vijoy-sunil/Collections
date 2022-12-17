@@ -18,30 +18,30 @@
 #include "Utils.h"
 
 // log calls available to user, simplifies fn calls
-#define LOG_INIT                                Log::recordMgr.initRecord
-#define LOG_INFO(id)                            LOG (id, Log::INFO)
-#define LOG_WARNING(id)                         LOG (id, Log::WARNING)
-#define LOG_ERROR(id)                           LOG (id, Log::ERROR)
-#define LOG_CLOSE(id)                           Log::recordMgr.closeRecord (id)
-#define LOG_CLOSE_ALL                           Log::recordMgr.closeAllRecords()
-#define LOG_MGR_DUMP                            Log::recordMgr.dump (std::cout)
+#define LOG_INIT                                Quality::Log::recordMgr.initRecord
+#define LOG_INFO(id)                            LOG (id, Quality::Log::INFO)
+#define LOG_WARNING(id)                         LOG (id, Quality::Log::WARNING)
+#define LOG_ERROR(id)                           LOG (id, Quality::Log::ERROR)
+#define LOG_CLOSE(id)                           Quality::Log::recordMgr.closeRecord (id)
+#define LOG_CLOSE_ALL                           Quality::Log::recordMgr.closeAllRecords()
+#define LOG_MGR_DUMP                            Quality::Log::recordMgr.dump (std::cout)
 
 // conditional call, a lightweight alternative that only acts as a gate based on level
-#define IF_LOG(id, level)                       if (Log::Utils::filter (Log::recordMgr.getRecord (id), level))
-#define IF_NOT_LOG(id, level)                   if (!Log::Utils::filter (Log::recordMgr.getRecord (id), level))
+#define IF_LOG(id, level)                       if (Quality::Log::filter (Quality::Log::recordMgr.getRecord (id), level))
+#define IF_NOT_LOG(id, level)                   if (!Quality::Log::filter (Quality::Log::recordMgr.getRecord (id), level))
 
 // under the hood
 #define LOG_GET_FILE                            __FILE__
 #define LOG_GET_FUNCTION                        __FUNCTION__
 #define LOG_GET_LINE                            __LINE__
 
-#define LOG_GET_REF(id)                         Log::recordMgr.getRecord (id)->getReference()                
+#define LOG_GET_REF(id)                         Quality::Log::recordMgr.getRecord (id)->getReference()                
 #define LOG(id, level)                          IF_NOT_LOG (id, level) {;}                                  \
                                                 else                                                        \
                                                     LOG_GET_REF (id) <<                                     \
-                                                    Log::Utils::getHeader (id,                              \
-                                                                           level,                           \
-                                                                           LOG_GET_FILE,                    \
-                                                                           LOG_GET_FUNCTION,                \
-                                                                           LOG_GET_LINE)
+                                                    Quality::Log::getHeader (id,                            \
+                                                                            level,                          \
+                                                                            LOG_GET_FILE,                   \
+                                                                            LOG_GET_FUNCTION,               \
+                                                                            LOG_GET_LINE)
 #endif  // LOG_H
