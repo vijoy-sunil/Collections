@@ -31,11 +31,11 @@ LIB_TEST_CASE (0, "int type w/ no overwrite") {
 
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (0, int) != output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (0);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (1, "float type w/ no overwrite") {
@@ -50,11 +50,11 @@ LIB_TEST_CASE (1, "float type w/ no overwrite") {
 
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (1, float) != output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (1);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (2, "string type w/ no overwrite") {
@@ -69,11 +69,11 @@ LIB_TEST_CASE (2, "string type w/ no overwrite") {
 
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (2, std::string) != output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (2);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (3, "char type w/ overwrite") {
@@ -88,11 +88,11 @@ LIB_TEST_CASE (3, "char type w/ overwrite") {
 
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (3, char) != output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (3);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (4, "reuse instance id") {
@@ -100,7 +100,7 @@ LIB_TEST_CASE (4, "reuse instance id") {
     BUFFER_INIT (4, Memory::CIRCULAR_OVERWRITE, char, capacity); 
     BUFFER_PUSH (4, char) << 'a';
     if (*BUFFER_POP (4, char) != 'a')
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // you are able to reuse the instance #4 for another buffer after you close it
     BUFFER_CLOSE (4);
@@ -108,11 +108,11 @@ LIB_TEST_CASE (4, "reuse instance id") {
     BUFFER_INIT (4, Memory::CIRCULAR_NO_OVERWRITE, int, capacity); 
     BUFFER_PUSH (4, int) << 1010;
     if (*BUFFER_POP (4, int) != 1010)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     BUFFER_CLOSE (4); 
 
-    return Quality::PASS; 
+    return Quality::Test::PASS; 
 }
 
 LIB_TEST_CASE (5, "buffer mgr dump") {
@@ -128,7 +128,7 @@ LIB_TEST_CASE (5, "buffer mgr dump") {
     BUFFER_CLOSE_ALL;
 
     BUFFER_MGR_DUMP;
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (6, "buffer dump") {
@@ -148,7 +148,7 @@ LIB_TEST_CASE (6, "buffer dump") {
     BUFFER_DUMP (8, int);
     BUFFER_CLOSE (8);
 
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
@@ -166,7 +166,7 @@ LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
     // half flush
     for (int i = 0; i < capacity/2; i++) {
         if (*BUFFER_POP (9, char) != half_flush_output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     // re full fill
@@ -176,11 +176,11 @@ LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
     // full flush
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (9, char) != full_flush_output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (9);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
@@ -200,7 +200,7 @@ LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
     // half flush
     for (int i = 0; i < capacity/2; i++) {
         if (*BUFFER_POP (10, char) != half_flush_output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_DUMP (10, char);
@@ -214,11 +214,11 @@ LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
     // full flush
     for (int i = 0; i < capacity; i++) {
         if (*BUFFER_POP (10, char) != full_flush_output[i])
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_CLOSE (10);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (9, "buffer reset") {
@@ -235,7 +235,7 @@ LIB_TEST_CASE (9, "buffer reset") {
     BUFFER_DUMP (11, float);
     BUFFER_CLOSE (11);
 
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (10, "buffer peek") {
@@ -252,9 +252,9 @@ LIB_TEST_CASE (10, "buffer peek") {
 
     // peek
     if (*BUFFER_PEEK_FIRST (12, char) != output_full_fill_peek[0])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     if (*BUFFER_PEEK_LAST (12, char) != output_full_fill_peek[1])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // half flush
     for (int i = 0; i < capacity/2; i++)
@@ -262,9 +262,9 @@ LIB_TEST_CASE (10, "buffer peek") {
     
     // peek
     if (*BUFFER_PEEK_FIRST (12, char) != output_half_flush_peek[0])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     if (*BUFFER_PEEK_LAST (12, char) != output_half_flush_peek[1])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // re full fill
     for (auto i : input)
@@ -272,12 +272,12 @@ LIB_TEST_CASE (10, "buffer peek") {
 
     // peek
     if (*BUFFER_PEEK_FIRST (12, char) != output_full_fill_peek[0])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
     if (*BUFFER_PEEK_LAST (12, char) != output_full_fill_peek[1])
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     BUFFER_CLOSE (12);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (11, "buffer availability") {
@@ -293,24 +293,24 @@ LIB_TEST_CASE (11, "buffer availability") {
         BUFFER_PUSH (13, int) << i; 
 
     if (BUFFER_AVAILABILITY (13, int) != output_full_fill)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // half flush
     for (int i = 0; i < capacity/2; i++)
         BUFFER_POP (13, int);
 
     if (BUFFER_AVAILABILITY (13, int) != output_half_flush)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     // re full fill
     for (auto i : input) 
         BUFFER_PUSH (13, int) << i; 
 
     if (BUFFER_AVAILABILITY (13, int) != output_full_fill)
-        return Quality::FAIL;
+        return Quality::Test::FAIL;
 
     BUFFER_CLOSE (13);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (12, "custom type") {
@@ -343,17 +343,17 @@ LIB_TEST_CASE (12, "custom type") {
 
         if (out.data != output_full_flush[i].data ||
             out.desc != output_full_flush[i].desc)
-            return Quality::FAIL;
+            return Quality::Test::FAIL;
     }
 
     BUFFER_DUMP_CUSTOM (14, s_customType, lambda_customType);
 
     BUFFER_CLOSE (14);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 int main (void) {
-    LIB_TEST_INIT (Quality::TO_CONSOLE | Quality::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
     // run all tests
     LIB_TEST_RUN_ALL;
 
