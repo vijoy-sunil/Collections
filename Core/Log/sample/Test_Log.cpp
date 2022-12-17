@@ -31,7 +31,7 @@ LIB_TEST_CASE (0, "multiple log instances") {
     LOG_CLOSE (0);
     LOG_CLOSE (1);
 
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (1, "filter log level test") {
@@ -51,7 +51,7 @@ LIB_TEST_CASE (1, "filter log level test") {
     }
 
     LOG_CLOSE_ALL;
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (2, "sink test") {
@@ -72,7 +72,7 @@ LIB_TEST_CASE (2, "sink test") {
     }
 
     LOG_CLOSE_ALL;
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (3, "conditional calls") {
@@ -92,7 +92,7 @@ LIB_TEST_CASE (3, "conditional calls") {
     
     LOG_ERROR (10) << count << std::endl;
     LOG_CLOSE (10);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (4, "mgr dump") {
@@ -103,7 +103,7 @@ LIB_TEST_CASE (4, "mgr dump") {
 
     LOG_CLOSE (11);
     LOG_CLOSE (12);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (5, "special messages") {
@@ -147,11 +147,11 @@ LIB_TEST_CASE (5, "special messages") {
 
     LOG_CLOSE (13);
     LOG_CLOSE (14);
-    return Quality::PASS;
+    return Quality::Test::PASS;
 }
 
 int main(void) {
-    LIB_TEST_INIT (Quality::TO_CONSOLE | Quality::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
 
     LIB_TEST_RUN_ALL;
     return 0;
