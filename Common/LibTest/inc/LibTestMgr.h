@@ -20,14 +20,11 @@
 #include <vector>
 #include <map>
 #include <chrono>
+#include "../../../Admin/Constants.h"
 
 // https://en.cppreference.com/w/cpp/chrono/duration
 #define ELAPSED_TIME_CAST               std::chrono::nanoseconds
 #define ELAPSED_TIME_UNIT               "ns"
-// formatting
-#define TEST_DUMP_LINE_LENGTH           50
-#define TEST_DUMP_LINE_STYLE            ':'
-#define TEST_DUMP_LINE_BREAK            std::string (TEST_DUMP_LINE_LENGTH, TEST_DUMP_LINE_STYLE) << std::endl
 
 namespace Collections {
 namespace Quality {
@@ -93,10 +90,10 @@ namespace Test {
 
             void dumpSummary (std::ostream& ost, 
                               double elapsed) {
-                ost << TEST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
                 ost << "TEST SUMMARY" 
                     << "\n"; 
-                ost << TEST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
 
                 ost << "TOTAL TESTS: " 
                     << "\t"
@@ -144,13 +141,13 @@ namespace Test {
                 ost << "]"
                     << "\n";  
 
-                ost << TEST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
             }
 
             void dumpTestResult (size_t testId, 
                                  std::ostream& ost,
                                  double elapsed) {
-                ost << TEST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
                 
                 ost << "ID: "
                     << "\t\t"
@@ -172,7 +169,7 @@ namespace Test {
                     << "[ " << elapsed << " " << ELAPSED_TIME_UNIT << " ]"
                     << "\n";
                 
-                ost << TEST_DUMP_LINE_BREAK; 
+                ost << DUMP_LINE_BREAK; 
             }
 
             inline bool ifTestIdExist (size_t testId) {

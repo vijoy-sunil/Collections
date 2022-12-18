@@ -17,11 +17,7 @@
 #include <iostream>
 #include <map>
 #include <cassert>
-
-// dumb formatting
-#define DUMP_LINE_LENGTH            50
-#define DUMP_LINE_STYLE             '-'
-#define DUMP_LINE_BREAK             std::string (DUMP_LINE_LENGTH, DUMP_LINE_STYLE) << std::endl
+#include "Constants.h"
 
 namespace Collections {
 namespace Admin {
