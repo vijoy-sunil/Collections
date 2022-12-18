@@ -26,7 +26,7 @@
 #define ELAPSED_TIME_UNIT               "ns"
 // formatting
 #define TEST_DUMP_LINE_LENGTH           50
-#define TEST_DUMP_LINE_STYLE            '-'
+#define TEST_DUMP_LINE_STYLE            ':'
 #define TEST_DUMP_LINE_BREAK            std::string (TEST_DUMP_LINE_LENGTH, TEST_DUMP_LINE_STYLE) << std::endl
 
 namespace Collections {
@@ -175,6 +175,10 @@ namespace Test {
                 ost << TEST_DUMP_LINE_BREAK; 
             }
 
+            inline bool ifTestIdExist (size_t testId) {
+                return m_summary.find (testId) != m_summary.end();
+            }
+
         public:
             LibTestMgr (void) {}
 
@@ -197,10 +201,6 @@ namespace Test {
                     if (!m_saveFile.is_open())
                         assert (false);
                 }
-            }
-
-            inline bool ifTestIdExist (size_t testId) {
-                return m_summary.find (testId) != m_summary.end();
             }
 
             void registerTest (e_status (*testCase) (void),
