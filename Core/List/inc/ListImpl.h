@@ -14,23 +14,12 @@
 #ifndef LIST_IMPL_H
 #define LIST_IMPL_H
 
-#include <iostream>
-
-// dump formatting
-#define LIST_DUMP_LINE_LENGTH               50
-#define LIST_DUMP_LINE_STYLE                '~'
-#define LIST_DUMP_LINE_BREAK                std::string (LIST_DUMP_LINE_LENGTH, LIST_DUMP_LINE_STYLE) << std::endl
+#include "../../../Admin/InstanceMgr.h"
 
 namespace Collections {
 namespace Memory {
-    class ListBase {
-        public:
-            virtual ~ListBase() = 0;
-    };
-    inline ListBase::~ListBase() {} 
-
     template <typename T>
-    class List: public ListBase {
+    class List: public Admin::NonTemplateBase {
         private:
             // node definition
             typedef struct Node {
@@ -388,10 +377,10 @@ namespace Memory {
                        void (*lambda) (T*, std::ostream&) = [](T* nodeData, std::ostream& ost) { 
                                                                 ost << *nodeData; 
                                                             }) {
-                ost << LIST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
                 ost << "LIST DUMP" 
                     << "\n"; 
-                ost << LIST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
 
                 ost << "CONTENTS: "
                     << "\t";
@@ -449,7 +438,7 @@ namespace Memory {
                 ost << " ]"
                     << "\n";                                      
                 
-                ost << LIST_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
             }
     };
 }   // namespace Memory

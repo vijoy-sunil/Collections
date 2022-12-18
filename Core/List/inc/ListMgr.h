@@ -15,69 +15,22 @@
 #define LIST_MGR_H
 
 #include "ListImpl.h"
-#include <cassert>
-#include <map>
 
 namespace Collections {
 namespace Memory {
-    class ListMgr {
-        private:
-            std::map <size_t, ListBase*> m_listPool;
-
+    class ListMgr: public Admin::InstanceMgr {
         public:
             template <typename T>
             void initList (size_t instanceId) {
 
                 // create and add list object to pool
-                if (m_listPool.find (instanceId) == m_listPool.end()) {
-                    ListBase* c_list = new List <T> (instanceId);
-                    m_listPool.insert (std::make_pair (instanceId, c_list));
+                if (m_instancePool.find (instanceId) == m_instancePool.end()) {
+                    Admin::NonTemplateBase* c_list = new List <T> (instanceId);
+                    m_instancePool.insert (std::make_pair (instanceId, c_list));
                 }
                 // instance id already exists
                 else
                     assert (false);
-            }
-
-            ListBase* getList (size_t instanceId) {
-                if (m_listPool.find (instanceId) != m_listPool.end())
-                    return m_listPool[instanceId];
-                // invalid instance id
-                else
-                    assert (false);
-            }
-
-            void closeList (size_t instanceId) {
-                if (m_listPool.find (instanceId) != m_listPool.end()) {
-                    delete m_listPool[instanceId];
-                    // remove from map, so you are able to reuse the instance id
-                    m_listPool.erase (instanceId);       
-                }
-                // closing a list instance that doesn't exist, do nothing
-                else
-                    ;
-            }
-
-            void closeAllLists (void) {
-                for (auto const& [key, val] : m_listPool)
-                    delete m_listPool[key];
-
-                // clear all entries in pool
-                m_listPool.clear();
-            }   
-
-            void dump (std::ostream& ost) {
-                ost << LIST_DUMP_LINE_BREAK;
-                ost << "LIST MGR DUMP" 
-                    << "\n"; 
-                ost << LIST_DUMP_LINE_BREAK;
-
-                ost << "INSTANCES: "
-                    << "\t";
-                for (auto const& [key, val] : m_listPool)
-                    ost << "[ " << key << " ] ";
-
-                ost << "\n";
-                ost << LIST_DUMP_LINE_BREAK;
             }
     };
     ListMgr listMgr;

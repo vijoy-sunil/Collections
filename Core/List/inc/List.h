@@ -16,46 +16,40 @@
 
 #include "ListMgr.h"
 
+// list mgr methods
 #define LIST_INIT(id, dataType)                 Memory::listMgr.initList <dataType> (id)
-
-// 'set' operations
-#define LIST_PEEK_SET(id, dataType)             GET_LIST (id, dataType).peekSet
-#define LIST_PEEK_SET_HEAD(id, dataType)        GET_LIST (id, dataType).peekSetHead()
-#define LIST_PEEK_SET_TAIL(id, dataType)        GET_LIST (id, dataType).peekSetTail()
-#define LIST_PEEK_SET_NEXT(id, dataType)        GET_LIST (id, dataType).peekSetNext()
-#define LIST_PEEK_SET_PREVIOUS(id, dataType)    GET_LIST (id, dataType).peekSetPrevious()
-
-// 'execute' operations
-#define LIST_PEEK_CURRENT(id, dataType)         GET_LIST (id, dataType).peekCurrent()
-#define LIST_PEEK_HEAD(id, dataType)            GET_LIST (id, dataType).peekHead()
-#define LIST_PEEK_TAIL(id, dataType)            GET_LIST (id, dataType).peekTail()
-
-#define LIST_ADD_HEAD(id, dataType)             GET_LIST (id, dataType).addHead
-#define LIST_ADD_TAIL(id, dataType)             GET_LIST (id, dataType).addTail
-#define LIST_ADD_AFTER(id, dataType)            GET_LIST (id, dataType).addAfter
-#define LIST_ADD_BEFORE(id, dataType)           GET_LIST (id, dataType).addBefore
-
-#define LIST_REMOVE(id, dataType)               GET_LIST (id, dataType).remove()
-#define LIST_REMOVE_HEAD(id, dataType)          GET_LIST (id, dataType).removeHead()
-#define LIST_REMOVE_TAIL(id, dataType)          GET_LIST (id, dataType).removeTail()
-
-// utils
-#define LIST_REVERSE(id, dataType)              GET_LIST (id, dataType).reverse()
-#define LIST_SWAP(id, dataType)                 GET_LIST (id, dataType).swap
-#define LIST_RESET(id, dataType)                GET_LIST (id, dataType).reset()
-#define LIST_SIZE(id, dataType)                 GET_LIST (id, dataType).getSize()
-
-#define LIST_CLOSE(id)                          Memory::listMgr.closeList (id)
-#define LIST_CLOSE_ALL                          Memory::listMgr.closeAllLists()
-
-#define LIST_DUMP(id, dataType)                 GET_LIST (id, dataType).dump (std::cout)
-#define LIST_DUMP_CUSTOM(id,                                                                                \
-                         dataType,                                                                          \
-                         lambda)                GET_LIST (id, dataType).dump (std::cout, lambda)
-
+#define GET_LIST(id, dataType)                  dynamic_cast <Memory::List <dataType> *>                        \
+                                                (Memory::listMgr.getInstance (id))  
+#define LIST_CLOSE(id)                          Memory::listMgr.closeInstance (id)
+#define LIST_CLOSE_ALL                          Memory::listMgr.closeAllInstances()
 #define LIST_MGR_DUMP                           Memory::listMgr.dump (std::cout)
 
-// under the hood
-#define GET_LIST(id, dataType)                  dynamic_cast <Memory::List <dataType> &>       \
-                                                (*Memory::listMgr.getList (id))                                    
+// 'set' operations
+#define LIST_PEEK_SET                           peekSet
+#define LIST_PEEK_SET_HEAD                      peekSetHead()
+#define LIST_PEEK_SET_TAIL                      peekSetTail()
+#define LIST_PEEK_SET_NEXT                      peekSetNext()
+#define LIST_PEEK_SET_PREVIOUS                  peekSetPrevious()
+
+// 'execute' operations (these need to be executed after a 'set' operation)
+#define LIST_PEEK_CURRENT                       peekCurrent()
+#define LIST_PEEK_HEAD                          peekHead()
+#define LIST_PEEK_TAIL                          peekTail()
+
+#define LIST_ADD_HEAD                           addHead
+#define LIST_ADD_TAIL                           addTail
+#define LIST_ADD_AFTER                          addAfter
+#define LIST_ADD_BEFORE                         addBefore
+
+#define LIST_REMOVE                             remove()
+#define LIST_REMOVE_HEAD                        removeHead()
+#define LIST_REMOVE_TAIL                        removeTail()
+
+// utils
+#define LIST_REVERSE                            reverse()
+#define LIST_SWAP                               swap
+#define LIST_RESET                              reset()
+#define LIST_SIZE                               getSize()
+#define LIST_DUMP                               dump (std::cout)
+#define LIST_DUMP_CUSTOM(lambda)                dump (std::cout, lambda)                                  
 #endif  // LIST_H
