@@ -14,12 +14,7 @@
 #ifndef BUFFER_IMPL_H
 #define BUFFER_IMPL_H
 
-#include <iostream>
-
-// dump formatting
-#define BUFFER_DUMP_LINE_LENGTH             50
-#define BUFFER_DUMP_LINE_STYLE              '~'
-#define BUFFER_DUMP_LINE_BREAK              std::string (BUFFER_DUMP_LINE_LENGTH, BUFFER_DUMP_LINE_STYLE) << std::endl
+#include "../../../Admin/InstanceMgr.h"
 
 namespace Collections {
 namespace Memory {
@@ -28,28 +23,8 @@ namespace Memory {
         CIRCULAR_OVERWRITE = 2
     }e_type;
 
-    /* Buffer alone is not a type, but a template which can generate a family of types, such as  Buffer <int> and 
-     * Buffer<double>. All these variants are not related such that the one is somehow derived from the other or such. So 
-     * you have to establish some relation between all  these generated types. One way is to use a common non-template base
-     * class
-     */
-    class BufferBase {
-        public:
-            /* the destructor is virtual for the base class because if you did not have a virtual destructor and through 
-             * the pointer to base class when you call destructor you end up calling base class destructor. In this case 
-             * you want polymorphism to work on your destructor as well, e.g. through calling destructor on your base class
-             * you want to end up calling destructor of your most derived class not your base class.
-            */
-            virtual ~BufferBase() = 0;
-    };
-    /* we need to provide an implementation to the pure virtual destructor of the base class, this is because If you derive
-     * anything from base and then try to delete or destroy it, base's destructor will eventually be called. Since it is 
-     * pure and doesn't have an implementation, undefined behavior will ensue.
-    */
-    inline BufferBase::~BufferBase() {} 
-
     template <typename T>
-    class Buffer: public BufferBase {
+    class Buffer: public Admin::NonTemplateBase {
         private:
             size_t m_instanceId;
             e_type m_type;
@@ -88,8 +63,7 @@ namespace Memory {
                 delete[] m_buffer;
             }
             
-            // overload << operator for push operation
-            Buffer& operator << (const T& data) {
+            void push (const T& data) {
                 // always push when in overwrite mode
                 if (!isFull() || m_type == CIRCULAR_OVERWRITE) {
                     *m_head = data;
@@ -111,8 +85,6 @@ namespace Memory {
                 // if push fails due to maximum capacity, do nothing
                 else
                     ;
-
-                return *this;
             }
 
             T* pop (void) {
@@ -162,10 +134,10 @@ namespace Memory {
                 T* readPtr = m_tail;
                 size_t numItems = m_numItems;
 
-                ost << BUFFER_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
                 ost << "BUFFER DUMP" 
                     << "\n"; 
-                ost << BUFFER_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
 
                 ost << "CONTENTS: "
                     << "\t";
@@ -203,7 +175,7 @@ namespace Memory {
                     ost << " ]" ;
                 }
                 ost << "\n";
-                ost << BUFFER_DUMP_LINE_BREAK;
+                ost << DUMP_LINE_BREAK;
             }
     };
 }   // namespace Memory

@@ -16,34 +16,29 @@
 
 #include "BufferMgr.h"
 
-// buffer calls available to user, simplifies fn calls
-#define BUFFER_INIT(id,                                                                                     \
-                    type,                                                                                   \
-                    dataType,                                                                               \
+// buffer manager methods
+#define BUFFER_INIT(id,                                                                                         \
+                    type,                                                                                       \
+                    dataType,                                                                                   \
                     capacity)                   Memory::bufferMgr.initBuffer <dataType> (id, type, capacity)
+// get buffer instance (pointer to buffer object) from mgr
+#define GET_BUFFER(id, dataType)                dynamic_cast <Memory::Buffer <dataType> *>                      \
+                                                (Memory::bufferMgr.getInstance (id)) 
+#define BUFFER_CLOSE(id)                        Memory::bufferMgr.closeInstance (id)
+#define BUFFER_CLOSE_ALL                        Memory::bufferMgr.closeAllInstances()
+#define BUFFER_MGR_DUMP                         Memory::bufferMgr.dump (std::cout)  
 
-#define BUFFER_PUSH(id, dataType)               GET_BUFFER (id, dataType)
-#define BUFFER_POP(id, dataType)                GET_BUFFER (id, dataType).pop()
-#define BUFFER_RESET(id, dataType)              GET_BUFFER (id, dataType).reset()
-#define BUFFER_PEEK_FIRST(id, dataType)         GET_BUFFER (id, dataType).peekFirst()
-#define BUFFER_PEEK_LAST(id, dataType)          GET_BUFFER (id, dataType).peekLast()
-#define BUFFER_AVAILABILITY(id, dataType)       GET_BUFFER (id, dataType).availability()
-
-#define BUFFER_CLOSE(id)                        Memory::bufferMgr.closeBuffer (id)
-#define BUFFER_CLOSE_ALL                        Memory::bufferMgr.closeAllBuffers()
-
+#define BUFFER_PUSH(data)                       push (data)
+#define BUFFER_POP                              pop()
+#define BUFFER_FLUSH(stream)                    flush (stream)
+#define BUFFER_PEEK_FIRST                       peekFirst()
+#define BUFFER_PEEK_LAST                        peekLast()
+#define BUFFER_AVAILABILITY                     availability()
+#define BUFFER_RESET                            reset()
 // default sink for buffer dump is set to cout
-#define BUFFER_DUMP(id, dataType)               GET_BUFFER (id, dataType).dump (std::cout)
+#define BUFFER_DUMP                             dump (std::cout)
 /* use this to dump buffer containing custom data types by passing in a lambda function specifying how to unravel the
  * custom data type
 */
-#define BUFFER_DUMP_CUSTOM(id,                                                                             \
-                           dataType,                                                                       \
-                           lambda)              GET_BUFFER (id, dataType).dump (std::cout, lambda)
-#define BUFFER_MGR_DUMP                         Memory::bufferMgr.dump (std::cout)
-
-// under the hood
-#define BUFFER_FLUSH(id, dataType, stream)      GET_BUFFER (id, dataType).flush (stream)
-#define GET_BUFFER(id, dataType)                dynamic_cast <Memory::Buffer <dataType> &>     \
-                                                (*Memory::bufferMgr.getBuffer (id))                                    
+#define BUFFER_DUMP_CUSTOM(lambda)              dump (std::cout, lambda)
 #endif  // BUFFER_H
