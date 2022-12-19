@@ -18,16 +18,41 @@ using namespace Collections;
 
 LIB_TEST_CASE (0, "multiple log instances") {
     LOG_INIT (0, Quality::Log::INFO, Quality::Log::TO_CONSOLE);
-    LOG_INFO (0) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl; 
+    auto myLog = GET_LOG (0);
+
+    LOG_INFO (myLog) << "Hello World! " 
+                     << "This is a test message. " 
+                     << 123 
+                     << "," 
+                     << 10.1010 
+                     << std::endl; 
     LOG_CLOSE (0);
 
     LOG_INIT (0, Quality::Log::WARNING, Quality::Log::TO_CONSOLE);
-    LOG_WARNING (0) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl;
+    auto myAnotherLog = GET_LOG (0);
+
+    LOG_WARNING (myAnotherLog) << "Hello World! " 
+                               << "This is a test message. " 
+                               << 123 
+                               << "," 
+                               << 10.1010 
+                               << std::endl;
 
     LOG_INIT (1, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
-    LOG_WARNING (1) << "Hello World! " << "This is a test message. " << 123 << "," << 10.1010 << std::endl;
-    LOG_WARNING (1) << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    auto myDifferentLog = GET_LOG (1);
 
+    LOG_WARNING (myDifferentLog) << "Hello World! " 
+                                 << "This is a test message. " 
+                                 << 123 
+                                 << "," 
+                                 << 10.1010 
+                                 << std::endl;
+    LOG_WARNING (myDifferentLog) << "My name is " 
+                                 << "John Adams " 
+                                 << 123 
+                                 << "," 
+                                 << 10.1010 
+                                 << std::endl;
     LOG_CLOSE (0);
     LOG_CLOSE (1);
 
@@ -35,79 +60,80 @@ LIB_TEST_CASE (0, "multiple log instances") {
 }
 
 LIB_TEST_CASE (1, "filter log level test") {
-    // there are a total of 5 log levels
-    const int instances[] = { 2, 3, 4, 5, 6 };
-
     LOG_INIT (2, Quality::Log::NONE, Quality::Log::TO_FILE_IMMEDIATE);
     LOG_INIT (3, Quality::Log::INFO, Quality::Log::TO_FILE_IMMEDIATE);
     LOG_INIT (4, Quality::Log::WARNING, Quality::Log::TO_FILE_IMMEDIATE);
     LOG_INIT (5, Quality::Log::ERROR, Quality::Log::TO_FILE_IMMEDIATE);
     LOG_INIT (6, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
 
-    for (auto i : instances) {
-        LOG_INFO (i)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
-        LOG_WARNING (i) << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
-        LOG_ERROR (i)   << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
-    }
+    auto myLog2 = GET_LOG (2);
+    auto myLog3 = GET_LOG (3);
+    auto myLog4 = GET_LOG (4);
+    auto myLog5 = GET_LOG (5);
+    auto myLog6 = GET_LOG (6);
 
+    LOG_INFO    (myLog2)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_WARNING (myLog2)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_ERROR   (myLog2)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+
+    LOG_INFO    (myLog3)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_WARNING (myLog3)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_ERROR   (myLog3)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+
+    LOG_INFO    (myLog4)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_WARNING (myLog4)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_ERROR   (myLog4)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+
+    LOG_INFO    (myLog5)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_WARNING (myLog5)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_ERROR   (myLog5)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+
+    LOG_INFO    (myLog6)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_WARNING (myLog6)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+    LOG_ERROR   (myLog6)    << "My name is " << "John Adams " << 123 << "," << 10.1010 << std::endl;
+
+    LOG_MGR_DUMP;
     LOG_CLOSE_ALL;
     return Quality::Test::PASS;
 }
 
 LIB_TEST_CASE (2, "sink test") {
-    // there are a total of 3 log sinks
-    const int instances[] = { 7, 8, 9 };
-
     LOG_INIT (7, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
     LOG_INIT (8, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
     // you need to specify buffer capacity for circular buffer sink
     LOG_INIT (9, Quality::Log::VERBOSE, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 10);
 
-    for (auto i : instances) {
-        int numMessages = 15;
-        while (numMessages != 0) {
-            LOG_WARNING (i) << "My name is " << "John Adams " << numMessages << "," << 10.1010 << std::endl;    
-            numMessages--;
-        }
+    auto myLog7 = GET_LOG (7);
+    auto myLog8 = GET_LOG (8);
+    auto myLog9 = GET_LOG (9);
+
+    int numMessages = 15;
+    while (numMessages != 0) {
+        LOG_WARNING (myLog7) << "My name is " << "John Adams " << numMessages << "," << 10.1010 << std::endl;  
+        LOG_WARNING (myLog8) << "My name is " << "John Adams " << numMessages << "," << 10.1010 << std::endl;  
+        LOG_WARNING (myLog9) << "My name is " << "John Adams " << numMessages << "," << 10.1010 << std::endl;  
+
+        numMessages--;
     }
 
     LOG_CLOSE_ALL;
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (3, "conditional calls") {
-    LOG_INIT (10, Quality::Log::ERROR, Quality::Log::TO_CONSOLE);
-    int count = 0;
-
-    // this code block executes as an info message
-    IF_LOG (10, Quality::Log::INFO) {
-        for (int i = 0; i < 10; i++)
-            count++;
-    }
-
-    IF_NOT_LOG (10, Quality::Log::WARNING) {
-        for (int i = 0; i < 10; i++)
-            count += 2;
-    }
-    
-    LOG_ERROR (10) << count << std::endl;
-    LOG_CLOSE (10);
-    return Quality::Test::PASS;
-}
-
-LIB_TEST_CASE (4, "mgr dump") {
-    LOG_INIT (11, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
-    LOG_INIT (12, Quality::Log::INFO, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 100);
+LIB_TEST_CASE (3, "mgr dump") {
+    LOG_INIT (10, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
+    LOG_INIT (11, Quality::Log::INFO, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 100);
 
     LOG_MGR_DUMP;
 
+    LOG_CLOSE (10);
     LOG_CLOSE (11);
-    LOG_CLOSE (12);
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (5, "special messages") {
-    LOG_INIT (13, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE | Quality::Log::TO_CONSOLE);
+LIB_TEST_CASE (4, "special messages") {
+    LOG_INIT (12, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE | Quality::Log::TO_CONSOLE);
+    auto myLog = GET_LOG (12);
   
     int input_0 = 1000;
     char input_1 = 'a';
@@ -115,38 +141,39 @@ LIB_TEST_CASE (5, "special messages") {
     std::string input_3 = "John Adams";        
     float *ptr = &input_2;
 
-    LOG_INFO (13) << input_0 << " " << input_1 << std::endl;
-    LOG_INFO (13) << input_2 << " " << input_3 << " " << *ptr << std::endl;
+    LOG_INFO (myLog) << input_0 << " " << input_1 << std::endl;
+    LOG_INFO (myLog) << input_2 << " " << input_3 << " " << *ptr << std::endl;
 
-    LOG_WARNING (13) << "test format specifiers like \\n \\t etc." 
-                     << "\t\t\t" 
-                     << "does it work?"
-                     << "\n" 
-                     << "guess it does!"
-                     << std::endl;
+    LOG_WARNING (myLog) << "test format specifiers like \\n \\t etc." 
+                        << "\t\t\t" 
+                        << "does it work?"
+                        << "\n" 
+                        << "guess it does!"
+                        << std::endl;
 
-    LOG_INIT (14, Quality::Log::VERBOSE, 
+    LOG_INIT (13, Quality::Log::VERBOSE, 
               Quality::Log::TO_FILE_IMMEDIATE | 
               Quality::Log::TO_FILE_BUFFER_CIRCULAR | 
               Quality::Log::TO_CONSOLE, 5);
+    auto mySecondLog = GET_LOG (13);
+
     /* for all sinks except circular buffer, when you omit std::endl at the end of a log message and start another message
      * it is considered as different log entries (indicated by headers that are appended to the beginning of each message)
      * evn though they are not on the same line.
     */
-    LOG_ERROR (14) << "testing multi line logs without std::endl";
-    LOG_ERROR (14) << "even if i use \\n" << "\n";
-    LOG_ERROR (14) << "I am still a different message even though we are on the same line" << std::endl;
+    LOG_ERROR (mySecondLog) << "testing multi line logs without std::endl";
+    LOG_ERROR (mySecondLog) << "even if i use \\n" << "\n";
+    LOG_ERROR (mySecondLog) << "I am still a different message even though we are on the same line" << std::endl;
 
-    /* for circular buffered sinks, std::endl marks the end of a single entry into the buffer
-    */
+    // for circular buffered sinks, std::endl marks the end of a single entry into the buffer
     int count = 0;
     for (int i = 0; i < 5; i++) {
         count++;
-        LOG_INFO (14) << "count: " << count << std::endl;
+        LOG_INFO (mySecondLog) << "count: " << count << std::endl;
     }
 
+    LOG_CLOSE (12);
     LOG_CLOSE (13);
-    LOG_CLOSE (14);
     return Quality::Test::PASS;
 }
 

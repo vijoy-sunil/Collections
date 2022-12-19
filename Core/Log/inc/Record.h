@@ -14,9 +14,12 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+#include "../../../Admin/InstanceMgr.h"
 // import buffer from collections to use buffered sink
 #include "../../../Common/Buffer/inc/Buffer.h"
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 
 namespace Collections {
 namespace Quality {
@@ -45,7 +48,7 @@ namespace Log {
     }
 
     // record objects (identified by instance ids) are maintained by the mgr
-    class Record {
+    class Record: public Admin::NonTemplateBase {
         private:
             size_t m_instanceId;
             e_level m_level;
@@ -62,6 +65,41 @@ namespace Log {
             // file name without instance id + format
             std::string m_saveFileName_immediate = "./immediate_log_";
             std::string m_saveFileName_buffered = "./buffered_log_";
+
+            std::string levelToString (e_level level) {
+                std::string result;
+                switch (level) {
+                    case INFO:
+                        result = "INFO";
+                        break;
+
+                    case WARNING:
+                        result = "WARN";
+                        break;
+
+                    case ERROR:
+                        result = "ERRO";
+                        break;
+
+                    default:
+                        result = "UNDF";
+                        break;
+                }
+                return result;
+            }
+
+            std::string getLocalTimestamp (void) {
+                /* the string stream associates a string object with a string. Using this we can read from string as if it were a 
+                * stream like cin
+                */
+                std::stringstream stream;
+                
+                std::chrono::time_point <std::chrono::system_clock> now = std::chrono::system_clock::now();
+                std::time_t t_c = std::chrono::system_clock::to_time_t (now);
+                // https://en.cppreference.com/w/cpp/io/manip/put_time
+                stream << std::put_time (std::localtime (&t_c), "%F %T");
+                return stream.str();
+            }
 
             // these 2 methods helps us to convert everything to string type
             std::string to_string (const std::string& r) const { 
@@ -134,18 +172,35 @@ namespace Log {
                 return m_sink;
             }
 
-            inline void setLevel (e_level level) {
-                m_level = level;
-            }
-
             inline e_level getLevel (void) {
                 return m_level;
             }
 
+            std::string getHeader (e_level level,
+                                   const char* file, 
+                                   const char* function, 
+                                   const size_t line) {
+
+                std::string header = "[ " + std::to_string (m_instanceId) + " ]" + " " +
+                                     getLocalTimestamp() + " " +
+                                     "[ " + levelToString (level) + " ]" + " " +
+                                     file + " " +
+                                     function + " " +
+                                     std::to_string (line) +  " ";
+
+                return header;
+            }
+
+            inline bool filterLevel (e_level level) {
+                return m_level & level;
+            }
+
             // write buffered data to file, only used when sink is a buffered sink
             void flushBufferToFile (void) {
-                if (m_saveFile_buffered.is_open())
-                    BUFFER_FLUSH (m_instanceId, std::string, m_saveFile_buffered);
+                if (m_saveFile_buffered.is_open()) {
+                    auto logBuffer = GET_BUFFER (m_instanceId, std::string);
+                    logBuffer-> BUFFER_FLUSH (m_saveFile_buffered);
+                }
             }
 
             // overload for std::endl
@@ -158,7 +213,8 @@ namespace Log {
                 
                 // for buffered sink, instead of inserting a new line we push the log entry into the buffer
                 if (m_sink & TO_FILE_BUFFER_CIRCULAR) {
-                    BUFFER_PUSH (m_instanceId, std::string) << m_bufferedSinkHolder;
+                    auto logBuffer = GET_BUFFER (m_instanceId, std::string);
+                    logBuffer-> BUFFER_PUSH (m_bufferedSinkHolder);
                     // clear after flush
                     m_bufferedSinkHolder = "";
                 }

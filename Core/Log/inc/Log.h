@@ -15,33 +15,42 @@
 #define LOG_H
 
 #include "RecordMgr.h"
-#include "Utils.h"
 
-// log calls available to user, simplifies fn calls
+// mgr methods
 #define LOG_INIT                                Quality::Log::recordMgr.initRecord
-#define LOG_INFO(id)                            LOG (id, Quality::Log::INFO)
-#define LOG_WARNING(id)                         LOG (id, Quality::Log::WARNING)
-#define LOG_ERROR(id)                           LOG (id, Quality::Log::ERROR)
+#define GET_LOG(id)                             static_cast <Quality::Log::Record*>                                 \
+                                                (Quality::Log::recordMgr.getInstance (id))
+// override close methods from instance mgr
 #define LOG_CLOSE(id)                           Quality::Log::recordMgr.closeRecord (id)
 #define LOG_CLOSE_ALL                           Quality::Log::recordMgr.closeAllRecords()
-#define LOG_MGR_DUMP                            Quality::Log::recordMgr.dump (std::cout)
+/* Normally, the dump method in the manager contains only the instance ids that are currently active, but we can use a
+ * lambda function to provide more information about each instance. For example, here we can dump the level and the sink
+ * type of each instance in the format: instanceId-LX-SX (-L is the level, -S is the sink)
+*/
+#define LOG_MGR_DUMP                            auto lambda = [](Admin::NonTemplateBase* val, std::ostream& ost) {  \
+                                                Quality::Log::Record* c_record =                                    \
+                                                static_cast <Quality::Log::Record*> (val);                          \
+                                                ost << "-L"                                                         \
+                                                    << c_record-> getLevel()                                        \
+                                                    << "-S"                                                         \
+                                                    << c_record-> getSink();                                        \
+                                                };                                                                  \
+                                                Quality::Log::recordMgr.dump (std::cout, lambda)
 
-// conditional call, a lightweight alternative that only acts as a gate based on level
-#define IF_LOG(id, level)                       if (Quality::Log::filter (Quality::Log::recordMgr.getRecord (id), level))
-#define IF_NOT_LOG(id, level)                   if (!Quality::Log::filter (Quality::Log::recordMgr.getRecord (id), level))
+// logging methods
+#define LOG_INFO(c_record)                      LOG (c_record, Quality::Log::INFO)
+#define LOG_WARNING(c_record)                   LOG (c_record, Quality::Log::WARNING)
+#define LOG_ERROR(c_record)                     LOG (c_record, Quality::Log::ERROR)
 
-// under the hood
+// under the hood   
 #define LOG_GET_FILE                            __FILE__
 #define LOG_GET_FUNCTION                        __FUNCTION__
 #define LOG_GET_LINE                            __LINE__
-
-#define LOG_GET_REF(id)                         Quality::Log::recordMgr.getRecord (id)->getReference()                
-#define LOG(id, level)                          IF_NOT_LOG (id, level) {;}                                  \
-                                                else                                                        \
-                                                    LOG_GET_REF (id) <<                                     \
-                                                    Quality::Log::getHeader (id,                            \
-                                                                            level,                          \
-                                                                            LOG_GET_FILE,                   \
-                                                                            LOG_GET_FUNCTION,               \
-                                                                            LOG_GET_LINE)
+#define LOG(c_record, level)                    if (! (c_record-> filterLevel (level))) { ; }                       \
+                                                else                                                                \
+                                                    c_record-> getReference() <<                                    \
+                                                    c_record-> getHeader (level,                                    \
+                                                                          LOG_GET_FILE,                             \
+                                                                          LOG_GET_FUNCTION,                         \
+                                                                          LOG_GET_LINE) 
 #endif  // LOG_H

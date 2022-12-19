@@ -16,19 +16,10 @@
 
 #include "Record.h"
 
-// dump formatting
-#define LOG_DUMP_LINE_LENGTH                50
-#define LOG_DUMP_LINE_STYLE                 '.'
-#define LOG_DUMP_LINE_BREAK                 std::string (LOG_DUMP_LINE_LENGTH, LOG_DUMP_LINE_STYLE) << std::endl
-
 namespace Collections {
 namespace Quality {
 namespace Log {
-    class RecordMgr {
-        private:
-            // container for records, allows us to use multiple logs in one project
-            std::map <size_t, Record*> m_recordPool;
-
+    class RecordMgr: public Admin::InstanceMgr {
         public:
             void initRecord (size_t instanceId, 
                              e_level level, 
@@ -37,14 +28,14 @@ namespace Log {
                              std::string format = ".txt") {
             
                 // add record object to pool
-                if (m_recordPool.find (instanceId) == m_recordPool.end()) {
-                    Record *c_record = new Record (instanceId, 
-                                                   level, 
-                                                   sink, 
-                                                   bufferCapacity,
-                                                   format);
+                if (m_instancePool.find (instanceId) == m_instancePool.end()) {
+                    Admin::NonTemplateBase* c_record = new Record (instanceId, 
+                                                                   level, 
+                                                                   sink, 
+                                                                   bufferCapacity,
+                                                                   format);
 
-                    m_recordPool.insert (std::make_pair (instanceId, c_record));
+                    m_instancePool.insert (std::make_pair (instanceId, c_record));
                 }
 
                 // instance id already exists
@@ -52,27 +43,17 @@ namespace Log {
                     assert (false);
             }
 
-            Record* getRecord (size_t instanceId) {
-                Record* c_record;
-                if (m_recordPool.find (instanceId) != m_recordPool.end())
-                    c_record = m_recordPool[instanceId];
-                
-                // invalid instance id
-                else  
-                    assert (false);
-
-                return c_record;
-            }
-
             void closeRecord (size_t instanceId) {
-                if (m_recordPool.find (instanceId) != m_recordPool.end()) { 
-                    // flush buffered sink
-                    if (m_recordPool[instanceId]->getSink() & TO_FILE_BUFFER_CIRCULAR)
-                        m_recordPool[instanceId]->flushBufferToFile();
+                if (m_instancePool.find (instanceId) != m_instancePool.end()) { 
+                    Record* c_record = static_cast <Record*> (m_instancePool[instanceId]);
 
-                    delete m_recordPool[instanceId];
+                    // flush buffered sink
+                    if (c_record-> getSink() & TO_FILE_BUFFER_CIRCULAR)
+                        c_record-> flushBufferToFile();
+
+                    delete c_record;
                     // remove from map, so you are able to reuse the instance id
-                    m_recordPool.erase (instanceId);       
+                    m_instancePool.erase (instanceId);       
                 }
                 // closing a record instance that doesn't exist, do nothing
                 else
@@ -80,36 +61,15 @@ namespace Log {
             }
 
             void closeAllRecords (void) {
-                for (auto const& [key, val] : m_recordPool) {
+                for (auto const& [key, val] : m_instancePool) {
+                    Record* c_record = static_cast <Record*> (val);
                     // flush buffered sink
-                    if (val->getSink() & TO_FILE_BUFFER_CIRCULAR)
-                        val->flushBufferToFile();
+                    if (c_record-> getSink() & TO_FILE_BUFFER_CIRCULAR)
+                        c_record-> flushBufferToFile();
 
-                    delete m_recordPool[key];
+                    delete m_instancePool[key];
                 }
-                m_recordPool.clear();
-            }
-
-            // X-LX-SX is the format in which the isntance info is dumped (-L is the level, -S is the sink)
-            void dump (std::ostream& ost) {
-                ost << LOG_DUMP_LINE_BREAK;
-                ost << "LOG MGR DUMP" 
-                    << "\n"; 
-                ost << LOG_DUMP_LINE_BREAK;
-
-                ost << "INSTANCES: "
-                    << "\t";
-                
-                for (auto const& [key, value] : m_recordPool) {
-                    ost << "[ " << key
-                        << "-L" 
-                        << value->getLevel()
-                        << "-S"
-                        << value->getSink()
-                        << " ] ";
-                }
-                ost << "\n";
-                ost << LOG_DUMP_LINE_BREAK;    
+                m_instancePool.clear();
             }
     };
     // single instance
