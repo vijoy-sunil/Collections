@@ -14,9 +14,13 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// output dirs
+const std::string LOG_SAVE_DIR      =   "./LogSaves";
+const std::string LIBTEST_SAVE_DIR  =   "./LibTestSaves";
+
 // dumb formatting
-#define DUMP_LINE_LENGTH            50
-#define DUMP_LINE_STYLE             '-'
-#define DUMP_LINE_BREAK             std::string (DUMP_LINE_LENGTH, DUMP_LINE_STYLE) << std::endl
+#define DUMP_LINE_LENGTH                50
+#define DUMP_LINE_STYLE                 '-'
+#define DUMP_LINE_BREAK                 std::string (DUMP_LINE_LENGTH, DUMP_LINE_STYLE) << std::endl
 
 #endif  // CONSTANTS_H
