@@ -27,15 +27,16 @@
  * lambda function to provide more information about each instance. For example, here we can dump the level and the sink
  * type of each instance in the format: instanceId-LX-SX (-L is the level, -S is the sink)
 */
-#define LOG_MGR_DUMP                            auto lambda = [](Admin::NonTemplateBase* val, std::ostream& ost) {  \
-                                                Quality::Log::Record* c_record =                                    \
-                                                static_cast <Quality::Log::Record*> (val);                          \
-                                                ost << "-L"                                                         \
-                                                    << c_record-> getLevel()                                        \
-                                                    << "-S"                                                         \
-                                                    << c_record-> getSink();                                        \
-                                                };                                                                  \
-                                                Quality::Log::recordMgr.dump (std::cout, lambda)
+#define LOG_MGR_DUMP                            Quality::Log::recordMgr.dump (std::cout,                            \
+                                                [](Admin::NonTemplateBase* val, std::ostream& ost) {                \
+                                                        Quality::Log::Record* c_record =                            \
+                                                        static_cast <Quality::Log::Record*> (val);                  \
+                                                        ost << "-L"                                                 \
+                                                            << c_record-> getLevel()                                \
+                                                            << "-S"                                                 \
+                                                            << c_record-> getSink();                                \
+                                                        }                                                           \
+                                                )
 
 // logging methods
 #define LOG_INFO(c_record)                      LOG (c_record, Quality::Log::INFO)
