@@ -1,5 +1,10 @@
 # Collections
 
+## Import
+<pre>
+using namespace Collections;
+</pre>
+
 ## Directory structure
 <pre>
     Collections
