@@ -20,6 +20,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <filesystem>
 
 namespace Collections {
 namespace Quality {
@@ -63,8 +64,8 @@ namespace Log {
             std::string m_bufferedSinkHolder;
 
             // file name without instance id + format
-            std::string m_saveFileName_immediate = "./immediate_log_";
-            std::string m_saveFileName_buffered = "./buffered_log_";
+            std::string m_saveFileName_immediate = LOG_SAVE_DIR + "/immediate_log_";
+            std::string m_saveFileName_buffered  = LOG_SAVE_DIR + "/buffered_log_";
 
             std::string levelToString (e_level level) {
                 std::string result;
@@ -123,7 +124,10 @@ namespace Log {
                 m_instanceId = instanceId;
                 m_level = level;
                 m_sink = sink;
-                
+
+                // create dir
+                std::filesystem::create_directories(LOG_SAVE_DIR);
+
                 // set file names
                 m_saveFileName_immediate += std::to_string (m_instanceId) + format;
                 m_saveFileName_buffered  += std::to_string (m_instanceId) + format;
