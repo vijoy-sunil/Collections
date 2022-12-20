@@ -1,32 +1,43 @@
 # Module paths
-BUFFER_SRC 	:= ../Common/Buffer/sample
-LIBTEST_SRC := ../Common/LibTest/sample
-LIST_SRC 	:= ../Common/List/sample
-LOG_SRC 	:= ../Common/Log/sample
+BUFFER 		:= ../Common/Buffer
+LIBTEST 	:= ../Common/LibTest
+LIST 		:= ../Core/List
+LOG 		:= ../Core/Log
+# save dirs
+SAVEDIR 	:= ./LogSaves ./LibTestSaves
 
-# set module src to build
-SRC_DIRS = $(BUFFER_SRC)
+TARGET     	= exec_img
+# set module to build
+MODULE    	= $(LOG)
 
-TARGET = exec_img
-CC = clang++
+CXX        	= clang++
+CXXFLAGS   	= -std=c++20 -Wall -Wextra -O0
 
-SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
-OBJS := $(addsuffix .o,$(basename $(SRCS)))
-DEPS := $(OBJS:.o=.d)
+LD         	= clang++ -o
+LDFLAGS    	= -Wall -pedantic
 
-SAVE_DIR := ./LogSaves ./LibTestSaves
-INC_DIRS := $(shell find $(SRC_DIRS) -type d)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+SRCDIR     	= $(MODULE)/sample
+INCDIR		= $(MODULE)/inc
+OBJDIR     	= ./objs
+BINDIR     	= ./
 
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++20
+SOURCES   	:= $(wildcard $(SRCDIR)/*.cpp)
+INCLUDES  	:= $(wildcard $(INCDIR)/*.h)
+OBJECTS   	:= $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -o $@ $(LOADLIBES) $(LDLIBS)
-	$(RM) $(OBJS) $(DEPS)
+RM         	= rm -f
+RMDIR		= rm -r -f
+
+$(BINDIR)/$(TARGET): $(OBJECTS)
+	@$(LD) $@ $(LDFLAGS) $(OBJECTS)
+	@echo "linking complete!"
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@echo "compiled "$<" successfully!"
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGET) $(OBJS) $(DEPS)
-	$(RM) -r $(SAVE_DIR)
-
--include $(DEPS)
+	@$(RM) $(OBJECTS) $(BINDIR)/$(TARGET)
+	@$(RMDIR) $(SAVEDIR)
+	@echo "cleanup complete!"
