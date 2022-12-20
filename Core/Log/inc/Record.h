@@ -20,6 +20,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <chrono>
 #include <filesystem>
 
 namespace Collections {
