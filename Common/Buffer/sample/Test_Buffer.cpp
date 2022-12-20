@@ -309,8 +309,8 @@ LIB_TEST_CASE (11, "buffer availability") {
     int input[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const int capacity = 6;
 
-    int output_full_fill = 0;
-    int output_half_flush = capacity/2;
+    size_t output_full_fill = 0;
+    size_t output_half_flush = capacity/2;
 
     // full fill
     BUFFER_INIT (13, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
