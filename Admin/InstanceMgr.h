@@ -84,7 +84,7 @@ namespace Admin {
             void dump (std::ostream& ost, 
                        void (*lambda) (NonTemplateBase*, std::ostream&) = 
                        [](NonTemplateBase* instance, std::ostream& ost) {
-                            // do nothing
+                            ost << "-A" << instance;
                        }) {
                 ost << DUMP_LINE_BREAK;
                 ost << "INSTANCE MGR DUMP" 
@@ -96,8 +96,9 @@ namespace Admin {
                     
                 for (auto const& [key, val] : m_instancePool) {
                     ost << "[ " << key;
-                    /* dump more information about each instance ids through lambda, since the mgr itself doesn't have
-                     * much information unless we cast it back to original type
+                    /* dump more information about each instance ids through lambda. Since the mgr itself doesn't have
+                     * much information unless we cast it back to original type, by default the lambda dumps out the
+                     * instance address
                     */
                     lambda (val, ost);
                     ost << " ] ";
