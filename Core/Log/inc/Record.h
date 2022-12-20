@@ -211,10 +211,10 @@ namespace Log {
             // overload for std::endl
             Record& operator << (endl_type endl){
                 if (m_sink & TO_FILE_IMMEDIATE && m_saveFile_immediate.is_open())
-                    m_saveFile_immediate << std::endl;
+                    m_saveFile_immediate << endl;
 
                 if (m_sink & TO_CONSOLE)
-                    std::cout << std::endl;
+                    std::cout << endl;
                 
                 // for buffered sink, instead of inserting a new line we push the log entry into the buffer
                 if (m_sink & TO_FILE_BUFFER_CIRCULAR) {
