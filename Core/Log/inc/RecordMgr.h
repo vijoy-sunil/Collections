@@ -21,21 +21,24 @@ namespace Quality {
 namespace Log {
     class RecordMgr: public Admin::InstanceMgr {
         public:
-            void initRecord (size_t instanceId, 
-                             e_level level, 
-                             e_sink sink,
-                             size_t bufferCapacity = 0,
-                             std::string format = ".txt") {
+            Record* initRecord (size_t instanceId, 
+                                e_level level, 
+                                e_sink sink,
+                                size_t bufferCapacity = 0,
+                                std::string format = ".txt") {
             
                 // add record object to pool
                 if (m_instancePool.find (instanceId) == m_instancePool.end()) {
-                    Admin::NonTemplateBase* c_record = new Record (instanceId, 
-                                                                   level, 
-                                                                   sink, 
-                                                                   bufferCapacity,
-                                                                   format);
+                    Record* c_record = new Record (instanceId, 
+                                                   level, 
+                                                   sink, 
+                                                   bufferCapacity,
+                                                   format);
 
-                    m_instancePool.insert (std::make_pair (instanceId, c_record));
+                    Admin::NonTemplateBase* c_instance = c_record;
+                    m_instancePool.insert (std::make_pair (instanceId, c_instance));
+
+                    return c_record;
                 }
 
                 // instance id already exists
