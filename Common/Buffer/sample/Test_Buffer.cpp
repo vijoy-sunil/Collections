@@ -25,10 +25,10 @@ LIB_TEST_CASE (0, "int type w/ no overwrite") {
     const int capacity = 5;
     int output[] = { 10, 9, 8, 7, 6 };
 
-    // init buffer instance
-    BUFFER_INIT (0, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
-    // get buffer instance
-    auto myBuffer = GET_BUFFER (0, int);
+    // init buffer and get instance
+    auto myBuffer = BUFFER_INIT (0, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
+    // or use GET_ method to get instance
+    // auto myBuffer = GET_BUFFER (0, int);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -49,8 +49,7 @@ LIB_TEST_CASE (1, "float type w/ no overwrite") {
     const int capacity = 5;
     float output[] = { 10.1, 9.2, 8.3, 7.4, 6.5 };
 
-    BUFFER_INIT (1, Memory::CIRCULAR_NO_OVERWRITE, float, capacity);
-    auto myBuffer = GET_BUFFER (1, float);
+    auto myBuffer = BUFFER_INIT (1, Memory::CIRCULAR_NO_OVERWRITE, float, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -70,8 +69,7 @@ LIB_TEST_CASE (2, "string type w/ no overwrite") {
     const int capacity = 5;
     std::string output[] = { "ab", "cd", "ef", "gh", "ij" };
 
-    BUFFER_INIT (2, Memory::CIRCULAR_NO_OVERWRITE, std::string, capacity);
-    auto myBuffer = GET_BUFFER (2, std::string);
+    auto myBuffer = BUFFER_INIT (2, Memory::CIRCULAR_NO_OVERWRITE, std::string, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -91,8 +89,7 @@ LIB_TEST_CASE (3, "char type w/ overwrite") {
     const int capacity = 5;
     char output[] = { 'f', 'g', 'h', 'i', 'j' };
 
-    BUFFER_INIT (3, Memory::CIRCULAR_OVERWRITE, char, capacity);
-    auto myBuffer = GET_BUFFER (3, char);
+    auto myBuffer = BUFFER_INIT (3, Memory::CIRCULAR_OVERWRITE, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -108,8 +105,7 @@ LIB_TEST_CASE (3, "char type w/ overwrite") {
 
 LIB_TEST_CASE (4, "reuse instance id") {
     const int capacity = 5;
-    BUFFER_INIT (4, Memory::CIRCULAR_OVERWRITE, char, capacity); 
-    auto myBuffer = GET_BUFFER (4, char);
+    auto myBuffer = BUFFER_INIT (4, Memory::CIRCULAR_OVERWRITE, char, capacity); 
 
     myBuffer-> BUFFER_PUSH ('a');
     if (*myBuffer-> BUFFER_POP != 'a')
@@ -118,8 +114,7 @@ LIB_TEST_CASE (4, "reuse instance id") {
     // you are able to reuse the instance #4 for another buffer after you close it
     BUFFER_CLOSE (4);
 
-    BUFFER_INIT (4, Memory::CIRCULAR_NO_OVERWRITE, int, capacity); 
-    auto mySecondBuffer = GET_BUFFER (4, int);
+    auto mySecondBuffer = BUFFER_INIT (4, Memory::CIRCULAR_NO_OVERWRITE, int, capacity); 
 
     mySecondBuffer-> BUFFER_PUSH (1010);
     if (*mySecondBuffer-> BUFFER_POP != 1010)
@@ -150,8 +145,7 @@ LIB_TEST_CASE (6, "buffer dump") {
     int input[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
     const int capacity = 5;
-    BUFFER_INIT (8, Memory::CIRCULAR_OVERWRITE, int, capacity);
-    auto myBuffer = GET_BUFFER (8, int);
+    auto myBuffer = BUFFER_INIT (8, Memory::CIRCULAR_OVERWRITE, int, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -176,8 +170,7 @@ LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
     char full_flush_output[] = { 'd', 'e', 'f', 'a', 'b', 'c'};
 
     // full fill
-    BUFFER_INIT (9, Memory::CIRCULAR_NO_OVERWRITE, char, capacity);
-    auto myBuffer = GET_BUFFER (9, char);
+    auto myBuffer = BUFFER_INIT (9, Memory::CIRCULAR_NO_OVERWRITE, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -210,8 +203,7 @@ LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
     char full_flush_output[] = { 'e', 'f', 'g', 'h', 'i', 'j' };
 
     // full fill
-    BUFFER_INIT (10, Memory::CIRCULAR_OVERWRITE, char, capacity);
-    auto myBuffer = GET_BUFFER (10, char);
+    auto myBuffer = BUFFER_INIT (10, Memory::CIRCULAR_OVERWRITE, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -246,8 +238,7 @@ LIB_TEST_CASE (9, "buffer reset") {
     float input[] = { 10.1, 9.2, 8.3, 7.4, 6.5, 5.6, 4.7, 3.8, 2.9, 1.10 };
 
     const int capacity = 6;
-    BUFFER_INIT (11, Memory::CIRCULAR_OVERWRITE, float, capacity);
-    auto myBuffer = GET_BUFFER (11, float);
+    auto myBuffer = BUFFER_INIT (11, Memory::CIRCULAR_OVERWRITE, float, capacity);
     
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -269,8 +260,7 @@ LIB_TEST_CASE (10, "buffer peek") {
 
     const int capacity = 6;
     // full fill
-    BUFFER_INIT (12, Memory::CIRCULAR_OVERWRITE, char, capacity);
-    auto myBuffer = GET_BUFFER (12, char);
+    auto myBuffer = BUFFER_INIT (12, Memory::CIRCULAR_OVERWRITE, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -313,8 +303,7 @@ LIB_TEST_CASE (11, "buffer availability") {
     size_t output_half_flush = capacity/2;
 
     // full fill
-    BUFFER_INIT (13, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
-    auto myBuffer = GET_BUFFER (13, int);
+    auto myBuffer = BUFFER_INIT (13, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -352,8 +341,7 @@ LIB_TEST_CASE (12, "custom type") {
     const int capacity = 3;
     s_customType output_full_flush[] = { {2, "two"}, {3, "three"}, {4, "four"} };
 
-    BUFFER_INIT (14, Memory::CIRCULAR_OVERWRITE, s_customType, capacity);
-    auto myBuffer = GET_BUFFER (14, s_customType);
+    auto myBuffer = BUFFER_INIT (14, Memory::CIRCULAR_OVERWRITE, s_customType, capacity);
 
     // full fill
     for (auto i : input)

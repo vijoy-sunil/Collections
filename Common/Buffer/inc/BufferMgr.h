@@ -21,14 +21,19 @@ namespace Memory {
     class BufferMgr: public Admin::InstanceMgr {
         public:
             template <typename T>
-            void initBuffer (size_t instanceId, 
-                             e_type type, 
-                             size_t capacity) {
+            Buffer <T>* initBuffer (size_t instanceId, 
+                                    e_type type, 
+                                    size_t capacity) {
 
                 // create and add buffer object to pool
                 if (m_instancePool.find (instanceId) == m_instancePool.end()) {
-                    Admin::NonTemplateBase* c_buffer = new Buffer <T> (instanceId, type, capacity);
-                    m_instancePool.insert (std::make_pair (instanceId, c_buffer));
+                    Buffer <T>* c_buffer = new Buffer <T> (instanceId, type, capacity);
+
+                    // upcasting
+                    Admin::NonTemplateBase* c_instance = c_buffer;
+                    m_instancePool.insert (std::make_pair (instanceId, c_instance));
+
+                    return c_buffer;
                 }
                 // instance id already exists
                 else
