@@ -74,12 +74,12 @@ namespace Memory {
                 if (currentNode != NULL) {
                     // use the lambda function to unravel node data
                     lambda (&(currentNode-> data), ost);
-                    ost << " -I" << currentNode-> id;
+                    ost << "-I" << currentNode-> id;
 
                     if (currentNode-> previous != NULL)
-                        ost << " -P" << currentNode-> previous-> id;
+                        ost << "-P" << currentNode-> previous-> id;
                     if (currentNode-> next != NULL)
-                        ost << " -N" << currentNode-> next-> id;
+                        ost << "-N" << currentNode-> next-> id;
                 }
             }
 
