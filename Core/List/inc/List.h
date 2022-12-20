@@ -25,7 +25,7 @@
 #define LIST_MGR_DUMP                           Memory::listMgr.dump (std::cout)
 
 // 'set' operations
-#define LIST_PEEK_SET                           peekSet
+#define LIST_PEEK_SET(id)                       peekSet (id)
 #define LIST_PEEK_SET_HEAD                      peekSetHead()
 #define LIST_PEEK_SET_TAIL                      peekSetTail()
 #define LIST_PEEK_SET_NEXT                      peekSetNext()
@@ -36,10 +36,10 @@
 #define LIST_PEEK_HEAD                          peekHead()
 #define LIST_PEEK_TAIL                          peekTail()
 
-#define LIST_ADD_HEAD                           addHead
-#define LIST_ADD_TAIL                           addTail
-#define LIST_ADD_AFTER                          addAfter
-#define LIST_ADD_BEFORE                         addBefore
+#define LIST_ADD_HEAD(data)                     addHead (data)
+#define LIST_ADD_TAIL(data)                     addTail (data)
+#define LIST_ADD_AFTER(data)                    addAfter (data)
+#define LIST_ADD_BEFORE(data)                   addBefore (data)
 
 #define LIST_REMOVE                             remove()
 #define LIST_REMOVE_HEAD                        removeHead()
@@ -47,7 +47,7 @@
 
 // utils
 #define LIST_REVERSE                            reverse()
-#define LIST_SWAP                               swap
+#define LIST_SWAP(idA,idB)                      swap (idA, idB)
 #define LIST_RESET                              reset()
 #define LIST_SIZE                               getSize()
 #define LIST_DUMP                               dump (std::cout)
