@@ -1,4 +1,8 @@
-# Module paths
+# How To?
+# make MODULE=X, where 'X' is one of the available modules listed below
+# make clean, removes all generated outputs
+
+# add path to all available modules here
 BUFFER 		:= ../Common/Buffer
 LIBTEST 	:= ../Common/LibTest
 LIST 		:= ../Core/List
@@ -7,17 +11,14 @@ LOG 		:= ../Core/Log
 SAVEDIR 	:= ./LogSaves ./LibTestSaves
 
 TARGET     	= exec_img
-# set module to build
-MODULE    	= $(LOG)
-
 CXX        	= clang++
 CXXFLAGS   	= -std=c++20 -Wall -Wextra -O0
 
 LD         	= clang++ -o
 LDFLAGS    	= -Wall -pedantic
 
-SRCDIR     	= $(MODULE)/sample
-INCDIR		= $(MODULE)/inc
+SRCDIR     	= $($(MODULE))/sample
+INCDIR		= $($(MODULE))/inc
 OBJDIR     	= ./objs
 BINDIR     	= ./
 
@@ -38,6 +39,6 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 
 .PHONY: clean
 clean:
-	@$(RM) $(OBJECTS) $(BINDIR)/$(TARGET)
+	@$(RM) $(OBJDIR)/* $(BINDIR)/$(TARGET)
 	@$(RMDIR) $(SAVEDIR)
 	@echo "cleanup complete!"
