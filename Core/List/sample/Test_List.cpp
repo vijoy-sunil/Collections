@@ -37,8 +37,7 @@ LIB_TEST_CASE (0, "multiple instances") {
 
     // close before reusing an existing id
     LIST_CLOSE (1);
-    LIST_INIT (1, float);
-    auto myList4 = GET_LIST (1, float);
+    auto myList4 = LIST_INIT (1, float);
 
     myList4-> LIST_ADD_HEAD (5.95);
     myList4-> LIST_DUMP;
