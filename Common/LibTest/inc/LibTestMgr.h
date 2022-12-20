@@ -24,8 +24,8 @@
 #include <filesystem>
 
 // https://en.cppreference.com/w/cpp/chrono/duration
-#define ELAPSED_TIME_CAST               std::chrono::nanoseconds
-#define ELAPSED_TIME_UNIT               "ns"
+#define ELAPSED_TIME_CAST               std::chrono::milliseconds
+#define ELAPSED_TIME_UNIT               "ms"
 
 namespace Collections {
 namespace Quality {
@@ -90,7 +90,7 @@ namespace Test {
             }
 
             void dumpSummary (std::ostream& ost, 
-                              double elapsed) {
+                              ELAPSED_TIME_CAST::rep elapsed) {
                 ost << DUMP_LINE_BREAK;
                 ost << "TEST SUMMARY" 
                     << "\n"; 
@@ -147,7 +147,7 @@ namespace Test {
 
             void dumpTestResult (size_t testId, 
                                  std::ostream& ost,
-                                 double elapsed) {
+                                 ELAPSED_TIME_CAST::rep elapsed) {
                 ost << DUMP_LINE_BREAK;
                 
                 ost << "ID: "
@@ -227,13 +227,13 @@ namespace Test {
                 if (m_summary[testId].second != PENDING)
                     return;
 
-                // compute elapsed time using the clock with the shortest tick period available
-                auto begin = std::chrono::high_resolution_clock::now();
+                // compute elapsed time using steday clock
+                auto begin = std::chrono::steady_clock::now();
 
                 // execute test and save result
                 m_summary[testId].second = m_tests[testId]();
 
-                auto end = std::chrono::high_resolution_clock::now();
+                auto end = std::chrono::steady_clock::now();
                 auto elapsed = std::chrono::duration_cast <ELAPSED_TIME_CAST> (end - begin);
 
                 // update stats
@@ -256,12 +256,12 @@ namespace Test {
                 /* there will be significant overhead when running all tests due to individual dumps and stats update per 
                  * test
                 */
-                auto begin = std::chrono::high_resolution_clock::now();
+                auto begin = std::chrono::steady_clock::now();
                 // run all tests
                 for (const auto& [key, val] : m_tests)
                     runTest (key);
 
-                auto end = std::chrono::high_resolution_clock::now();
+                auto end = std::chrono::steady_clock::now();
                 auto elapsed = std::chrono::duration_cast <ELAPSED_TIME_CAST> (end - begin);
 
                 if (m_sink & TO_CONSOLE)
