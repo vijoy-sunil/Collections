@@ -14,6 +14,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <string>
+
 // output dirs
 const std::string LOG_SAVE_DIR      =   "./LogSaves";
 const std::string LIBTEST_SAVE_DIR  =   "./LibTestSaves";

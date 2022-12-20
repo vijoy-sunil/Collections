@@ -14,10 +14,10 @@
 #ifndef INSTANCE_MGR_H
 #define INSTANCE_MGR_H
 
+#include "Constants.h"
 #include <iostream>
 #include <map>
 #include <cassert>
-#include "Constants.h"
 
 namespace Collections {
 namespace Admin {
