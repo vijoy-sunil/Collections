@@ -21,12 +21,15 @@ namespace Memory {
     class ListMgr: public Admin::InstanceMgr {
         public:
             template <typename T>
-            void initList (size_t instanceId) {
+            List <T>* initList (size_t instanceId) {
 
                 // create and add list object to pool
                 if (m_instancePool.find (instanceId) == m_instancePool.end()) {
-                    Admin::NonTemplateBase* c_list = new List <T> (instanceId);
-                    m_instancePool.insert (std::make_pair (instanceId, c_list));
+                    List <T>* c_list = new List <T> (instanceId);
+
+                    Admin::NonTemplateBase* c_instance = c_list;
+                    m_instancePool.insert (std::make_pair (instanceId, c_instance));
+                    return c_list;
                 }
                 // instance id already exists
                 else

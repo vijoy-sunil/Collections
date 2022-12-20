@@ -17,15 +17,12 @@
 using namespace Collections;
 
 LIB_TEST_CASE (0, "multiple instances") {
-    LIST_INIT (0, int);
-    LIST_INIT (1, char);
-    LIST_INIT (2, float);
+    auto myList0 = LIST_INIT (0, int);
+    auto myList1 = LIST_INIT (1, char);
+    auto myList2 = LIST_INIT (2, float);
     LIST_INIT (3, std::string);
 
-    // get list instance
-    auto myList0 = GET_LIST (0, int);
-    auto myList1 = GET_LIST (1, char);
-    auto myList2 = GET_LIST (2, float);
+    // or use GET_ to get list instance
     auto myList3 = GET_LIST (3, std::string);
 
     myList0-> LIST_ADD_HEAD (1);
@@ -54,8 +51,7 @@ LIB_TEST_CASE (0, "multiple instances") {
 }
 
 LIB_TEST_CASE (1, "add/peek/remove from tail") {
-    LIST_INIT (1, int);
-    auto myList = GET_LIST (1, int);
+    auto myList = LIST_INIT (1, int);
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int output[] = { 60, 50, 40, 30, 20, 10 };
@@ -76,8 +72,7 @@ LIB_TEST_CASE (1, "add/peek/remove from tail") {
 }
 
 LIB_TEST_CASE (2, "add/peek/remove from head") {
-    LIST_INIT (2, int);
-    auto myList = GET_LIST (2, int);
+    auto myList = LIST_INIT (2, int);
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int output[] = { 60, 50, 40, 30, 20, 10 };
@@ -97,8 +92,7 @@ LIB_TEST_CASE (2, "add/peek/remove from head") {
 }
 
 LIB_TEST_CASE (3, "add before id") {
-    LIST_INIT (3, int);
-    auto myList = GET_LIST (3, int);
+    auto myList = LIST_INIT (3, int);
 
     // add one node before testing
     myList-> LIST_ADD_HEAD (50);
@@ -123,8 +117,7 @@ LIB_TEST_CASE (3, "add before id") {
 }
 
 LIB_TEST_CASE (4, "add after id") {
-    LIST_INIT (4, int);
-    auto myList = GET_LIST (4, int);
+    auto myList = LIST_INIT (4, int);
     // add one node before testing
     myList-> LIST_ADD_HEAD (50);
 
@@ -148,8 +141,7 @@ LIB_TEST_CASE (4, "add after id") {
 }
 
 LIB_TEST_CASE (5, "add/remove invalid id") {
-    LIST_INIT (5, int);
-    auto myList = GET_LIST (5, int);
+    auto myList = LIST_INIT (5, int);
     // add one node before testing
     myList-> LIST_ADD_HEAD (50);   
 
@@ -171,8 +163,7 @@ LIB_TEST_CASE (5, "add/remove invalid id") {
 }
 
 LIB_TEST_CASE (6, "peek/remove/dump from empty list") {
-    LIST_INIT (6, int);
-    auto myList = GET_LIST (6, int);
+    auto myList = LIST_INIT (6, int);
 
     if (myList-> LIST_PEEK_HEAD != NULL)
         return Quality::Test::FAIL;
@@ -197,8 +188,7 @@ LIB_TEST_CASE (6, "peek/remove/dump from empty list") {
 }
 
 LIB_TEST_CASE (7, "swap head node with another node") {
-    LIST_INIT (7, int); 
-    auto myList = GET_LIST (7, int);   
+    auto myList = LIST_INIT (7, int);   
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int swap_ids[] = { 0, 2 };
@@ -219,8 +209,7 @@ LIB_TEST_CASE (7, "swap head node with another node") {
 }
 
 LIB_TEST_CASE (8, "swap tail node with another node") {
-    LIST_INIT (8, int);   
-    auto myList = GET_LIST (8, int); 
+    auto myList = LIST_INIT (8, int);   
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int swap_ids[] = { 5, 2 };
@@ -241,8 +230,7 @@ LIB_TEST_CASE (8, "swap tail node with another node") {
 }
 
 LIB_TEST_CASE (9, "swap head node with tail node") {
-    LIST_INIT (9, int); 
-    auto myList = GET_LIST (9, int);   
+    auto myList = LIST_INIT (9, int);   
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int swap_ids[] = { 0, 5 };
@@ -267,8 +255,7 @@ LIB_TEST_CASE (9, "swap head node with tail node") {
 }
 
 LIB_TEST_CASE (10, "swap nodes with invalid id") {
-    LIST_INIT (10, int); 
-    auto myList = GET_LIST (10, int);   
+    auto myList = LIST_INIT (10, int);   
     int swap_ids[] = { 1, 11 };
 
     // swap in an empty list, 2 invalid ids
@@ -292,8 +279,7 @@ LIB_TEST_CASE (10, "swap nodes with invalid id") {
 }
 
 LIB_TEST_CASE (11, "swap non boundary adjacent nodes") {
-    LIST_INIT (11, int);
-    auto myList= GET_LIST (11, int);    
+    auto myList = LIST_INIT (11, int);  
 
     int input_0[] = { 10, 20, 30, 40, 50, 60 };
     
@@ -326,8 +312,7 @@ LIB_TEST_CASE (11, "swap non boundary adjacent nodes") {
 }
 
 LIB_TEST_CASE (12, "swap non boundary non adjacent nodes") {
-    LIST_INIT (12, int);   
-    auto myList = GET_LIST (12, int); 
+    auto myList = LIST_INIT (12, int);   
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int swap_ids[] = { 2, 4 };
@@ -343,8 +328,7 @@ LIB_TEST_CASE (12, "swap non boundary non adjacent nodes") {
 }
 
 LIB_TEST_CASE (13, "reverse list") {
-    LIST_INIT (13, int);  
-    auto myList = GET_LIST (13, int);  
+    auto myList = LIST_INIT (13, int);   
     
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int new_head = 60;
@@ -368,8 +352,7 @@ LIB_TEST_CASE (13, "reverse list") {
 }
 
 LIB_TEST_CASE (14, "reverse list with only 2 nodes") {
-    LIST_INIT (14, int);  
-    auto myList = GET_LIST (14, int);  
+    auto myList = LIST_INIT (14, int);   
 
     int input[] = { 10, 20 };
     int new_head = 20;
@@ -393,8 +376,7 @@ LIB_TEST_CASE (14, "reverse list with only 2 nodes") {
 }
 
 LIB_TEST_CASE (15, "reverse list with only 1 node") {
-    LIST_INIT (15, int); 
-    auto myList = GET_LIST (15, int);   
+    auto myList = LIST_INIT (15, int);   
 
     int input[] = { 10 };
     int new_head = 10;
@@ -418,8 +400,7 @@ LIB_TEST_CASE (15, "reverse list with only 1 node") {
 }
 
 LIB_TEST_CASE (16, "reverse empty list") {
-    LIST_INIT (16, int); 
-    auto myList = GET_LIST (16, int);   
+    auto myList = LIST_INIT (16, int);    
 
     myList-> LIST_REVERSE;
     myList-> LIST_DUMP;
@@ -435,8 +416,7 @@ LIB_TEST_CASE (17, "custom types") {
         float thresh;
     }s_customType;
 
-    LIST_INIT (17, s_customType);
-    auto myList = GET_LIST (17, s_customType);
+    auto myList = LIST_INIT (17, s_customType);
 
     s_customType input[] = { {"John", 0.55}, {"Adams", 0.75} };
 
@@ -452,8 +432,7 @@ LIB_TEST_CASE (17, "custom types") {
 }
 
 LIB_TEST_CASE (18, "list reset") {
-    LIST_INIT (18, int);
-    auto myList = GET_LIST (18, int);
+    auto myList = LIST_INIT (18, int);
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     for (auto i : input)
@@ -469,8 +448,7 @@ LIB_TEST_CASE (18, "list reset") {
 }
 
 LIB_TEST_CASE (19, "list traversal head to tail") {
-    LIST_INIT (19, int);
-    auto myList = GET_LIST (19, int);
+    auto myList = LIST_INIT (19, int);
 
     int input[] = { 10, 20, 30 };
 
@@ -495,8 +473,7 @@ LIB_TEST_CASE (19, "list traversal head to tail") {
 }
 
 LIB_TEST_CASE (20, "list traversal tail to head") {
-    LIST_INIT (20, int);
-    auto myList = GET_LIST (20, int);
+    auto myList = LIST_INIT (20, int);
 
     int input[] = { 10, 20, 30 };
 
@@ -521,8 +498,7 @@ LIB_TEST_CASE (20, "list traversal tail to head") {
 }
 
 LIB_TEST_CASE (21, "list traversal starting at id") {
-    LIST_INIT (21, int);
-    auto myList = GET_LIST (21, int);
+    auto myList = LIST_INIT (21, int);
 
     int input[] = { 10, 20, 30, 40, 50 };
 
@@ -562,8 +538,7 @@ LIB_TEST_CASE (21, "list traversal starting at id") {
 }
 
 LIB_TEST_CASE (22, "list traversal empty list") {
-    LIST_INIT (22, int);
-    auto myList = GET_LIST (22, int);
+    auto myList = LIST_INIT (22, int);
 
     // set peek position to tail
     myList-> LIST_PEEK_SET_TAIL;
@@ -585,16 +560,14 @@ LIB_TEST_CASE (22, "list traversal empty list") {
 }
 
 LIB_TEST_CASE (23, "combining two lists") {
-    LIST_INIT (23, int);
-    auto myList0 = GET_LIST (23, int);
+    auto myList0 = LIST_INIT (23, int);
 
     int input_0[] = { 10, 20, 30 };
 
     for (auto i : input_0)
         myList0-> LIST_ADD_TAIL (i);
 
-    LIST_INIT (24, int);
-    auto myList1 = GET_LIST (24, int);
+    auto myList1 = LIST_INIT (24, int);
 
     int input_1[] = { 40, 50, 60 };
 
@@ -631,8 +604,7 @@ LIB_TEST_CASE (23, "combining two lists") {
 }
 
 LIB_TEST_CASE (24, "remove using id") {
-    LIST_INIT (24, int);
-    auto myList = GET_LIST (24, int);
+    auto myList = LIST_INIT (24, int);
 
     int input[] = { 10, 20, 30, 40, 50, 60 };
     int removeId = 2;
@@ -656,8 +628,7 @@ LIB_TEST_CASE (24, "remove using id") {
 }
 
 LIB_TEST_CASE (25, "reset empty list") {
-    LIST_INIT (25, int);
-    auto myList = GET_LIST (25, int);
+    auto myList = LIST_INIT (25, int);
 
     myList-> LIST_ADD_HEAD (100);
 
