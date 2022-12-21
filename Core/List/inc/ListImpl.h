@@ -66,7 +66,9 @@ namespace Memory {
                 return currentNode;
             }
 
-            // used in list dump function, the nodes are displated in format: [ data -id -prevId -nextId ]
+            /* used in list dump function, the nodes are displated in format: [ data-IX-PY-NZ ], where X is the node id,
+             * Y is the previous node id, and Z is the next node id
+            */
             void dumpNode (s_Node* currentNode, 
                            std::ostream& ost, 
                            void (*lambda) (T*, std::ostream&)) {
