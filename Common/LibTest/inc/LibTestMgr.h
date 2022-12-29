@@ -27,6 +27,11 @@
 #define ELAPSED_TIME_CAST               std::chrono::milliseconds
 #define ELAPSED_TIME_UNIT               "ms"
 
+// dumb formatting
+#define DUMP_LINE_LENGTH                100
+#define DUMP_LINE_STYLE                 '-'
+#define DUMP_LINE_BREAK                 std::string (DUMP_LINE_LENGTH, DUMP_LINE_STYLE) << std::endl
+
 namespace Collections {
 namespace Quality {
 namespace Test {
