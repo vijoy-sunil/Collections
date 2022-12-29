@@ -25,4 +25,18 @@ const std::string LIBTEST_SAVE_DIR  =   "./LibTestSaves";
 #define DUMP_LINE_STYLE                 '-'
 #define DUMP_LINE_BREAK                 std::string (DUMP_LINE_LENGTH, DUMP_LINE_STYLE) << std::endl
 
+#define TAB_L1                          "\t"
+#define TAB_L2                          TAB_L1 "\t"
+#define TAB_L3                          TAB_L2 "\t"
+#define TAB_L4                          TAB_L3 "\t"
+#define TAB_L5                          TAB_L4 "\t"
+#define TAB_L6                          TAB_L5 "\t"
+
+#define OPEN_L1                         TAB_L1 << "{" << "\n"
+#define OPEN_L3                         TAB_L3 << "{" << "\n"
+#define OPEN_L5                         TAB_L5 << "{" << "\n"
+
+#define CLOSE_L1                        TAB_L1 << "}" << "\n"
+#define CLOSE_L3                        TAB_L3 << "}" << "\n"
+#define CLOSE_L5                        TAB_L5 << "}" << "\n"
 #endif  // CONSTANTS_H
