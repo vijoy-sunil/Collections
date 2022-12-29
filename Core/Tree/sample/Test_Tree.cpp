@@ -16,6 +16,8 @@
 
 using namespace Collections;
 
+#define ENABLE_INTERNAL_TESTS   1
+
 // test params to verify tree structure
 typedef struct {
     size_t  numNodes;
@@ -610,7 +612,7 @@ LIB_TEST_CASE (8, "custom type") {
     
     // define custom dump lambda
     auto lambda_customType = [](s_customType* currentNode, std::ostream& ost) { 
-                                    ost << currentNode-> thresh << "," << currentNode-> box;
+                                    ost << currentNode-> thresh << ", " << currentNode-> box;
                                 };
     myTree-> TREE_DUMP_CUSTOM (lambda_customType);
 
@@ -1259,6 +1261,519 @@ LIB_TEST_CASE (18, "invalid peek set next") {
     TREE_CLOSE (18);
     return Quality::Test::PASS;
 }
+
+#if ENABLE_INTERNAL_TESTS == 1
+LIB_TEST_CASE (19, "[internal validation] peek pair after peek set") {
+    auto myTree = TREE_INIT (19, int);
+    size_t depth = 6;
+
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+
+    /* sticky peek pairs could either be
+     * { node, level }  -> if the id passed in is valid
+     * { NULL, depth }  -> otherwise, returns a NULL pointer and depth of tree
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output = { 4, 3 };
+
+    myTree-> TREE_PEEK_SET (output.first);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output.first ||
+        myTree-> TREE_PEEK_LEVEL != output.second)     
+        return Quality::Test::FAIL;   
+
+    myTree-> TREE_DUMP;
+
+    // invalid id
+    myTree-> TREE_PEEK_SET (100);
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != depth)
+        return Quality::Test::FAIL;
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (19);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (20, "[internal validation] peek pair after peek set root") {
+    auto myTree = TREE_INIT (20, int);
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+
+    /* sticky peek pairs could either be
+     * { NULL, 0 }      -> if root doesn't exist
+     * { root, 1 }      -> valid root with level set to 1
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output = { 1, 1 };
+
+    myTree-> TREE_PEEK_SET_ROOT;
+
+    if (myTree-> TREE_PEEK_NODE-> id != output.first ||
+        myTree-> TREE_PEEK_LEVEL != output.second)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    // invalid root
+    myTree-> TREE_RESET;
+    myTree-> TREE_PEEK_SET_ROOT;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)
+        return Quality::Test::FAIL;
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (20);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (21, "[internal validation] peek pair after peek set next") {
+    auto myTree = TREE_INIT (21, int);
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs could either be
+     * { NULL, 0 }      -> end of tree reached
+     * { node, level}   -> node with level
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output = { 8, 6 };
+
+    myTree-> TREE_PEEK_SET (output.first);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output.first ||
+        myTree-> TREE_PEEK_LEVEL != output.second)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    // end of tree
+    myTree-> TREE_PEEK_SET_NEXT;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)
+        return Quality::Test::FAIL;
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (21);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (22, "[internal validation] peek pair after add parent") {
+    auto myTree = TREE_INIT (22, int);
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pair set to
+     * { node, level }  -> of child node if we are adding to the root, else
+     * { node, level }  -> of newly added parent
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output_0 = { 1, 1 };
+
+    myTree-> TREE_PEEK_SET (output_0.first);
+    myTree-> TREE_ADD_PARENT (0, 69);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output_0.first ||
+        myTree-> TREE_PEEK_LEVEL != output_0.second)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    std::pair <size_t, size_t> output_1 = { 9, 7 };
+
+    myTree-> TREE_PEEK_SET (8);
+    myTree-> TREE_ADD_PARENT (output_1.first, 90);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output_1.first ||
+        myTree-> TREE_PEEK_LEVEL != output_1.second)
+        return Quality::Test::FAIL;
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (22);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (23, "[internal validation] peek pair after remove/adopt") {
+    auto myTree = TREE_INIT (23, int);
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs set to
+     * { NULL, 0 }      -> reset pair
+    */
+
+    myTree-> TREE_PEEK_SET (8);
+    myTree-> TREE_REMOVE;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADOPT;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (23);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (24, "[internal validation] peek pair after depth") {
+    auto myTree = TREE_INIT (24, int);
+    size_t depth = 6;
+
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs set to
+     * { NULL, depth }
+    */
+
+    myTree-> TREE_DEPTH;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != depth)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (24);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (25, "[internal validation] peek pair after swap") {
+    auto myTree = TREE_INIT (25, int);
+    size_t depth = 6;
+
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs set to
+     * { nodeB, levelB }    -> if valid
+     * { NULL, depth }      -> otherwise
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output = { 4, 3 };
+
+    myTree-> TREE_SWAP (3, output.first);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output.first ||
+        myTree-> TREE_PEEK_LEVEL != output.second)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    myTree-> TREE_SWAP (22, 23);
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != depth)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (25);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (26, "[internal validation] peek pair after path") {
+    auto myTree = TREE_INIT (26, int);
+    size_t depth = 6;
+    
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs set to
+     * { nodeB, levelB }    -> if valid
+     * { NULL, depth }      -> otherwise
+    */
+
+    // output peek node id, peek level
+    std::pair <size_t, size_t> output = { 4, 3 };
+
+    myTree-> TREE_PATH (3, output.first);
+
+    if (myTree-> TREE_PEEK_NODE-> id != output.first ||
+        myTree-> TREE_PEEK_LEVEL != output.second)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    myTree-> TREE_SWAP (22, 23);
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != depth)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (26);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (27, "[internal validation] peek pair after import/reset") {
+    auto myTree = TREE_INIT (27, int);   
+    std::pair <size_t, int> input[] = { {1, 10}, 
+                                        {2, 20}, {3, 30},
+                                        {4, 40}, 
+                                        {5, 50}, {6, 60},
+                                        {7, 70},  
+                                        {8, 80} };
+
+    // create tree
+    myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
+
+    myTree-> TREE_PEEK_SET (1);
+    myTree-> TREE_ADD_CHILD (input[1].first, input[1].second);
+    myTree-> TREE_ADD_CHILD (input[2].first, input[2].second); 
+
+    myTree-> TREE_PEEK_SET (2);
+    myTree-> TREE_ADD_CHILD (input[3].first, input[3].second);    
+
+    myTree-> TREE_PEEK_SET (4);
+    myTree-> TREE_ADD_CHILD (input[4].first, input[4].second);  
+    myTree-> TREE_ADD_CHILD (input[5].first, input[5].second); 
+
+    myTree-> TREE_PEEK_SET (5);
+    myTree-> TREE_ADD_CHILD (input[6].first, input[6].second);  
+
+    myTree-> TREE_PEEK_SET (7);
+    myTree-> TREE_ADD_CHILD (input[7].first, input[7].second); 
+    
+    /* sticky peek pairs set to
+     * { NULL, 0 }      -> reset pair
+    */
+
+    myTree-> TREE_IMPORT (NULL);
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    myTree-> TREE_RESET;
+
+    if (myTree-> TREE_PEEK_NODE != NULL ||
+        myTree-> TREE_PEEK_LEVEL != 0)     
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_DUMP;
+
+    TREE_CLOSE (27);
+    return Quality::Test::PASS;
+}
+#endif  // ENABLE_INTERNAL_TESTS
 
 int main (void) {
     LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
