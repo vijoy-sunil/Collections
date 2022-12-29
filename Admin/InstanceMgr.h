@@ -81,31 +81,46 @@ namespace Admin {
                 m_instancePool.clear();
             }   
 
+            /* instance mgr is displayed in the following format
+             * mgr :    
+             *      {                                           <L1>
+             *          instance count : ?                      <L2>
+             *          instances :                         
+             *                      {                           <L3>
+             *                          id : ?                  <L4>
+             *                          ? : ?       
+             *                      }                           <L3>
+             *                      {
+             *                          id : ?
+             *                          ? : ?
+             *                      }                           <L3>
+             *                      ...
+             *      }                                           <L1>
+            */
             void dump (std::ostream& ost, 
                        void (*lambda) (NonTemplateBase*, std::ostream&) = 
                        [](NonTemplateBase* instance, std::ostream& ost) {
-                            ost << "-A" << instance;
+                            ost << TAB_L4   << "address : " << instance << "\n";
                        }) {
-                ost << DUMP_LINE_BREAK;
-                ost << "INSTANCE MGR DUMP" 
-                    << "\n"; 
-                ost << DUMP_LINE_BREAK;
 
-                ost << "INSTANCES: "
-                    << "\t";
-                    
+                ost << "mgr : " << "\n";
+                ost << OPEN_L1;
+
+                ost << TAB_L2 << "instances count : "   << m_instancePool.size() << "\n";
+                ost << TAB_L2 << "instances : "         << "\n";
+
                 for (auto const& [key, val] : m_instancePool) {
-                    ost << "[ " << key;
+                    ost << OPEN_L3;
+                    ost << TAB_L4   << "id : "          << key  << "\n";
                     /* dump more information about each instance ids through lambda. Since the mgr itself doesn't have
                      * much information unless we cast it back to original type, by default the lambda dumps out the
                      * instance address
                     */
-                    lambda (val, ost);
-                    ost << " ] ";
+                    lambda (val, ost);  ost << "\n";
+                    ost << CLOSE_L3;
                 }
 
-                ost << "\n";
-                ost << DUMP_LINE_BREAK;
+                ost << CLOSE_L1;
             }
     };
 }   // namespace Admin
