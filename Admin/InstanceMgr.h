@@ -100,7 +100,7 @@ namespace Admin {
             void dump (std::ostream& ost, 
                        void (*lambda) (NonTemplateBase*, std::ostream&) = 
                        [](NonTemplateBase* instance, std::ostream& ost) {
-                            ost << TAB_L4   << "address : " << instance << "\n";
+                            ost << TAB_L4 << "address : " << instance << "\n";
                        }) {
 
                 ost << "mgr : " << "\n";
