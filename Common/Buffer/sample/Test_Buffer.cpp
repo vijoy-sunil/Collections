@@ -349,7 +349,7 @@ LIB_TEST_CASE (12, "custom type") {
 
     // define lambda function, this tells the custom dump function on how to unravel the custom type
     auto lambda_customType = [](s_customType* readPtr, std::ostream& ost) { 
-                                    ost << readPtr-> data << "," << readPtr-> desc;
+                                    ost << readPtr-> data << ", " << readPtr-> desc;
                                 };
     myBuffer-> BUFFER_DUMP_CUSTOM (lambda_customType);
 

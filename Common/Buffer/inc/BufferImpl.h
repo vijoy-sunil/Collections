@@ -129,53 +129,54 @@ namespace Memory {
                 m_tail = m_buffer;
             }
 
+            /* buffer is displayed in the following format
+             * buffer : 
+             *          {                               <L1>
+             *              id : ?                      <L2>
+             *              availability : ?
+             *              first : ?
+             *              last : ?
+             *              data : 
+             *                      {                   <L3>
+             *                          ?               <L4>
+             *                          ?
+             *                          ...
+             *                      }                   <L3>
+             *          }                               <L1>
+            */
             void dump (std::ostream& ost, 
-                       void (*lambda) (T*, std::ostream&) = [](T* readPtr, std::ostream& ost) { ost << *readPtr; }) {
+                       void (*lambda) (T*, std::ostream&) = [](T* readPtr, std::ostream& ost) { 
+                                                                ost << *readPtr; 
+                                                            }) {
                 T* readPtr = m_tail;
                 size_t numItems = m_numItems;
 
-                ost << DUMP_LINE_BREAK;
-                ost << "BUFFER DUMP" 
-                    << "\n"; 
-                ost << DUMP_LINE_BREAK;
+                ost << "buffer : " << "\n";
+                ost << OPEN_L1;
 
-                ost << "CONTENTS: "
-                    << "\t";
+                ost << TAB_L2 << "id : "            << m_instanceId         << "\n";
+                ost << TAB_L2 << "availability : "  << availability()       << "\n";
+
+                ost << TAB_L2 << "first : ";        
+                if (m_numItems != 0)            lambda (peekFirst(), ost); 
+                else                            ost << "NULL";                       
+                ost << "\n"; 
+
+                ost << TAB_L2 << "last : ";        
+                if (m_numItems != 0)            lambda (peekLast(), ost);
+                else                            ost << "NULL";                       
+                ost << "\n"; 
+
+                ost << TAB_L2 << "data : "          << "\n";
+                ost << OPEN_L3;
                 while (numItems != 0) {
-                    ost << "[ ";
-                    lambda (readPtr, ost);
-                    ost << " ] ";
-
-                    numItems--;
-                    readPtr = readPtr == m_end ? m_buffer : readPtr + 1;
+                ost << TAB_L4;                  lambda (readPtr, ost);  ost << "\n";
+                numItems--;
+                readPtr = readPtr == m_end ? m_buffer : readPtr + 1;
                 }
-                ost << "\n";
-
-                ost << "ID/TYPE: "
-                    << "\t"
-                    << "[ "
-                    << m_instanceId << "/" << typeid (T).name()
-                    << " ]"
-                    << "\n";
-
-                ost << "AVAILABILITY: "
-                    << "\t"
-                    << "[ " 
-                    << availability() << "/" << m_capacity
-                    << " ]"
-                    << "\n";
-
-                ost << "PEEK: "
-                    << "\t\t";
-                if (m_numItems != 0) {
-                    ost << "[ ";
-                    lambda (peekFirst(), ost);
-                    ost << "/";
-                    lambda (peekLast(), ost);                     
-                    ost << " ]" ;
-                }
-                ost << "\n";
-                ost << DUMP_LINE_BREAK;
+                ost << CLOSE_L3;
+                
+                ost << CLOSE_L1;
             }
     };
 }   // namespace Memory
