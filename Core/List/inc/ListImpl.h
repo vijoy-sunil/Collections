@@ -66,25 +66,6 @@ namespace Memory {
                 return currentNode;
             }
 
-            /* used in list dump function, the nodes are displated in format: [ data-IX-PY-NZ ], where X is the node id,
-             * Y is the previous node id, and Z is the next node id
-            */
-            void dumpNode (s_Node* currentNode, 
-                           std::ostream& ost, 
-                           void (*lambda) (T*, std::ostream&)) {
-
-                if (currentNode != NULL) {
-                    // use the lambda function to unravel node data
-                    lambda (&(currentNode-> data), ost);
-                    ost << "-I" << currentNode-> id;
-
-                    if (currentNode-> previous != NULL)
-                        ost << "-P" << currentNode-> previous-> id;
-                    if (currentNode-> next != NULL)
-                        ost << "-N" << currentNode-> next-> id;
-                }
-            }
-
         public:
             List (size_t instanceId) {
                 m_instanceId = instanceId;
@@ -131,14 +112,12 @@ namespace Memory {
                 return m_peekNode;
             }
 
-            s_Node* peekHead (void) {
-                peekSetHead();
-                return peekCurrent();
+            inline s_Node* peekHead (void) {
+                return m_headNode;
             }
 
-            s_Node* peekTail (void) {
-                peekSetTail();
-                return peekCurrent();
+            inline s_Node* peekTail (void) {
+                return m_tailNode;
             }
 
             void addHead (const T& data) {
@@ -375,72 +354,86 @@ namespace Memory {
                 return m_numNodes;
             }
 
+            /* node contents are displayed in the following pattern
+             *      {                                   <L3>
+             *          id : ?                          <L4>
+             *          next id : ?
+             *          previous id : ?
+             *          data : ?
+             *      }                                   <L3>
+            */
+            void dumpNode (s_Node* node, 
+                           std::ostream& ost, 
+                           void (*lambda) (T*, std::ostream&)) {
+                if (node == NULL)
+                    return;
+
+                std::string nextId = (node-> next == NULL) ? "NULL" : std::to_string (node-> next-> id);
+                std::string previousId = (node-> previous == NULL) ? "NULL" : std::to_string (node-> previous-> id);
+
+                ost << OPEN_L3;
+                ost << TAB_L4 << "id : "            << node-> id                        << "\n";
+                ost << TAB_L4 << "next id : "       << nextId                           << "\n";
+                ost << TAB_L4 << "previous id : "   << previousId                       << "\n";
+                ost << TAB_L4 << "data : ";         lambda (& (node-> data), ost);  ost << "\n";
+                ost << CLOSE_L3;
+            }
+
+            /* list is displayed in the following format
+             * list : 
+             *      {                                   <L1>
+             *          id : ?                          <L2>
+             *          node count : ?
+             *          peek : 
+             *                  {                       <L3>
+             *                      node contents       <L4>
+             *                  }
+             *          head : 
+             *                  {
+             *                      node contents
+             *                  }
+             *          tail : 
+             *                  {
+             *                      node contents
+             *                  }
+             *          nodes :
+             *                  {                       <L3>
+             *                      node contents       <L4>
+             *                  }
+             *                  {
+             *                      node contents
+             *                  }                       <L3>
+             *                  ...
+             *      }                                   <L1>
+            */
             void dump (std::ostream& ost, 
                        void (*lambda) (T*, std::ostream&) = [](T* nodeData, std::ostream& ost) { 
                                                                 ost << *nodeData; 
                                                             }) {
-                ost << DUMP_LINE_BREAK;
-                ost << "LIST DUMP" 
-                    << "\n"; 
-                ost << DUMP_LINE_BREAK;
+                ost << "list : " << "\n";
+                ost << OPEN_L1;
 
-                ost << "CONTENTS: "
-                    << "\t";
+                ost << TAB_L2 << "id : "            << m_instanceId << "\n";
+                ost << TAB_L2 << "node count : "    << getSize()    << "\n";
                 
-                s_Node* currentNode = m_headNode;
-                while (currentNode != NULL) {
-                    ost << "[ ";
-                    dumpNode (currentNode, ost, lambda);
-                    ost << " ] ";
+                ost << TAB_L2 << "peek : "          << "\n";
+                dumpNode (peekCurrent(), ost, lambda);
+                
+                ost << TAB_L2 << "head : "          << "\n";
+                dumpNode (peekHead(), ost, lambda);
 
-                    currentNode = currentNode-> next;
+                ost << TAB_L2 << "tail : "          << "\n";
+                dumpNode (peekTail(), ost, lambda);               
+
+                ost << TAB_L2 << "nodes : "         << "\n";
+                s_Node* node = m_headNode;
+                while (node != NULL) {
+                    // dump nodes in L4
+                    dumpNode (node, ost, lambda);
+                    node = node-> next;
                 }
-                ost << "\n";
 
-                ost << "ID/TYPE: "
-                    << "\t"
-                    << "[ "
-                    << m_instanceId << "/" << typeid (T).name()
-                    << " ]"
-                    << "\n";
-
-                ost << "NUM NODES: "
-                    << "\t"
-                    << "[ "
-                    << m_numNodes
-                    << " ]"
-                    << "\n";
-
-                ost << "LAST USED ID: "
-                    << "\t"
-                    << "[ ";
-                if (m_nextAvailableId != 0)
-                    ost << m_nextAvailableId - 1;
-                ost << " ]"
-                    << "\n";
-
-                ost << "HEAD NODE: "
-                    << "\t"
-                    << "[ ";
-                dumpNode (m_headNode, ost, lambda);
-                ost << " ]"
-                    << "\n";
-
-                ost << "TAIL NODE: "
-                    << "\t"
-                    << "[ ";
-                dumpNode (m_tailNode, ost, lambda);
-                ost << " ]"
-                    << "\n";
-
-                ost << "LAST PEEKED: "
-                    << "\t"
-                    << "[ ";
-                dumpNode (m_peekNode, ost, lambda);
-                ost << " ]"
-                    << "\n";                                      
-                
-                ost << DUMP_LINE_BREAK;
+                ost << CLOSE_L1;
             }
     };
 }   // namespace Memory
