@@ -568,18 +568,20 @@ namespace Memory {
             }
 
             /* node contents are displayed in the following pattern
-             * id : ?                                       <L4>
-             * descendants count : ?
-             * parent id : ?
-             * child id :  
-             *              {                               <L5>
-             *                  ?                           <L6>
-             *                  ?
-             *                  ...
-             *              }                               <L5>
-             * child count : ?
-             * data : ?, ?
-             * level : ?
+             *      {                                           <L3>
+             *          id : ?                                  <L4>
+             *          descendants count : ?
+             *          parent id : ?
+             *          child count : ?
+             *          child id :  
+             *                  {                               <L5>
+             *                      ?                           <L6>
+             *                      ?
+             *                      ...
+             *                  }                               <L5>
+             *          data : ?, ?
+             *          level : ?
+             *      }                                           <L3>
             */
             void dumpNode (s_Node* node, 
                            std::ostream& ost, 
@@ -590,9 +592,11 @@ namespace Memory {
 
                 std::string parentId = (node-> parent == NULL) ? "NULL" : std::to_string (node-> parent-> id);
 
+                ost << OPEN_L3;
                 ost << TAB_L4   << "id : "                  << node-> id                        << "\n";
                 ost << TAB_L4   << "descendants count : "   << node-> numDescendants            << "\n";
                 ost << TAB_L4   << "parent id : "           << parentId                         << "\n";
+                ost << TAB_L4   << "child count : "         << node-> child.size()              << "\n";
                 ost << TAB_L4   << "child id : "            << "\n";
                 
                 ost << OPEN_L5;
@@ -600,9 +604,9 @@ namespace Memory {
                 ost << TAB_L6   << child-> id               << "\n";
                 ost << CLOSE_L5;
                 
-                ost << TAB_L4   << "child count : "         << node-> child.size()              << "\n";
                 ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";
                 ost << TAB_L4   << "level : "               << peekLevel()                      << "\n";
+                ost << CLOSE_L3;
             }
 
             /* tree is displayed in the following format
@@ -638,16 +642,13 @@ namespace Memory {
                                                     << ", "     
                                                     << peekLevel()  << "\n";
                 ost << TAB_L2   << "depth : "       << getDepth()   << "\n";
-                ost << TAB_L2   << "nodes : "        << "\n";
+                ost << TAB_L2   << "nodes : "       << "\n";
             
                 // loop through all nodes level-wise
                 peekSetRoot();
                 while (peekNode() != NULL) {
                     // dump nodes in L4
-                    ost << OPEN_L3;
                     dumpNode (peekNode(), ost, lambda);
-                    ost << CLOSE_L3;
-
                     peekSetNext();
                 }
 
