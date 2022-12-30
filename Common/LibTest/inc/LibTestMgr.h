@@ -197,7 +197,7 @@ namespace Test {
                 // append format to file name
                 m_saveFileName += format;
                 // create dir
-                std::filesystem::create_directories(LIBTEST_SAVE_DIR);
+                std::filesystem::create_directories (LIBTEST_SAVE_DIR);
                 // open file, overwrite on every test run
                 if (m_sink & TO_FILE) { 
                     m_saveFile.open (m_saveFileName, 
