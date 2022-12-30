@@ -145,6 +145,48 @@ namespace Memory {
                 return { NULL, level };
             }
 
+            /* node contents are displayed in the following pattern
+             *      {                                           <L3>
+             *          id : ?                                  <L4>
+             *          descendants count : ?
+             *          parent id : ?
+             *          child count : ?
+             *          child id :  
+             *                  {                               <L5>
+             *                      ?                           <L6>
+             *                      ?
+             *                      ...
+             *                  }                               <L5>
+             *          data : ?, ?
+             *          level : ?
+             *      }                                           <L3>
+            */
+            void dumpNode (s_Node* node, 
+                           std::ostream& ost, 
+                           void (*lambda) (T*, std::ostream&)) {
+
+                if (node == NULL)
+                    return; 
+
+                std::string parentId = (node-> parent == NULL) ? "NULL" : std::to_string (node-> parent-> id);
+
+                ost << OPEN_L3;
+                ost << TAB_L4   << "id : "                  << node-> id                        << "\n";
+                ost << TAB_L4   << "descendants count : "   << node-> numDescendants            << "\n";
+                ost << TAB_L4   << "parent id : "           << parentId                         << "\n";
+                ost << TAB_L4   << "child count : "         << node-> child.size()              << "\n";
+                ost << TAB_L4   << "child id : "            << "\n";
+                
+                ost << OPEN_L5;
+                for (auto const& child : node-> child)
+                ost << TAB_L6   << child-> id               << "\n";
+                ost << CLOSE_L5;
+                
+                ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";
+                ost << TAB_L4   << "level : "               << peekLevel()                      << "\n";
+                ost << CLOSE_L3;
+            }
+
         public:
             Tree (size_t instanceId) {
                 m_instanceId = instanceId;
@@ -565,48 +607,6 @@ namespace Memory {
                 peekSetRoot();
                 remove();
                 m_rootNode = rootNode;
-            }
-
-            /* node contents are displayed in the following pattern
-             *      {                                           <L3>
-             *          id : ?                                  <L4>
-             *          descendants count : ?
-             *          parent id : ?
-             *          child count : ?
-             *          child id :  
-             *                  {                               <L5>
-             *                      ?                           <L6>
-             *                      ?
-             *                      ...
-             *                  }                               <L5>
-             *          data : ?, ?
-             *          level : ?
-             *      }                                           <L3>
-            */
-            void dumpNode (s_Node* node, 
-                           std::ostream& ost, 
-                           void (*lambda) (T*, std::ostream&)) {
-
-                if (node == NULL)
-                    return; 
-
-                std::string parentId = (node-> parent == NULL) ? "NULL" : std::to_string (node-> parent-> id);
-
-                ost << OPEN_L3;
-                ost << TAB_L4   << "id : "                  << node-> id                        << "\n";
-                ost << TAB_L4   << "descendants count : "   << node-> numDescendants            << "\n";
-                ost << TAB_L4   << "parent id : "           << parentId                         << "\n";
-                ost << TAB_L4   << "child count : "         << node-> child.size()              << "\n";
-                ost << TAB_L4   << "child id : "            << "\n";
-                
-                ost << OPEN_L5;
-                for (auto const& child : node-> child)
-                ost << TAB_L6   << child-> id               << "\n";
-                ost << CLOSE_L5;
-                
-                ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";
-                ost << TAB_L4   << "level : "               << peekLevel()                      << "\n";
-                ost << CLOSE_L3;
             }
 
             /* tree is displayed in the following format

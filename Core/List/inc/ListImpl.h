@@ -66,6 +66,31 @@ namespace Memory {
                 return currentNode;
             }
 
+            /* node contents are displayed in the following pattern
+             *      {                                   <L3>
+             *          id : ?                          <L4>
+             *          next id : ?
+             *          previous id : ?
+             *          data : ?
+             *      }                                   <L3>
+            */
+            void dumpNode (s_Node* node, 
+                           std::ostream& ost, 
+                           void (*lambda) (T*, std::ostream&)) {
+                if (node == NULL)
+                    return;
+
+                std::string nextId = (node-> next == NULL) ? "NULL" : std::to_string (node-> next-> id);
+                std::string previousId = (node-> previous == NULL) ? "NULL" : std::to_string (node-> previous-> id);
+
+                ost << OPEN_L3;
+                ost << TAB_L4 << "id : "            << node-> id                        << "\n";
+                ost << TAB_L4 << "next id : "       << nextId                           << "\n";
+                ost << TAB_L4 << "previous id : "   << previousId                       << "\n";
+                ost << TAB_L4 << "data : ";         lambda (& (node-> data), ost);  ost << "\n";
+                ost << CLOSE_L3;
+            }
+
         public:
             List (size_t instanceId) {
                 m_instanceId = instanceId;
@@ -352,31 +377,6 @@ namespace Memory {
 
             inline size_t getSize (void) {
                 return m_numNodes;
-            }
-
-            /* node contents are displayed in the following pattern
-             *      {                                   <L3>
-             *          id : ?                          <L4>
-             *          next id : ?
-             *          previous id : ?
-             *          data : ?
-             *      }                                   <L3>
-            */
-            void dumpNode (s_Node* node, 
-                           std::ostream& ost, 
-                           void (*lambda) (T*, std::ostream&)) {
-                if (node == NULL)
-                    return;
-
-                std::string nextId = (node-> next == NULL) ? "NULL" : std::to_string (node-> next-> id);
-                std::string previousId = (node-> previous == NULL) ? "NULL" : std::to_string (node-> previous-> id);
-
-                ost << OPEN_L3;
-                ost << TAB_L4 << "id : "            << node-> id                        << "\n";
-                ost << TAB_L4 << "next id : "       << nextId                           << "\n";
-                ost << TAB_L4 << "previous id : "   << previousId                       << "\n";
-                ost << TAB_L4 << "data : ";         lambda (& (node-> data), ost);  ost << "\n";
-                ost << CLOSE_L3;
             }
 
             /* list is displayed in the following format
