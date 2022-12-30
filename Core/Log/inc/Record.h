@@ -127,7 +127,7 @@ namespace Log {
                 m_sink = sink;
 
                 // create dir
-                std::filesystem::create_directories(LOG_SAVE_DIR);
+                std::filesystem::create_directories (LOG_SAVE_DIR);
 
                 // set file names
                 m_saveFileName_immediate += std::to_string (m_instanceId) + format;
