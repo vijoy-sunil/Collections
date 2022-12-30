@@ -423,7 +423,7 @@ LIB_TEST_CASE (17, "custom types") {
         myList-> LIST_ADD_HEAD (i);
 
     auto lambda_customType = [](s_customType* currentNode, std::ostream& ost) { 
-                                    ost << currentNode-> name << "," << currentNode-> thresh;
+                                    ost << currentNode-> name << ", " << currentNode-> thresh;
                                 };
     myList-> LIST_DUMP_CUSTOM (lambda_customType);
     LIST_CLOSE (17);
