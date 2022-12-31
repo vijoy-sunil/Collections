@@ -32,7 +32,7 @@ using namespace Collections;
 </pre>
 
 ## Sample code
->*see complete usage in respective sample/ directory*
+>*See complete usage in respective sample/ directory*
 
 ### Buffer
 <pre>
@@ -83,6 +83,8 @@ using namespace Collections;
     // close this list using its instance id
     LIST_CLOSE (0);
 </pre>
+
+>*List can be used as Queue or Stack using available methods*
 
 ### Log
 <pre>
