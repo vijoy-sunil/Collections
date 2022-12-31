@@ -31,20 +31,16 @@ namespace Memory {
 
             size_t m_instanceId;
             size_t m_numNodes;
-            size_t m_nextAvailableId;
 
             s_Node* m_headNode;
             s_Node* m_tailNode;
             s_Node* m_peekNode;
             
-            s_Node* createNode (const T& data) {
+            s_Node* createNode (size_t id, const T& data) {
                 s_Node* newNode = new s_Node;
                 m_numNodes++;
 
-                newNode-> id = m_nextAvailableId;
-                // this is used to set the id of newly created nodes (decoupled with num nodes)
-                m_nextAvailableId++;
-
+                newNode-> id = id;
                 newNode-> next = NULL;
                 newNode-> previous = NULL;
                 newNode-> data = data;
@@ -95,7 +91,6 @@ namespace Memory {
             List (size_t instanceId) {
                 m_instanceId = instanceId;
                 m_numNodes = 0;
-                m_nextAvailableId = 0;
 
                 m_headNode = NULL;
                 m_tailNode = NULL;
@@ -145,8 +140,8 @@ namespace Memory {
                 return m_tailNode;
             }
 
-            void addHead (const T& data) {
-                s_Node* newNode = createNode (data);
+            void addHead (size_t id, const T& data) {
+                s_Node* newNode = createNode (id, data);
                 // create link
                 if (m_headNode != NULL) {
                     newNode-> next = m_headNode;
@@ -161,8 +156,8 @@ namespace Memory {
                 m_headNode = newNode;
             }
 
-            void addTail (const T& data) {
-                s_Node* newNode = createNode (data);
+            void addTail (size_t id, const T& data) {
+                s_Node* newNode = createNode (id, data);
                 // create link
                 if (m_headNode != NULL) {
                     m_tailNode-> next = newNode;
@@ -177,7 +172,7 @@ namespace Memory {
                 m_tailNode = newNode;
             }
 
-            bool addAfter (const T& data) {
+            bool addAfter (size_t id, const T& data) {
                 s_Node* currentNode = peekCurrent();
                 // id not found
                 if (currentNode == NULL)
@@ -185,10 +180,10 @@ namespace Memory {
 
                 // if NOI is the tail node
                 if (currentNode == m_tailNode)
-                    addTail (data);    
+                    addTail (id, data);    
 
                 else {
-                    s_Node* newNode = createNode (data);
+                    s_Node* newNode = createNode (id, data);
                     // save link
                     s_Node* nextNode = currentNode-> next;
 
@@ -202,7 +197,7 @@ namespace Memory {
                 return true;     
             }
 
-            bool addBefore (const T& data) {
+            bool addBefore (size_t id, const T& data) {
                 s_Node* currentNode = peekCurrent();
                 // id not found
                 if (currentNode == NULL)
@@ -210,10 +205,10 @@ namespace Memory {
 
                 // if NOI is the head node
                 if (currentNode == m_headNode)
-                    addHead (data);
+                    addHead (id, data);
 
                 else {
-                    s_Node* newNode = createNode (data);
+                    s_Node* newNode = createNode (id, data);
                     s_Node* previousNode = currentNode-> previous;
 
                     // create link
@@ -368,8 +363,6 @@ namespace Memory {
 
                 // reset stats
                 m_numNodes = 0;
-                m_nextAvailableId = 0;
-
                 m_headNode = NULL;
                 m_tailNode = NULL;
                 m_peekNode = NULL;

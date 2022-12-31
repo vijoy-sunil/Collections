@@ -36,10 +36,10 @@
 #define LIST_PEEK_HEAD                          peekHead()
 #define LIST_PEEK_TAIL                          peekTail()
 
-#define LIST_ADD_HEAD(data)                     addHead (data)
-#define LIST_ADD_TAIL(data)                     addTail (data)
-#define LIST_ADD_AFTER(data)                    addAfter (data)
-#define LIST_ADD_BEFORE(data)                   addBefore (data)
+#define LIST_ADD_HEAD(id,data)                  addHead (id, data)
+#define LIST_ADD_TAIL(id,data)                  addTail (id, data)
+#define LIST_ADD_AFTER(id,data)                 addAfter (id, data)
+#define LIST_ADD_BEFORE(id,data)                addBefore (id, data)
 
 #define LIST_REMOVE                             remove()
 #define LIST_REMOVE_HEAD                        removeHead()
