@@ -5,9 +5,9 @@
 # add path to all available modules here
 BUFFER 		:= ../Common/Buffer
 LIBTEST 	:= ../Common/LibTest
+TREE		:= ../Common/Tree
 LIST 		:= ../Core/List
 LOG 		:= ../Core/Log
-TREE		:= ../Core/Tree
 # save dirs
 SAVEDIR 	:= ./LogSaves ./LibTestSaves
 

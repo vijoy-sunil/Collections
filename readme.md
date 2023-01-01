@@ -10,11 +10,11 @@ using namespace Collections;
     Collections
     |-- Common
         |-- Buffer
-        |-- LibTest                 
+        |-- LibTest
+        |-- Tree                
     |-- Core          
         |-- List
         |-- Log
-        |-- Tree
 </pre>
 
 ## Namespaces
@@ -74,6 +74,18 @@ using namespace Collections;
     LIB_TEST_RUN (2);
 </pre>
 
+## Tree
+<pre>
+    #include "Common/Tree/inc/Tree.h"
+
+    // create a new tree ('myTree' is a pointer to the tree instance created)
+    auto myTree = TREE_INIT (0,                                     // instance id 
+                             int);                                  // holds integer
+
+    // close this tree using its instance id
+    TREE_CLOSE (0);
+</pre>
+
 ### List
 <pre>
     #include "Core/List/inc/List.h"
@@ -110,16 +122,4 @@ using namespace Collections;
 
     // close this log using its instance id 
     LOG_CLOSE (0);
-</pre>
-
-## Tree
-<pre>
-    #include "Core/Tree/inc/Tree.h"
-
-    // create a new tree ('myTree' is a pointer to the tree instance created)
-    auto myTree = TREE_INIT (0,                                     // instance id 
-                             int);                                  // holds integer
-
-    // close this tree using its instance id
-    TREE_CLOSE (0);
 </pre>
