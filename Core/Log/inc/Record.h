@@ -148,7 +148,7 @@ namespace Log {
 
                     // buffer and the log will share the same instance ids
                     BUFFER_INIT (m_instanceId, 
-                                 Memory::CIRCULAR_OVERWRITE, 
+                                 Memory::WITH_OVERFLOW, 
                                  std::string, 
                                  bufferCapacity);   
                     

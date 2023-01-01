@@ -40,13 +40,15 @@ using namespace Collections;
 
     // create a new buffer ('myBuffer' is a pointer to the buffer instance created)
     auto myBuffer = BUFFER_INIT (0,                                 // instance id
-                                 Memory::CIRCULAR_NO_OVERWRITE,     // circular buffer (with overwrite)          
+                                 Memory::WITH_OVERFLOW,             // circular buffer type        
                                  int,                               // holds integer
                                  capacity);                         // buffer capacity
 
     // close this buffer using its instance id
     BUFFER_CLOSE (0);
 </pre>
+
+>*Buffer can be used as Queue or Stack using available methods*
 
 ### LibTest
 <pre>

@@ -16,17 +16,17 @@
 #include "../../LibTest/inc/LibTest.h"
 using namespace Collections;
 
-LIB_TEST_CASE (0, "int type w/ no overwrite") {
+LIB_TEST_CASE (0, "int type w/ no overflow") {
     int input[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
-    /* since this is a no overwrite test case, with capacity = 5, the buffer contents will be 10 ... 6 even if we iterate
+    /* since this is a no overflow test case, with capacity = 5, the buffer contents will be 10 ... 6 even if we iterate
      * through the full input[] array, and the push operation should return without fail
     */
-    const int capacity = 5;
+    size_t capacity = 5;
     int output[] = { 10, 9, 8, 7, 6 };
 
     // init buffer and get instance
-    auto myBuffer = BUFFER_INIT (0, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
+    auto myBuffer = BUFFER_INIT (0, Memory::WITHOUT_OVERFLOW, int, capacity);
     // or use GET_ method to get instance
     // auto myBuffer = GET_BUFFER (0, int);
 
@@ -34,8 +34,8 @@ LIB_TEST_CASE (0, "int type w/ no overwrite") {
         myBuffer-> BUFFER_PUSH (i);
 
     // pop contents
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != output[i])
+    for (auto i : output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -43,19 +43,19 @@ LIB_TEST_CASE (0, "int type w/ no overwrite") {
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (1, "float type w/ no overwrite") {
+LIB_TEST_CASE (1, "float type w/ no overflow") {
     float input[] = { 10.1, 9.2, 8.3, 7.4, 6.5, 5.6, 4.7, 3.8, 2.9, 1.10 };
 
-    const int capacity = 5;
+    size_t capacity = 5;
     float output[] = { 10.1, 9.2, 8.3, 7.4, 6.5 };
 
-    auto myBuffer = BUFFER_INIT (1, Memory::CIRCULAR_NO_OVERWRITE, float, capacity);
+    auto myBuffer = BUFFER_INIT (1, Memory::WITHOUT_OVERFLOW, float, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
 
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != output[i])
+    for (auto i : output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -63,19 +63,19 @@ LIB_TEST_CASE (1, "float type w/ no overwrite") {
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (2, "string type w/ no overwrite") {
+LIB_TEST_CASE (2, "string type w/ no overflow") {
     std::string input[] = { "ab", "cd", "ef", "gh", "ij", "kl", "mn", "op", "qr", "st" };
 
-    const int capacity = 5;
+    size_t capacity = 5;
     std::string output[] = { "ab", "cd", "ef", "gh", "ij" };
 
-    auto myBuffer = BUFFER_INIT (2, Memory::CIRCULAR_NO_OVERWRITE, std::string, capacity);
+    auto myBuffer = BUFFER_INIT (2, Memory::WITHOUT_OVERFLOW, std::string, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
 
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != output[i])
+    for (auto i : output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -83,19 +83,19 @@ LIB_TEST_CASE (2, "string type w/ no overwrite") {
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (3, "char type w/ overwrite") {
+LIB_TEST_CASE (3, "char type w/ overflow") {
     char input[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
 
-    const int capacity = 5;
+    size_t capacity = 5;
     char output[] = { 'f', 'g', 'h', 'i', 'j' };
 
-    auto myBuffer = BUFFER_INIT (3, Memory::CIRCULAR_OVERWRITE, char, capacity);
+    auto myBuffer = BUFFER_INIT (3, Memory::WITH_OVERFLOW, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
 
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != output[i])
+    for (auto i : output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -104,33 +104,32 @@ LIB_TEST_CASE (3, "char type w/ overwrite") {
 }
 
 LIB_TEST_CASE (4, "reuse instance id") {
-    const int capacity = 5;
-    auto myBuffer = BUFFER_INIT (4, Memory::CIRCULAR_OVERWRITE, char, capacity); 
+    size_t capacity = 5;
+    auto myBuffer = BUFFER_INIT (4, Memory::WITH_OVERFLOW, char, capacity); 
 
     myBuffer-> BUFFER_PUSH ('a');
-    if (*myBuffer-> BUFFER_POP != 'a')
+    if (* (myBuffer-> BUFFER_POP_FIRST) != 'a')
         return Quality::Test::FAIL;
 
     // you are able to reuse the instance #4 for another buffer after you close it
     BUFFER_CLOSE (4);
 
-    auto mySecondBuffer = BUFFER_INIT (4, Memory::CIRCULAR_NO_OVERWRITE, int, capacity); 
+    auto mySecondBuffer = BUFFER_INIT (4, Memory::WITHOUT_OVERFLOW, int, capacity); 
 
     mySecondBuffer-> BUFFER_PUSH (1010);
-    if (*mySecondBuffer-> BUFFER_POP != 1010)
+    if (* (mySecondBuffer-> BUFFER_POP_FIRST) != 1010)
         return Quality::Test::FAIL;
 
     BUFFER_CLOSE (4); 
-
     return Quality::Test::PASS; 
 }
 
 LIB_TEST_CASE (5, "buffer mgr dump") {
     const int capacity = 5;
 
-    BUFFER_INIT (5, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
-    BUFFER_INIT (6, Memory::CIRCULAR_NO_OVERWRITE, float, capacity);
-    BUFFER_INIT (7, Memory::CIRCULAR_NO_OVERWRITE, int, capacity); 
+    BUFFER_INIT (5, Memory::WITHOUT_OVERFLOW, int, capacity);
+    BUFFER_INIT (6, Memory::WITHOUT_OVERFLOW, float, capacity);
+    BUFFER_INIT (7, Memory::WITHOUT_OVERFLOW, int, capacity); 
 
     // mgr dump shows all opened buffer instances
     BUFFER_MGR_DUMP;
@@ -144,8 +143,8 @@ LIB_TEST_CASE (5, "buffer mgr dump") {
 LIB_TEST_CASE (6, "buffer dump") {
     int input[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
-    const int capacity = 5;
-    auto myBuffer = BUFFER_INIT (8, Memory::CIRCULAR_OVERWRITE, int, capacity);
+    size_t capacity = 5;
+    auto myBuffer = BUFFER_INIT (8, Memory::WITH_OVERFLOW, int, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -153,31 +152,31 @@ LIB_TEST_CASE (6, "buffer dump") {
     myBuffer-> BUFFER_DUMP;
 
     // pop few and redump
-    myBuffer-> BUFFER_POP;
-    myBuffer-> BUFFER_POP;
+    myBuffer-> BUFFER_POP_FIRST;
+    myBuffer-> BUFFER_POP_FIRST;
 
     myBuffer-> BUFFER_DUMP;
+    
     BUFFER_CLOSE (8);
-
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
+LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overflow") {
     char input[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
 
-    const int capacity = 6;
+    size_t capacity = 6;
     char half_flush_output[] = { 'a', 'b', 'c' };
-    char full_flush_output[] = { 'd', 'e', 'f', 'a', 'b', 'c'};
+    char full_flush_output[] = { 'd', 'e', 'f', 'a', 'b', 'c' };
 
     // full fill
-    auto myBuffer = BUFFER_INIT (9, Memory::CIRCULAR_NO_OVERWRITE, char, capacity);
+    auto myBuffer = BUFFER_INIT (9, Memory::WITHOUT_OVERFLOW, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
 
     // half flush
-    for (int i = 0; i < capacity/2; i++) {
-        if (*myBuffer-> BUFFER_POP != half_flush_output[i])
+    for (auto i : half_flush_output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -186,8 +185,8 @@ LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
         myBuffer-> BUFFER_PUSH (i);
 
     // full flush
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != full_flush_output[i])
+    for (auto i : full_flush_output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -195,15 +194,15 @@ LIB_TEST_CASE (7, "full-fill half-flush full-fill w/ no overwrite") {
     return Quality::Test::PASS;
 }
 
-LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
+LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overflow") {
     char input[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
 
-    const int capacity = 6;
-    char half_flush_output[] = { 'e', 'f', 'g'};
+    size_t capacity = 6;
+    char half_flush_output[] = { 'e', 'f', 'g' };
     char full_flush_output[] = { 'e', 'f', 'g', 'h', 'i', 'j' };
 
     // full fill
-    auto myBuffer = BUFFER_INIT (10, Memory::CIRCULAR_OVERWRITE, char, capacity);
+    auto myBuffer = BUFFER_INIT (10, Memory::WITH_OVERFLOW, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -211,8 +210,8 @@ LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
     myBuffer-> BUFFER_DUMP;
 
     // half flush
-    for (int i = 0; i < capacity/2; i++) {
-        if (*myBuffer-> BUFFER_POP != half_flush_output[i])
+    for (auto i : half_flush_output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -225,8 +224,8 @@ LIB_TEST_CASE (8, "full-fill half-flush full-fill w/ overwrite") {
     myBuffer-> BUFFER_DUMP;
 
     // full flush
-    for (int i = 0; i < capacity; i++) {
-        if (*myBuffer-> BUFFER_POP != full_flush_output[i])
+    for (auto i : full_flush_output) {
+        if (* (myBuffer-> BUFFER_POP_FIRST) != i)
             return Quality::Test::FAIL;
     }
 
@@ -238,7 +237,7 @@ LIB_TEST_CASE (9, "buffer reset") {
     float input[] = { 10.1, 9.2, 8.3, 7.4, 6.5, 5.6, 4.7, 3.8, 2.9, 1.10 };
 
     const int capacity = 6;
-    auto myBuffer = BUFFER_INIT (11, Memory::CIRCULAR_OVERWRITE, float, capacity);
+    auto myBuffer = BUFFER_INIT (11, Memory::WITH_OVERFLOW, float, capacity);
     
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -247,8 +246,8 @@ LIB_TEST_CASE (9, "buffer reset") {
 
     myBuffer-> BUFFER_RESET;
     myBuffer-> BUFFER_DUMP;
-    BUFFER_CLOSE (11);
 
+    BUFFER_CLOSE (11);
     return Quality::Test::PASS;
 }
 
@@ -258,27 +257,27 @@ LIB_TEST_CASE (10, "buffer peek") {
     char output_full_fill_peek[] = { 'e', 'j' };
     char output_half_flush_peek[] = { 'h', 'j' };
 
-    const int capacity = 6;
+    size_t capacity = 6;
     // full fill
-    auto myBuffer = BUFFER_INIT (12, Memory::CIRCULAR_OVERWRITE, char, capacity);
+    auto myBuffer = BUFFER_INIT (12, Memory::WITH_OVERFLOW, char, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
 
     // peek
-    if (*myBuffer-> BUFFER_PEEK_FIRST != output_full_fill_peek[0])
+    if (* (myBuffer-> BUFFER_PEEK_FIRST) != output_full_fill_peek[0])
         return Quality::Test::FAIL;
-    if (*myBuffer-> BUFFER_PEEK_LAST != output_full_fill_peek[1])
+    if (* (myBuffer-> BUFFER_PEEK_LAST) != output_full_fill_peek[1])
         return Quality::Test::FAIL;
 
     // half flush
-    for (int i = 0; i < capacity/2; i++)
-        myBuffer-> BUFFER_POP;
+    for (size_t i = 0; i < capacity/2; i++)
+        myBuffer-> BUFFER_POP_FIRST;
     
     // peek
-    if (*myBuffer-> BUFFER_PEEK_FIRST != output_half_flush_peek[0])
+    if (* (myBuffer-> BUFFER_PEEK_FIRST) != output_half_flush_peek[0])
         return Quality::Test::FAIL;
-    if (*myBuffer-> BUFFER_PEEK_LAST != output_half_flush_peek[1])
+    if (* (myBuffer-> BUFFER_PEEK_LAST) != output_half_flush_peek[1])
         return Quality::Test::FAIL;
 
     // re full fill
@@ -286,9 +285,9 @@ LIB_TEST_CASE (10, "buffer peek") {
         myBuffer-> BUFFER_PUSH (i);
 
     // peek
-    if (*myBuffer-> BUFFER_PEEK_FIRST != output_full_fill_peek[0])
+    if (* (myBuffer-> BUFFER_PEEK_FIRST) != output_full_fill_peek[0])
         return Quality::Test::FAIL;
-    if (*myBuffer-> BUFFER_PEEK_LAST != output_full_fill_peek[1])
+    if (* (myBuffer-> BUFFER_PEEK_LAST) != output_full_fill_peek[1])
         return Quality::Test::FAIL;
 
     BUFFER_CLOSE (12);
@@ -297,13 +296,13 @@ LIB_TEST_CASE (10, "buffer peek") {
 
 LIB_TEST_CASE (11, "buffer availability") {
     int input[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    const int capacity = 6;
+    size_t capacity = 6;
 
     size_t output_full_fill = 0;
     size_t output_half_flush = capacity/2;
 
     // full fill
-    auto myBuffer = BUFFER_INIT (13, Memory::CIRCULAR_NO_OVERWRITE, int, capacity);
+    auto myBuffer = BUFFER_INIT (13, Memory::WITHOUT_OVERFLOW, int, capacity);
 
     for (auto i : input) 
         myBuffer-> BUFFER_PUSH (i);
@@ -312,8 +311,8 @@ LIB_TEST_CASE (11, "buffer availability") {
         return Quality::Test::FAIL;
 
     // half flush
-    for (int i = 0; i < capacity/2; i++)
-        myBuffer-> BUFFER_POP;
+    for (size_t i = 0; i < capacity/2; i++)
+        myBuffer-> BUFFER_POP_FIRST;
 
     if (myBuffer-> BUFFER_AVAILABILITY != output_half_flush)
         return Quality::Test::FAIL;
@@ -336,12 +335,18 @@ LIB_TEST_CASE (12, "custom type") {
         std::string desc;
     }s_customType;
 
-    s_customType input[] = { {0, "zero"}, {1, "one"}, {2, "two"}, {3, "three"}, {4, "four"} };
+    s_customType input[] = { { 0, "zero" }, 
+                             { 1, "one" }, 
+                             { 2, "two" }, 
+                             { 3, "three" }, 
+                             { 4, "four" } };
     
-    const int capacity = 3;
-    s_customType output_full_flush[] = { {2, "two"}, {3, "three"}, {4, "four"} };
+    size_t capacity = 3;
+    s_customType output_full_flush[] = { { 2, "two" }, 
+                                         { 3, "three" }, 
+                                         { 4, "four" } };
 
-    auto myBuffer = BUFFER_INIT (14, Memory::CIRCULAR_OVERWRITE, s_customType, capacity);
+    auto myBuffer = BUFFER_INIT (14, Memory::WITH_OVERFLOW, s_customType, capacity);
 
     // full fill
     for (auto i : input)
@@ -354,17 +359,81 @@ LIB_TEST_CASE (12, "custom type") {
     myBuffer-> BUFFER_DUMP_CUSTOM (lambda_customType);
 
     // full flush
-    for (int i = 0; i < capacity; i++) {
-        s_customType out = *myBuffer-> BUFFER_POP;
+    for (auto i : output_full_flush) {
+        s_customType out = *(myBuffer-> BUFFER_POP_FIRST);
 
-        if (out.data != output_full_flush[i].data ||
-            out.desc != output_full_flush[i].desc)
+        if (out.data != i.data ||
+            out.desc != i.desc)
             return Quality::Test::FAIL;
     }
 
     myBuffer-> BUFFER_DUMP_CUSTOM (lambda_customType);
 
     BUFFER_CLOSE (14);
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (13, "buffer as stack") {
+    int input[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int output_0[] = { 9, 8, 7, 6, 5 };
+    int output_1[] = { 5, 4, 3, 2, 1 };
+    size_t capacity = 5;
+
+    auto myStack = BUFFER_INIT (15, Memory::WITH_OVERFLOW, int, capacity);
+    for (auto i : input)
+        myStack-> BUFFER_PUSH (i);
+
+    int idx = 0;
+    // a stack follows last in first out protocol
+    while (myStack-> BUFFER_AVAILABILITY != capacity) {
+        if (* (myStack-> BUFFER_POP_LAST) != output_0[idx++])
+            return Quality::Test::FAIL;
+    }
+
+    // lets try the same with no overflow
+    auto myAnotherStack = BUFFER_INIT (16, Memory::WITHOUT_OVERFLOW, int, capacity);
+    for (auto i : input)
+        myAnotherStack-> BUFFER_PUSH (i);
+
+    idx = 0;
+    while (myAnotherStack-> BUFFER_AVAILABILITY != capacity) {
+        if (* (myAnotherStack-> BUFFER_POP_LAST) != output_1[idx++])
+            return Quality::Test::FAIL;
+    }
+
+    BUFFER_CLOSE_ALL;
+    return Quality::Test::PASS;
+}
+
+LIB_TEST_CASE (14, "buffer as queue") {
+    int input[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int output_0[] = { 5, 6, 7, 8, 9 };
+    int output_1[] = { 1, 2, 3, 4, 5 };
+    size_t capacity = 5;
+
+    auto myQueue = BUFFER_INIT (17, Memory::WITH_OVERFLOW, int, capacity);
+    for (auto i : input)
+        myQueue-> BUFFER_PUSH (i);
+
+    int idx = 0;
+    // a queue follows first in first out protocol
+    while (myQueue-> BUFFER_AVAILABILITY != capacity) {
+        if (* (myQueue-> BUFFER_POP_FIRST) != output_0[idx++])
+            return Quality::Test::FAIL;
+    }
+
+    // lets try the same with no overflow
+    auto myAnotherQueue = BUFFER_INIT (18, Memory::WITHOUT_OVERFLOW, int, capacity);
+    for (auto i : input)
+        myAnotherQueue-> BUFFER_PUSH (i);
+
+    idx = 0;
+    while (myAnotherQueue-> BUFFER_AVAILABILITY != capacity) {
+        if (* (myAnotherQueue-> BUFFER_POP_FIRST) != output_1[idx++])
+            return Quality::Test::FAIL;
+    }
+
+    BUFFER_CLOSE_ALL;
     return Quality::Test::PASS;
 }
 

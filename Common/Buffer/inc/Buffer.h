@@ -29,7 +29,8 @@
 #define BUFFER_MGR_DUMP                         Memory::bufferMgr.dump (std::cout)  
 
 #define BUFFER_PUSH(data)                       push (data)
-#define BUFFER_POP                              pop()
+#define BUFFER_POP_FIRST                        popFirst()
+#define BUFFER_POP_LAST                         popLast()
 #define BUFFER_FLUSH(stream)                    flush (stream)
 #define BUFFER_PEEK_FIRST                       peekFirst()
 #define BUFFER_PEEK_LAST                        peekLast()

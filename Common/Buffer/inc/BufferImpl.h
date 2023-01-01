@@ -19,8 +19,8 @@
 namespace Collections {
 namespace Memory {
     typedef enum {
-        CIRCULAR_NO_OVERWRITE = 1,
-        CIRCULAR_OVERWRITE = 2
+        WITH_OVERFLOW = 1,
+        WITHOUT_OVERFLOW = 2
     }e_type;
 
     template <typename T>
@@ -64,8 +64,8 @@ namespace Memory {
             }
             
             void push (const T& data) {
-                // always push when in overwrite mode
-                if (!isFull() || m_type == CIRCULAR_OVERWRITE) {
+                // always push when in overflow enabled mode
+                if (!isFull() || m_type == WITH_OVERFLOW) {
                     *m_head = data;
                     m_numItems++;
 
@@ -75,7 +75,7 @@ namespace Memory {
                     /* if num items is greater than capacity, that means we have overflowed over the oldest element, so
                      * we need to update the tail pointer (pointing to the oldest element) and correct num items
                     */
-                    if (m_type == CIRCULAR_OVERWRITE && m_numItems > m_capacity) {
+                    if (m_type == WITH_OVERFLOW && m_numItems > m_capacity) {
                         m_tail = m_tail == m_end ? m_buffer : m_tail + 1;
                         // correct num items
                         m_numItems--;
@@ -87,7 +87,7 @@ namespace Memory {
                     ;
             }
 
-            T* pop (void) {
+            T* popFirst (void) {
                 T* data = NULL;
 
                 if (!isEmpty()) {
@@ -100,9 +100,22 @@ namespace Memory {
                 return data; 
             }
 
+            T* popLast (void) {
+                T* data = NULL;
+
+                if (!isEmpty()) {
+                    // when head pointer is at the head of the buffer
+                    m_head = m_head == m_buffer ? m_end : m_head - 1;
+
+                    data = m_head;
+                    m_numItems--;
+                }
+                return data;
+            }
+
             void flush (std::ostream& ost) {
                 while (!isEmpty())
-                    ost << *pop() << "\n";
+                    ost << *popFirst() << "\n";
                 
                 ost.flush();
             }
