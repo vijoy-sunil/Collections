@@ -32,6 +32,7 @@
 // 'execute' operations (these need to be executed after a 'set' operation)
 #define TREE_PEEK_NODE                          peekNode()
 #define TREE_PEEK_LEVEL                         peekLevel()
+#define TREE_PEEK_CHILD_COUNT                   peekChildCount()
 
 #define TREE_ADD_ROOT(id, data)                 addRoot (id, data)
 #define TREE_ADD_CHILD(id, data)                addChild (id, data)
@@ -43,8 +44,8 @@
 // utils
 #define TREE_SIZE                               getSize()
 #define TREE_DEPTH                              getDepth()
-#define TREE_SWAP(idA,idB)                      swap (idA, idB)
-#define TREE_PATH(idA,idB)                      getPath (idA, idB)
+#define TREE_SWAP(idA, idB)                     swap (idA, idB)
+#define TREE_PATH(idA, idB)                     getPath (idA, idB)
 #define TREE_IMPORT(node)                       importTree (node)
 #define TREE_RESET                              importTree (NULL)
 #define TREE_DUMP                               dump (std::cout)
