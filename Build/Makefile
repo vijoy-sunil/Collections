@@ -6,6 +6,7 @@
 BUFFER 		:= ../Common/Buffer
 LIBTEST 	:= ../Common/LibTest
 TREE		:= ../Common/Tree
+BTREE		:= ../Core/BTree
 LIST 		:= ../Core/List
 LOG 		:= ../Core/Log
 # save dirs
