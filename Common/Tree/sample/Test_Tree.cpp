@@ -45,7 +45,7 @@ bool verifyTree (Memory::Tree <T>* tree, s_verifyParams params) {
         if (tree-> TREE_PEEK_LEVEL != params.levels[idx])
             return false;
 
-        if (tree-> TREE_PEEK_NODE-> child.size() != params.numChildren[idx])
+        if (tree-> TREE_PEEK_CHILD_COUNT != params.numChildren[idx])
             return false;
 
         if (tree-> TREE_PEEK_NODE-> id != params.ids[idx])
@@ -89,10 +89,15 @@ LIB_TEST_CASE (0, "multiple instances") {
 
 LIB_TEST_CASE (1, "add to root") {
     auto myTree = TREE_INIT (1, int);
-    std::pair <int, int> input[] = { {0, 10}, {1, 20}, {2, 30}, {3, 40} };
+    std::pair <size_t, int> input[] = { { 0, 10 }, 
+                                        { 1, 20 }, 
+                                        { 2, 30 }, 
+                                        { 3, 40 } };
     // create tree
     for (auto i : input)
         myTree-> TREE_ADD_ROOT (i.first, i.second);
+
+    myTree-> TREE_DUMP;
 
     size_t numNodes = 4;
     size_t depth = 4;
@@ -120,10 +125,10 @@ LIB_TEST_CASE (1, "add to root") {
 
 LIB_TEST_CASE (2, "add children") {
     auto myTree = TREE_INIT (2, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},           {3, 30}, 
-                                        {4, 40}, {5, 50},  {6, 60}, {7, 70},
-                                        {8, 80},                    {9, 90} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },              { 3, 30 }, 
+                                        { 4, 40 }, { 5, 50 },   { 6, 60 }, { 7, 70 },
+                                        { 8, 80 },                         { 9, 90 } };
 
     int idx = 0;
     // create tree
@@ -177,10 +182,10 @@ LIB_TEST_CASE (2, "add children") {
 
 LIB_TEST_CASE (3, "add parent") {
     auto myTree = TREE_INIT (3, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},           {3, 30}, 
-                                        {4, 40}, {5, 50},  {6, 60}, {7, 70},
-                                        {8, 80},                    {9, 90} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },              { 3, 30 }, 
+                                        { 4, 40 }, { 5, 50 },   { 6, 60 }, { 7, 70 },
+                                        { 8, 80 },                         { 9, 90 } };
 
     int idx = 0;
     // create tree
@@ -202,7 +207,7 @@ LIB_TEST_CASE (3, "add parent") {
         idx++;
     }
 
-    std::pair <size_t, int> newNodes[] = { {0, 9}, {16, 79}, {25, 49} };
+    std::pair <size_t, int> newNodes[] = { { 0, 9 }, { 16, 79 }, { 25, 49 } };
     /*                                  {0, 9}
      *                                  |
      *                                  {1, 10}
@@ -262,11 +267,11 @@ LIB_TEST_CASE (3, "add parent") {
 
 LIB_TEST_CASE (4, "remove with id (no adopt)") {
     auto myTree = TREE_INIT (4, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},
-                                        {3, 30}, {4, 40}, {5, 50}, {6, 60}, {7, 50},
-                                        {8, 80},                   {9, 90},
-                                        {10, 100} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },
+                                        { 3, 30 }, { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 50 },
+                                        { 8, 80 },                       { 9, 90 },
+                                        { 10, 100 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -326,11 +331,11 @@ LIB_TEST_CASE (4, "remove with id (no adopt)") {
 
 LIB_TEST_CASE (5, "remove root (no adopt)") {
     auto myTree = TREE_INIT (5, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},
-                                        {3, 30}, {4, 40}, {5, 50}, {6, 60}, {7, 50},
-                                        {8, 80},                   {9, 90},
-                                        {10, 100} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },
+                                        { 3, 30 }, { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 50 },
+                                        { 8, 80 },                       { 9, 90 },
+                                        { 10, 100 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -379,12 +384,12 @@ LIB_TEST_CASE (5, "remove root (no adopt)") {
 
 LIB_TEST_CASE (6, "remove with id (adopt)") {
     auto myTree = TREE_INIT (6, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},
-                                        {3, 30}, 
-                                        {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                        {8, 80},                   {9, 90},
-                                        {10, 8}, {11, 9} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },
+                                        { 3, 30 }, 
+                                        { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                        { 8, 80 },                       { 9, 90 },
+                                        { 10, 8 }, { 11, 9 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -441,7 +446,7 @@ LIB_TEST_CASE (6, "remove with id (adopt)") {
     size_t numDescendants[] =       { 5,
                                       4,
                                       3,
-                                      0,      0,      0};
+                                      0,      0,      0 };
     size_t parents[] =              { 0, 1, 2, 3, 3, 3 };
     
     if (verifyTree <int> (myTree, 
@@ -508,12 +513,12 @@ LIB_TEST_CASE (6, "remove with id (adopt)") {
 
 LIB_TEST_CASE (7, "remove root (adopt)") {
     auto myTree = TREE_INIT (7, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -642,12 +647,12 @@ LIB_TEST_CASE (8, "custom type") {
 
 LIB_TEST_CASE (9, "path between nodes") {
     auto myTree = TREE_INIT (9, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},
-                                        {3, 30}, 
-                                        {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                        {8, 80},                   {9, 90},
-                                        {10, 8}, {11, 9} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },
+                                        { 3, 30 }, 
+                                        { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                        { 8, 80 },                       { 9, 90 },
+                                        { 10, 8 }, { 11, 9 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -674,7 +679,8 @@ LIB_TEST_CASE (9, "path between nodes") {
     myTree-> TREE_ADD_CHILD (input[9].first, input[9].second); 
     myTree-> TREE_ADD_CHILD (input[10].first, input[10].second);  
 
-    std::pair <size_t, size_t> pathPairs[] =    { {1, 10}, {10, 1}, {1, 1}, {4, 7}, {9, 11}, {11, 9}, {8, 9} };
+    std::pair <size_t, size_t> pathPairs[] =    { { 1, 10 }, { 10, 1 }, { 1, 1 }, { 4, 7 }, 
+                                                  { 9, 11 }, { 11, 9 }, { 8, 9 } };
     std::vector <size_t> truePaths[] =          { { 10, 8, 4, 3, 2, 1 },
                                                   { 10, 8, 4, 3, 2, 1 },
                                                   { 1 },
@@ -704,12 +710,12 @@ LIB_TEST_CASE (9, "path between nodes") {
 
 LIB_TEST_CASE (10, "swap nodes") {
     auto myTree = TREE_INIT (10, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20},
-                                        {3, 30}, 
-                                        {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                        {8, 80},                   {9, 90},
-                                        {10, 8}, {11, 9},          {12, 5}, {13, 6}, {14, 7} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 },
+                                        { 3, 30 }, 
+                                        { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                        { 8, 80 },                       { 9, 90 },
+                                        { 10, 8 }, { 11, 9 },            { 12, 5 }, { 13, 6 }, { 14, 7 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -741,7 +747,11 @@ LIB_TEST_CASE (10, "swap nodes") {
     myTree-> TREE_ADD_CHILD (input[12].first, input[12].second); 
     myTree-> TREE_ADD_CHILD (input[13].first, input[13].second);   
 
-    std::pair <size_t, size_t> swapIds[]  = { {1, 1}, {11, 11}, {8, 9}, {9, 8}, {1, 7}, {7, 1}, {5, 6} };
+    std::pair <size_t, size_t> swapIds[]  = { { 1, 1 }, 
+                                              { 11, 11 }, 
+                                              { 8, 9 }, { 9, 8 }, 
+                                              { 1, 7 }, { 7, 1 }, 
+                                              { 5, 6 } };
 
     const size_t numNodes = 14;
     size_t depth = 6;
@@ -788,10 +798,10 @@ LIB_TEST_CASE (10, "swap nodes") {
 
 LIB_TEST_CASE (11, "unique node ids") {
     auto myTree = TREE_INIT (11, int);
-    std::pair <int, int> input[] = { {1, 10}, 
-                                     {1, 20},   // <----- invalid id, user needs to make sure ids are unique 
-                                     {2, 30}, 
-                                     {3, 40} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 1, 20 },   // <----- invalid id, user needs to make sure ids are unique 
+                                        { 2, 30 }, 
+                                        { 3, 40 } };
 
     myTree-> TREE_ADD_ROOT (input[0].first, input[1].second);
 
@@ -808,7 +818,7 @@ LIB_TEST_CASE (11, "unique node ids") {
 
 LIB_TEST_CASE (12, "reset tree") {
     auto myTree = TREE_INIT (12, int);
-    std::pair <int, int> input[] = { {0, 10}, {1, 20}, {2, 30}, {3, 40} };
+    std::pair <size_t, int> input[] = { { 0, 10 }, { 1, 20 }, { 2, 30 }, { 3, 40 } };
 
     // create tree
     for (auto i : input)
@@ -834,15 +844,15 @@ LIB_TEST_CASE (12, "reset tree") {
 
 LIB_TEST_CASE (13, "tree traversal starting from id") {
     auto myTree = TREE_INIT (13, int);
-    std::pair <size_t, int> input[] =   { {1, 10}, 
-                                          {2, 20},
-                                          {3, 30}, 
-                                          {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                          {8, 80},                   {9, 90},
-                                          {10, 8}, {11, 9},          {12, 5}, {13, 6}, {14, 7},
-                                                   {15, 1},
-                                                   {16, 2},
-                                                   {17, 3} };
+    std::pair <size_t, int> input[] =   { { 1, 10 }, 
+                                          { 2, 20 },
+                                          { 3, 30 }, 
+                                          { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                          { 8, 80 },                       { 9, 90 },
+                                          { 10, 8 }, { 11, 9 },            { 12, 5 }, { 13, 6 }, { 14, 7 },
+                                                     { 15, 1 },
+                                                     { 16, 2 },
+                                                     { 17, 3 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -916,15 +926,15 @@ LIB_TEST_CASE (13, "tree traversal starting from id") {
 
 LIB_TEST_CASE (14, "tree update (add child) amid traversal") {
     auto myTree = TREE_INIT (14, int);
-    std::pair <size_t, int> input[] =   { {1, 10}, 
-                                          {2, 20},
-                                          {3, 30}, 
-                                          {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                          {8, 80},                   {9, 90},
-                                          {10, 8}, {11, 9},          {12, 5}, {13, 6}, {14, 7},
-                                                   {15, 1},
-                                                   {16, 2},
-                                                   {17, 3} };
+    std::pair <size_t, int> input[] =   { { 1, 10 }, 
+                                          { 2, 20 },
+                                          { 3, 30 }, 
+                                          { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                          { 8, 80 },                       { 9, 90 },
+                                          { 10, 8 }, { 11, 9 },            { 12, 5 }, { 13, 6 }, { 14, 7 },
+                                                     { 15, 1 },
+                                                     { 16, 2 },
+                                                     { 17, 3 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1003,15 +1013,15 @@ LIB_TEST_CASE (14, "tree update (add child) amid traversal") {
 
 LIB_TEST_CASE (15, "tree update (remove node) amid traversal") {
     auto myTree = TREE_INIT (15, int);
-    std::pair <size_t, int> input[] =   { {1, 10}, 
-                                          {2, 20},
-                                          {3, 30}, 
-                                          {4, 40}, {5, 50}, {6, 60}, {7, 70},
-                                          {8, 80},                   {9, 90},
-                                          {10, 8}, {11, 9},          {12, 5}, {13, 6}, {14, 7},
-                                                   {15, 1},
-                                                   {16, 2},
-                                                   {17, 3} };
+    std::pair <size_t, int> input[] =   { { 1, 10 }, 
+                                          { 2, 20 },
+                                          { 3, 30 }, 
+                                          { 4, 40 }, { 5, 50 }, { 6, 60 }, { 7, 70 },
+                                          { 8, 80 },                       { 9, 90 },
+                                          { 10, 8 }, { 11, 9 },            { 12, 5 }, { 13, 6 }, { 14, 7 },
+                                                     { 15, 1 },
+                                                     { 16, 2 },
+                                                     { 17, 3 } };
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1089,12 +1099,12 @@ LIB_TEST_CASE (15, "tree update (remove node) amid traversal") {
 
 LIB_TEST_CASE (16, "append tree") {
     auto myTree = TREE_INIT (16, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };    
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };    
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1212,12 +1222,12 @@ LIB_TEST_CASE (17, "empty tree") {
 
 LIB_TEST_CASE (18, "invalid peek set next") {
     auto myTree = TREE_INIT (18, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1267,12 +1277,12 @@ LIB_TEST_CASE (19, "[internal validation] peek pair after peek set") {
     auto myTree = TREE_INIT (19, int);
     size_t depth = 6;
 
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1325,12 +1335,12 @@ LIB_TEST_CASE (19, "[internal validation] peek pair after peek set") {
 
 LIB_TEST_CASE (20, "[internal validation] peek pair after peek set root") {
     auto myTree = TREE_INIT (20, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1384,12 +1394,12 @@ LIB_TEST_CASE (20, "[internal validation] peek pair after peek set root") {
 
 LIB_TEST_CASE (21, "[internal validation] peek pair after peek set next") {
     auto myTree = TREE_INIT (21, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1442,12 +1452,12 @@ LIB_TEST_CASE (21, "[internal validation] peek pair after peek set next") {
 
 LIB_TEST_CASE (22, "[internal validation] peek pair after add parent") {
     auto myTree = TREE_INIT (22, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1503,12 +1513,12 @@ LIB_TEST_CASE (22, "[internal validation] peek pair after add parent") {
 
 LIB_TEST_CASE (23, "[internal validation] peek pair after remove/adopt") {
     auto myTree = TREE_INIT (23, int);
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1560,12 +1570,12 @@ LIB_TEST_CASE (24, "[internal validation] peek pair after depth") {
     auto myTree = TREE_INIT (24, int);
     size_t depth = 6;
 
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1607,12 +1617,12 @@ LIB_TEST_CASE (25, "[internal validation] peek pair after swap") {
     auto myTree = TREE_INIT (25, int);
     size_t depth = 6;
 
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1666,12 +1676,12 @@ LIB_TEST_CASE (26, "[internal validation] peek pair after path") {
     auto myTree = TREE_INIT (26, int);
     size_t depth = 6;
     
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
@@ -1723,12 +1733,12 @@ LIB_TEST_CASE (26, "[internal validation] peek pair after path") {
 
 LIB_TEST_CASE (27, "[internal validation] peek pair after import/reset") {
     auto myTree = TREE_INIT (27, int);   
-    std::pair <size_t, int> input[] = { {1, 10}, 
-                                        {2, 20}, {3, 30},
-                                        {4, 40}, 
-                                        {5, 50}, {6, 60},
-                                        {7, 70},  
-                                        {8, 80} };
+    std::pair <size_t, int> input[] = { { 1, 10 }, 
+                                        { 2, 20 }, { 3, 30 },
+                                        { 4, 40 }, 
+                                        { 5, 50 }, { 6, 60 },
+                                        { 7, 70 },  
+                                        { 8, 80 } };  
 
     // create tree
     myTree-> TREE_ADD_ROOT (input[0].first, input[0].second);
