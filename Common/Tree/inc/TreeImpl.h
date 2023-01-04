@@ -21,7 +21,7 @@ namespace Collections {
 namespace Memory {
     template <typename T>
     class Tree: public Admin::NonTemplateBase {
-        private:
+        protected:
             // node definition
             typedef struct Node {
                 size_t id;
@@ -30,11 +30,16 @@ namespace Memory {
                 std::vector <Node*> child;
                 T data;
             }s_Node;
-
-            size_t m_instanceId;
+            
             s_Node* m_rootNode;
+
+        private:
+            size_t m_instanceId;
             std::pair <s_Node*, size_t> m_stickyPeek;
+
+            // these two members are necessary to perform efficient tree traversal
             std::queue <s_Node*> m_stepperQueue;
+            size_t m_nodesInLevel;
 
             /* new node created will have
              * [id]             -> note that id validity should be checked by the user
@@ -60,15 +65,15 @@ namespace Memory {
             }
 
             /* queue contents could either be
-             * [root]-[NULL]    -> if root node exists, or
-             * [ ]              -> if tree is empty
+             * [ ]              -> if tree is empty, or
+             * [root]           -> if root node exists
             */
             void stepperStart (void) {
                 if (m_rootNode == NULL)
                     return;
 
                 m_stepperQueue.push (m_rootNode);
-                m_stepperQueue.push (NULL);
+                m_nodesInLevel = m_stepperQueue.size();
             }
             
             /* returns either of the 3 pairs
@@ -77,7 +82,15 @@ namespace Memory {
              * { NULL, false }  -> end of tree
             */
             std::pair <s_Node*, bool> stepperNext (void) {
-                if (m_stepperQueue.size() > 1) {
+                if (!m_stepperQueue.empty()) {
+                    if (m_nodesInLevel == 0) {
+                        m_nodesInLevel = m_stepperQueue.size();
+                        // return NULL, update level count
+                        return { NULL, true };
+                    }
+                    else
+                        m_nodesInLevel--;
+
                     // get next node in queue
                     s_Node* currentNode = m_stepperQueue.front();
                     m_stepperQueue.pop();
@@ -90,11 +103,9 @@ namespace Memory {
                         // return node, don't update level count
                         return { currentNode, false };
                     }
-                    else {
-                        m_stepperQueue.push (NULL);
-                        // return NULL, update level count
-                        return { NULL, true };
-                    }
+                    // run stepperNext() again if you encounter a NULL node in queue
+                    else
+                        return stepperNext();
                 }
 
                 // reached end of tree
@@ -174,12 +185,16 @@ namespace Memory {
                 ost << TAB_L4   << "id : "                  << node-> id                        << "\n";
                 ost << TAB_L4   << "descendants count : "   << node-> numDescendants            << "\n";
                 ost << TAB_L4   << "parent id : "           << parentId                         << "\n";
-                ost << TAB_L4   << "child count : "         << node-> child.size()              << "\n";
+                ost << TAB_L4   << "child count : "         << peekChildCount()                 << "\n";
                 ost << TAB_L4   << "child id : "            << "\n";
                 
                 ost << OPEN_L5;
-                for (auto const& child : node-> child)
+                for (auto const& child : node-> child) {
+                if (child != NULL)
                 ost << TAB_L6   << child-> id               << "\n";
+                else
+                ost << TAB_L6   << "NULL"                   << "\n";
+                }
                 ost << CLOSE_L5;
                 
                 ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";
@@ -192,6 +207,7 @@ namespace Memory {
                 m_instanceId = instanceId;
                 m_rootNode   = NULL;
                 m_stickyPeek = { NULL, 0 };
+                m_nodesInLevel = 0;
             }
 
             ~Tree (void) {
@@ -271,6 +287,17 @@ namespace Memory {
 
             inline size_t peekLevel (void) {
                 return m_stickyPeek.second;
+            }
+
+            size_t peekChildCount (void) {
+                s_Node* parentNode = peekNode();
+                if (parentNode == NULL)
+                    return 0;
+                // child vector size minus NULL occurences
+                else
+                    return parentNode-> child.size() - std::count (parentNode-> child.begin(), 
+                                                                   parentNode-> child.end(), 
+                                                                   static_cast <s_Node*> (0));
             }
 
             void addRoot (size_t id, const T& data) {
@@ -417,10 +444,12 @@ namespace Memory {
                         // remove from pending queue
                         pendingQ.pop();
             
-                        for (auto const& child : currentNode-> child)
-                            pendingQ.push (child);
+                        if (currentNode != NULL) {
+                            for (auto const& child : currentNode-> child)
+                                pendingQ.push (child);
 
-                        delete currentNode;
+                            delete currentNode;
+                        }
                     }
 
                     // clear dangling variables
@@ -433,14 +462,13 @@ namespace Memory {
                 return (m_rootNode == NULL) ? 0 : m_rootNode-> numDescendants + 1;
             }
 
-            /* pass an id that doesn't exist in tree to get depth, note that we are assuming that SIZE_MAX is an invalid
-             * id although technically you could have a node with id set to SIZE_MAX
+            /* pass an id that doesn't exist (reserved id) in tree to get depth
              *
              * sticky peek pairs set to
              * { NULL, depth }
             */
             size_t getDepth (void) {
-               peekSet (SIZE_MAX);
+               peekSet (RESERVED_0);
                return peekLevel();
             }
 
