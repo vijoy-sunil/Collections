@@ -76,17 +76,17 @@ namespace Memory {
                 m_nodesInLevel = m_stepperQueue.size();
             }
             
-            /* returns either of the 3 pairs
-             * { node, false }  -> we have a node
-             * { NULL, true }   -> no node since we hit level indicator (use this to update level count)
-             * { NULL, false }  -> end of tree
+            /* returns either of the following
+             * { false { NULL, true } }     -> update level count
+             * { false { node, false } }    -> we have a node (could be a NULL node)
+             * { true { NULL, false } }     -> end of tree
             */
-            std::pair <s_Node*, bool> stepperNext (void) {
+            std::pair <bool, std::pair <s_Node*, bool>> stepperNext (void) {
                 if (!m_stepperQueue.empty()) {
                     if (m_nodesInLevel == 0) {
                         m_nodesInLevel = m_stepperQueue.size();
-                        // return NULL, update level count
-                        return { NULL, true };
+                        // not end of tree, no node, update level count
+                        return { false, { NULL, true } };
                     }
                     else
                         m_nodesInLevel--;
@@ -95,21 +95,17 @@ namespace Memory {
                     s_Node* currentNode = m_stepperQueue.front();
                     m_stepperQueue.pop();
 
-                    // push all children to queue
                     if (currentNode != NULL) {
                         for (auto const& child : currentNode-> child)
                             m_stepperQueue.push (child);
-
-                        // return node, don't update level count
-                        return { currentNode, false };
                     }
-                    // run stepperNext() again if you encounter a NULL node in queue
-                    else
-                        return stepperNext();
+
+                    // not end of tree, current node, don't update level count
+                    return { false, { currentNode, false } };
                 }
 
                 // reached end of tree
-                return { NULL, false };
+                return { true, { NULL, false } };
             }
 
             /* returns either of the 2 pairs
@@ -123,31 +119,30 @@ namespace Memory {
                 stepperReset();
                 stepperStart();
 
-                /* Here, ret could be either of the 2 pairs
-                 * { root, false }  -> we have root node
-                 * { NULL, false }  -> root doesn't exist (we need to set level to 0)
+                /* Here, ret could be either of the following
+                 * { false { root, false } }    -> we have root node
+                 * { true { NULL, false } }     -> root doesn't exist (we need to set level to 0)
                 */
-                std::pair <s_Node*, bool> ret = stepperNext(); 
-                size_t level = (ret.first == NULL) ? 0 : 1;
+                std::pair <bool, std::pair <s_Node*, bool>> ret = stepperNext(); 
+                size_t level = (ret.first == true) ? 0 : 1;
 
-                while (! (ret.first  ==  NULL && 
-                          ret.second ==  false) ) {
-
+                // loop till end of tree
+                while (ret.first == false) {
                     // update level count
-                    if (ret.second == true)
+                    if (ret.second.second == true)
                         level++;
 
                     // we have a node in ret
                     else {
-                        s_Node* currentNode = ret.first;
-                        if (currentNode-> id == id)
+                        s_Node* currentNode = ret.second.first;
+                        if (currentNode != NULL && currentNode-> id == id)
                             return { currentNode, level };
                     }
 
-                    /* Here, ret could be either of the 3 pairs:
-                     * { node, false }  -> we have a node
-                     * { NULL, true }   -> no node since we hit level indicator
-                     * { NULL, false }  -> end of tree
+                    /* Here, ret could be either of the following
+                     * { false { NULL, true } }     -> update level count
+                     * { false { node, false } }    -> we have a node (could be a NULL node)
+                     * { true { NULL, false } }     -> end of tree
                     */
                     ret = stepperNext();
                 }
@@ -176,28 +171,36 @@ namespace Memory {
                            std::ostream& ost, 
                            void (*lambda) (T*, std::ostream&)) {
 
-                if (node == NULL)
-                    return; 
-
-                std::string parentId = (node-> parent == NULL) ? "NULL" : std::to_string (node-> parent-> id);
+                // the dumpNode() can also show details for a NULL node
+                std::string nodeId          = (node == NULL)            ? "NULL" : std::to_string (node-> id);
+                std::string numDescendants  = (node == NULL)            ? "0"    : std::to_string (node-> numDescendants);
+                std::string parentId        = (node == NULL)            ? "NULL" : 
+                                              (node-> parent == NULL)   ? "NULL" : std::to_string (node-> parent-> id);
 
                 ost << OPEN_L3;
-                ost << TAB_L4   << "id : "                  << node-> id                        << "\n";
-                ost << TAB_L4   << "descendants count : "   << node-> numDescendants            << "\n";
+                ost << TAB_L4   << "id : "                  << nodeId                           << "\n";
+                ost << TAB_L4   << "descendants count : "   << numDescendants                   << "\n";
                 ost << TAB_L4   << "parent id : "           << parentId                         << "\n";
                 ost << TAB_L4   << "child count : "         << peekChildCount()                 << "\n";
                 ost << TAB_L4   << "child id : "            << "\n";
                 
                 ost << OPEN_L5;
-                for (auto const& child : node-> child) {
-                if (child != NULL)
+                if (node != NULL) {
+                    for (auto const& child : node-> child) {
+                        if (child != NULL)
                 ost << TAB_L6   << child-> id               << "\n";
-                else
+                        else
                 ost << TAB_L6   << "NULL"                   << "\n";
+                    }
                 }
                 ost << CLOSE_L5;
+
+                if (node != NULL) {
+                ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";    
+                }
+                else
+                ost << TAB_L4   << "data : "                << "NULL"                           << "\n";
                 
-                ost << TAB_L4   << "data : ";               lambda (& (node-> data), ost);  ost << "\n";
                 ost << TAB_L4   << "level : "               << peekLevel()                      << "\n";
                 ost << CLOSE_L3;
             }
@@ -234,17 +237,17 @@ namespace Memory {
                 stepperStart();
 
                 /* instead of setting peek node to root node directly, we use the stepper to set it for us (same as in the
-                 * peekSet method). This allows us to use peekSetNext method to be used after
+                 * peekSet method). This allows us to use peekSetNext method afterwards
                  *
-                 *  Here, stepperNext() could return either of the 2 pairs
-                 * { root, false } -> we have root node
-                 * { NULL, false } -> root doesn't exist (we need to set level to 0)
+                 * Here, stepperNext() could return either of the following
+                 * { false { root, false } }    -> we have root node
+                 * { true { NULL, false } }     -> root doesn't exist (we need to set level to 0)
                 */
-                s_Node* currentNode = stepperNext().first;
-                if (currentNode == NULL)
+                s_Node* rootNode = stepperNext().second.first;
+                if (rootNode == NULL)
                     m_stickyPeek = { NULL, 0 };
                 else
-                    m_stickyPeek = { currentNode, 1 };
+                    m_stickyPeek = { rootNode, 1 };
             }
 
             /* this is an efficient way to traverse the tree (vs getNode method) since there is no need to start the
@@ -253,7 +256,7 @@ namespace Memory {
              * 
              * sticky peek pairs could either be
              * { NULL, 0 }      -> end of tree reached
-             * { node, level}   -> node with level
+             * { node, level}   -> node with level (could be a NULL node)
              *
              * if the tree has been updated, calling peekSetNext() may result in wrong result since the stepper queue may
              * not reflect the changes made during the tree update. (updates that effect this method involves any change
@@ -261,24 +264,25 @@ namespace Memory {
              * this method). To combat this, either set peek again to parent or to the root 
             */
             void peekSetNext (void) {
-                /* ret could be either of the 3 pairs:
-                 * { node, false } -> we have a node
-                 * { NULL, true }  -> no node since we hit level indicator (here we update level count and move again)
-                 * { NULL, false } -> end of tree
+                /* ret could be either of the following:
+                 * { false { NULL, true } }     -> update level count
+                 * { false { node, false } }    -> we have a node (could be a NULL node)
+                 * { true { NULL, false } }     -> end of tree
                 */
-                std::pair <s_Node*, bool> ret = stepperNext();  
+                std::pair <bool, std::pair <s_Node*, bool>> ret = stepperNext();  
 
-                if (ret.second == true) {
+                if (ret.second.second == true) {
                     m_stickyPeek.second++;
                     // move 1 more step to get past the level indicator
                     ret = stepperNext();
                 }
 
-                // clear level count
-                if (ret.first == NULL)
+                // end of tree
+                if (ret.first == true)
                     m_stickyPeek = { NULL, 0 };
+                // we have a node (could be a NULL node)
                 else 
-                    m_stickyPeek.first = ret.first;
+                    m_stickyPeek.first = ret.second.first;
             }
 
             inline s_Node* peekNode (void) {
@@ -298,6 +302,12 @@ namespace Memory {
                     return parentNode-> child.size() - std::count (parentNode-> child.begin(), 
                                                                    parentNode-> child.end(), 
                                                                    static_cast <s_Node*> (0));
+            }
+
+            // { NULL, 0 } indicates end of tree
+            inline bool peekIsEnd (void) {
+                return (m_stickyPeek.first  == NULL && 
+                        m_stickyPeek.second == 0) ? true : false;
             }
 
             void addRoot (size_t id, const T& data) {
@@ -331,6 +341,29 @@ namespace Memory {
                 newNode-> parent = parentNode;
                 return true; 
             } 
+
+            /* a NULL child only has its level associated with it
+             *      {                                     
+             *          id : NULL                               
+             *          descendants count : 0
+             *          parent id : NULL
+             *          child count : 0
+             *          child id :  
+             *                  {                             
+             *                  }                       
+             *          data : NULL
+             *          level : [valid level]   // <----------- NULL node's level
+             *      }  
+            */
+            bool addNullChild (void) {
+                s_Node* parentNode = peekNode();
+                // peek node id not found
+                if (parentNode == NULL)
+                    return false;
+
+                parentNode-> child.push_back (NULL);
+                return true;
+            }
 
             /* this is different from the addChild method, since, here we take in either a tree or a node as input and link
              * it with a parent node as its child. The user must make sure before hand that the final tree formed has all
@@ -370,24 +403,105 @@ namespace Memory {
                     return true;
                 }
 
-                /* adding a parent to 'childNode' is same as removing (with adopt) the 'childNode', adding a child to the
-                 * parent node, and then appending the adopted tree/node to newly added child. Note that the ordering of
-                 * the 'childNode' in the parent's child vector may be different, since we are removing and adding back to
-                 * the vector
+                /* adding a parent to childNode is done through the following steps
+                 * (1) add new node (acts as parent to adopted node/tree) using addChild() (note that the new node will
+                 *     be added to end of the parent's child vector)
+                 * (2) save the position of childNode in parent's child vector
+                 * (3) change position of newly added node from back of the vector to saved position from (2)
+                 * (4) remove (with adopt) the childNode (and its descendants)
+                 * (5) append the adopted node/tree from (4) to the newly added node
                 */
                 s_Node* parentNode = childNode-> parent;
-                /* we know that the id is valid, so no need to check the validity again in remove(), remove 'childNode' 
-                 * which has already been set as the peek node
-                */
+
+                // (1) using addChild() takes care of all internal updates
+                peekSet (parentNode-> id);
+                addChild (id, data);  
+
+                // (2)
+                typename std::vector <s_Node*>::iterator iter;
+                iter = std::find (parentNode-> child.begin(), 
+                                  parentNode-> child.end(), 
+                                  childNode);
+
+                // (3)
+                s_Node* newNode = parentNode-> child.back();
+                parentNode-> child.pop_back();
+                parentNode-> child.insert (iter, newNode);
+
+                // (4) 
+                peekSet (childNode-> id);
                 s_Node* rootNode = remove (true).first;
 
-                // add new child which will be the parent to the 'childNode'
-                peekSet (parentNode-> id);
-                addChild (id, data);
-
-                // set peekNode to the newly added child
+                // (5)
                 peekSet (id);
-                return appendTree (rootNode);
+                return appendTree (rootNode);        
+            }
+
+            /* this is different from the remove() method, as in removeNode() removes/adopts only a single node. When you
+             * remove a single node all its children are added as children to NOI's parent. For this reason, we cannot 
+             * use this method on the root node, because when you remove the root node its children becomes orphaned and
+             * can't be added as children to the root's parent (NULL)
+             * 
+             * returns either of the 3 pairs
+             * { NULL, false }  -> invalid id/root node
+             * { node, true }   -> adopted node, valid id
+             * { NULL, true }   -> remove complete, valid id
+             * 
+             * sticky peek pairs set to
+             * { NULL, 0 }      -> reset pair when valid id
+             * { NULL, depth }  -> invalid id
+             * { root, 1 }      -> root node
+            */
+            std::pair <s_Node*, bool> removeNode (bool adopt = false) {
+                s_Node* currentNode = peekNode();
+                // peek id not found, or if peek node is root node
+                if (currentNode == NULL || currentNode == m_rootNode)
+                    return { NULL, false };
+
+                s_Node* parentNode = currentNode-> parent;
+                
+                // save position of currentNode in parent's child vector
+                typename std::vector <s_Node*>::iterator iter;
+                iter = std::find (parentNode-> child.begin(),
+                                  parentNode-> child.end(),
+                                  currentNode);
+
+                // update descendants of all parents upto root node
+                s_Node* tempNode = parentNode;
+                while (tempNode != NULL) {
+                    tempNode-> numDescendants -= 1;
+                    tempNode = tempNode-> parent;
+                }
+
+                // add child of currentNode as parentNode's children
+                parentNode-> child.insert (iter, currentNode-> child.begin(),
+                                                 currentNode-> child.end());
+
+                // remove current node from parent's child vector
+                parentNode-> child.erase (std::remove (parentNode-> child.begin(), 
+                                                       parentNode-> child.end(), 
+                                                       currentNode),
+                                          parentNode-> child.end());
+
+                // set parent of new children
+                for (auto const& child : currentNode-> child) {
+                    if (child != NULL)
+                        child-> parent = parentNode;
+                }
+
+                // clear currentNode stats
+                currentNode-> numDescendants = 0;
+                currentNode-> parent = NULL;
+                currentNode-> child.clear();
+
+                m_stickyPeek = { NULL, 0 };
+
+                if (adopt == true) 
+                    return { currentNode, true };
+                else {
+                    delete currentNode;
+                    return { NULL, true };
+                }
             }
 
             /* return orphaned node/tree if adopt = true, else delete all orphaned nodes and return NULL. Since we also
@@ -400,6 +514,7 @@ namespace Memory {
              * 
              * sticky peek pairs set to
              * { NULL, 0 }      -> reset pair
+             * { NULL, depth }  -> invalid id
             */
             std::pair <s_Node*, bool> remove (bool adopt = false) {
                 s_Node* currentNode = peekNode();
@@ -444,12 +559,12 @@ namespace Memory {
                         // remove from pending queue
                         pendingQ.pop();
             
-                        if (currentNode != NULL) {
-                            for (auto const& child : currentNode-> child)
+                        for (auto const& child : currentNode-> child) {
+                            if (child != NULL)
                                 pendingQ.push (child);
-
-                            delete currentNode;
                         }
+
+                        delete currentNode;
                     }
 
                     // clear dangling variables
@@ -472,9 +587,9 @@ namespace Memory {
                return peekLevel();
             }
 
-            /* sticky peek pairs set to
-             * { nodeB, levelB }    -> if valid
-             * { NULL, depth }      -> otherwise
+            /* sticky peek pairs set to 
+             * { NULL, 0 }      -> reset pair under special cases/invalid id/same id
+             * { NULL, depth }  -> valid id/normal case
             */
             bool swap (size_t idA, size_t idB) {
                 peekSet (idA);
@@ -483,12 +598,32 @@ namespace Memory {
                 peekSet (idB);
                 s_Node* nodeB = peekNode();
 
+                // reset peek pair
+                m_stickyPeek = { NULL, 0 };
+
                 // invalid ids
                 if (nodeA == NULL || nodeB == NULL)
                     return false;
 
                 if (idA == idB) 
                     return true;
+
+                /* there are 2 special cases where our swap operation fails
+                 * (1) when nodeA is the immediate parent of nodeB
+                 * (2) and vice-versa
+                 * 
+                 * To get around this we insert a reserved node between the two nodes, which will be removed after the
+                 * swap operation is complete
+                */
+                if (nodeB-> parent == nodeA) {
+                    peekSet (nodeB-> id);
+                    addParent (RESERVED_1, m_rootNode-> data);
+                }
+                
+                if (nodeA-> parent == nodeB) {
+                    peekSet (nodeA-> id);
+                    addParent (RESERVED_1, m_rootNode-> data);
+                }
 
                 /* Updates that need to be made when you swap nodes
                  * 1 : parent's child vector
@@ -532,11 +667,15 @@ namespace Memory {
                     *itB = nodeA;
 
                 // (2) 
-                for (auto const& child : nodeA-> child)
-                    child-> parent = nodeB;
+                for (auto const& child : nodeA-> child) {
+                    if (child != NULL)
+                        child-> parent = nodeB;
+                }
 
-                for (auto const& child : nodeB-> child)
-                    child-> parent = nodeA;
+                for (auto const& child : nodeB-> child) {
+                    if (child != NULL)
+                        child-> parent = nodeA;
+                }
 
                 // (3)
                 nodeB-> parent = parentNodeA;
@@ -556,12 +695,15 @@ namespace Memory {
                 m_rootNode = (nodeA-> parent == NULL) ? nodeA :
                              (nodeB-> parent == NULL) ? nodeB :
                              m_rootNode;
+
+                // remove reserved node
+                peekSet (RESERVED_1);
+                removeNode();
                 return true;
             }
 
             /* sticky peek pairs set to
-             * { nodeB, levelB }    -> if valid
-             * { NULL, depth }      -> otherwise
+             * { NULL, 0 }      -> reset pair
             */
             std::vector <size_t> getPath (size_t idA, size_t idB) {
                 peekSet (idA);
@@ -571,6 +713,9 @@ namespace Memory {
                 peekSet (idB);
                 s_Node* nodeB = peekNode();
                 size_t levelB = peekLevel();
+
+                // reset peek pair
+                m_stickyPeek = { NULL, 0 };
 
                 // invalid ids
                 if (nodeA == NULL || nodeB == NULL)
@@ -625,6 +770,25 @@ namespace Memory {
                 return lowerPath;
             }
 
+            /* sticky peek pairs set to
+             * { NULL, 0 }      -> end of tree reached
+            */
+            std::vector <size_t> getTails (void) {
+                if (m_rootNode == NULL)
+                    return { };
+
+                std::vector <size_t> tails;
+                peekSetRoot();
+                while (!peekIsEnd()) {
+                    // return all node ids with child count/descendant count = 0
+                    if (peekNode() != NULL && peekChildCount() == 0)
+                        tails.push_back (peekNode()-> id);
+
+                    peekSetNext();
+                }
+                return tails;
+            }
+
             /* carefull when using this method since we are overwriting the root node of our tree and deleting any existing
              * nodes. This method is usually used to create a new tree using a node/tree 'adopted' from another tree
              *
@@ -653,6 +817,9 @@ namespace Memory {
              *                  }                           <L3>
              *                  ...
              *      }                                       <L1>
+             * 
+             * sticky peek pairs set to
+             * { NULL, 0 }      -> end of tree reached
             */
             void dump (std::ostream& ost, 
                        void (*lambda) (T*, std::ostream&) = [](T* nodeData, std::ostream& ost) { 
@@ -674,7 +841,7 @@ namespace Memory {
             
                 // loop through all nodes level-wise
                 peekSetRoot();
-                while (peekNode() != NULL) {
+                while (!peekIsEnd()) {
                     // dump nodes in L4
                     dumpNode (peekNode(), ost, lambda);
                     peekSetNext();

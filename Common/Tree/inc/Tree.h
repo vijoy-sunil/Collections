@@ -33,11 +33,15 @@
 #define TREE_PEEK_NODE                          peekNode()
 #define TREE_PEEK_LEVEL                         peekLevel()
 #define TREE_PEEK_CHILD_COUNT                   peekChildCount()
+#define TREE_PEEK_IS_END                        peekIsEnd()
 
 #define TREE_ADD_ROOT(id, data)                 addRoot (id, data)
 #define TREE_ADD_CHILD(id, data)                addChild (id, data)
+#define TREE_ADD_NULL_CHILD                     addNullChild()
 #define TREE_APPEND(node)                       appendTree (node)
 #define TREE_ADD_PARENT(id, data)               addParent (id, data)
+#define TREE_REMOVE_NODE                        removeNode()
+#define TREE_ADOPT_NODE                         removeNode (true)
 #define TREE_REMOVE                             remove()
 #define TREE_ADOPT                              remove (true)
 
@@ -46,6 +50,7 @@
 #define TREE_DEPTH                              getDepth()
 #define TREE_SWAP(idA, idB)                     swap (idA, idB)
 #define TREE_PATH(idA, idB)                     getPath (idA, idB)
+#define TREE_TAILS                              getTails()
 #define TREE_IMPORT(node)                       importTree (node)
 #define TREE_RESET                              importTree (NULL)
 #define TREE_DUMP                               dump (std::cout)

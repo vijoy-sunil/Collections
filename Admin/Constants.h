@@ -36,12 +36,14 @@ const std::string LIBTEST_SAVE_DIR  =   "./LibTestSaves";
 #define CLOSE_L3                        TAB_L3 << "}" << "\n"
 #define CLOSE_L5                        TAB_L5 << "}" << "\n"
 
-/* RESERVED id use cases (these ids are not to be used by user as instance ids)
+/* reserved id use cases (these ids are not to be used by user as instance ids)
  * 
  * RESERVED_0                           used by TREE to capture depth of the tree
- * RESERVED_1                           used as offset instance id for the buffer used in LOG. An offset instance id is an
+ * RESERVED_1                           used by TREE as dummy id in swap operation
+ * RESERVED_2                           used as offset instance id for the buffer used in LOG. An offset instance id is an
  *                                      instance id obtained by adding the offset to its parent instance id
 */
 #define RESERVED_0                      SIZE_MAX
-#define RESERVED_1                      99
+#define RESERVED_1                      SIZE_MAX - 1
+#define RESERVED_2                      99
 #endif  // CONSTANTS_H
