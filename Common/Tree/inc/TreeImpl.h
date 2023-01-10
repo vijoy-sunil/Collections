@@ -33,9 +33,25 @@ namespace Memory {
             
             s_Node* m_rootNode;
 
+            inline void savePeek (void) {
+                m_savePeekNode = peekNode();
+            }
+
+            void restorePeek (void) {
+                if (m_savePeekNode != NULL)
+                    peekSet (m_savePeekNode-> id);
+            }
+
+            inline void resetPeek (void) {
+                m_stickyPeek = { NULL, 0 };
+            }
+
         private:
             size_t m_instanceId;
             std::pair <s_Node*, size_t> m_stickyPeek;
+            
+            // save and restore peek using this
+            s_Node* m_savePeekNode;
 
             // these two members are necessary to perform efficient tree traversal
             std::queue <s_Node*> m_stepperQueue;
@@ -207,9 +223,11 @@ namespace Memory {
 
         public:
             Tree (size_t instanceId) {
-                m_instanceId = instanceId;
-                m_rootNode   = NULL;
-                m_stickyPeek = { NULL, 0 };
+                m_instanceId   = instanceId;
+                m_rootNode     = NULL;
+                
+                resetPeek();
+                m_savePeekNode = NULL;
                 m_nodesInLevel = 0;
             }
 
@@ -219,17 +237,17 @@ namespace Memory {
                 remove();
             }
 
-            /* sticky peek pairs could either be
-             * { node, level }  -> if the id passed in is valid
-             * { NULL, depth }  -> otherwise, returns a NULL pointer and depth of tree
+            /* sticky peek pair set to
+             * { node, level }  -> if valid id
+             * { NULL, depth }  -> otherwise
             */
             inline void peekSet (size_t id) {
                 m_stickyPeek = getNode (id);
             }
 
-            /* sticky peek pairs could either be
+            /* sticky peek pair set to
              * { NULL, 0 }      -> if root doesn't exist
-             * { root, 1 }      -> valid root with level set to 1
+             * { root, 1 }      -> otherwise
             */
             void peekSetRoot (void) {
                 // force reset queue
@@ -245,7 +263,7 @@ namespace Memory {
                 */
                 s_Node* rootNode = stepperNext().second.first;
                 if (rootNode == NULL)
-                    m_stickyPeek = { NULL, 0 };
+                    resetPeek();
                 else
                     m_stickyPeek = { rootNode, 1 };
             }
@@ -254,9 +272,9 @@ namespace Memory {
              * traversal every time from the root. Here, we use the stepper method instead (saves the last position into
              * the stepper queue)
              * 
-             * sticky peek pairs could either be
+             * sticky peek pair set to
              * { NULL, 0 }      -> end of tree reached
-             * { node, level}   -> node with level (could be a NULL node)
+             * { node, level}   -> otherwise (node could be a NULL child)
              *
              * if the tree has been updated, calling peekSetNext() may result in wrong result since the stepper queue may
              * not reflect the changes made during the tree update. (updates that effect this method involves any change
@@ -279,7 +297,7 @@ namespace Memory {
 
                 // end of tree
                 if (ret.first == true)
-                    m_stickyPeek = { NULL, 0 };
+                    resetPeek();
                 // we have a node (could be a NULL node)
                 else 
                     m_stickyPeek.first = ret.second.first;
@@ -389,8 +407,7 @@ namespace Memory {
             }
 
             /* sticky peek pair set to
-             * { node, level }  -> of child node if we are adding to the root, else
-             * { node, level }  -> of newly added parent
+             * { node, level }  -> at new parent node, if valid id
             */
             bool addParent (size_t id, const T& data) {
                 s_Node* childNode = peekNode();
@@ -400,6 +417,8 @@ namespace Memory {
 
                 if (childNode == m_rootNode) {
                     addRoot (id, data);
+                    // set peek to newly added parent (new root) for uniformity
+                    peekSetRoot();
                     return true;
                 }
 
@@ -447,10 +466,8 @@ namespace Memory {
              * { node, true }   -> adopted node, valid id
              * { NULL, true }   -> remove complete, valid id
              * 
-             * sticky peek pairs set to
-             * { NULL, 0 }      -> reset pair when valid id
-             * { NULL, depth }  -> invalid id
-             * { root, 1 }      -> root node
+             * sticky peek pair set to
+             * { NULL, 0 }      -> reset peek, if valid id
             */
             std::pair <s_Node*, bool> removeNode (bool adopt = false) {
                 s_Node* currentNode = peekNode();
@@ -494,7 +511,7 @@ namespace Memory {
                 currentNode-> parent = NULL;
                 currentNode-> child.clear();
 
-                m_stickyPeek = { NULL, 0 };
+                resetPeek();
 
                 if (adopt == true) 
                     return { currentNode, true };
@@ -512,9 +529,8 @@ namespace Memory {
              * { node, true }   -> adopted node/tree, valid id
              * { NULL, true }   -> remove complete, valid id
              * 
-             * sticky peek pairs set to
-             * { NULL, 0 }      -> reset pair
-             * { NULL, depth }  -> invalid id
+             * sticky peek pair set to
+             * { NULL, 0 }      -> reset peek, if valid id
             */
             std::pair <s_Node*, bool> remove (bool adopt = false) {
                 s_Node* currentNode = peekNode();
@@ -543,8 +559,7 @@ namespace Memory {
                     m_rootNode = NULL;
 
                 if (adopt == true) {
-                    // clear dangling variables
-                    m_stickyPeek = { NULL, 0 };
+                    resetPeek();
                     return { currentNode, true };
                 }
 
@@ -567,46 +582,45 @@ namespace Memory {
                         delete currentNode;
                     }
 
-                    // clear dangling variables
-                    m_stickyPeek = { NULL, 0 };
+                    resetPeek();
+                    return { NULL, true };
                 }
-                return { NULL, true };
             }
 
             inline size_t getSize (void) {
                 return (m_rootNode == NULL) ? 0 : m_rootNode-> numDescendants + 1;
             }
 
-            /* pass an id that doesn't exist (reserved id) in tree to get depth
-             *
-             * sticky peek pairs set to
-             * { NULL, depth }
-            */
+            // pass an id that doesn't exist (reserved id) in tree to get depth
             size_t getDepth (void) {
-               peekSet (RESERVED_0);
-               return peekLevel();
+                savePeek();
+
+                peekSet (RESERVED_0);
+                size_t depth = peekLevel();
+
+                restorePeek();
+                return depth;
             }
 
-            /* sticky peek pairs set to 
-             * { NULL, 0 }      -> reset pair under special cases/invalid id/same id
-             * { NULL, depth }  -> valid id/normal case
-            */
             bool swap (size_t idA, size_t idB) {
+                savePeek();
+
                 peekSet (idA);
                 s_Node* nodeA = peekNode();
 
                 peekSet (idB);
                 s_Node* nodeB = peekNode();
 
-                // reset peek pair
-                m_stickyPeek = { NULL, 0 };
-
                 // invalid ids
-                if (nodeA == NULL || nodeB == NULL)
+                if (nodeA == NULL || nodeB == NULL) {
+                    restorePeek();
                     return false;
+                }
 
-                if (idA == idB) 
+                if (idA == idB) {
+                    restorePeek();
                     return true;
+                }
 
                 /* there are 2 special cases where our swap operation fails
                  * (1) when nodeA is the immediate parent of nodeB
@@ -699,13 +713,14 @@ namespace Memory {
                 // remove reserved node
                 peekSet (RESERVED_1);
                 removeNode();
+
+                restorePeek();
                 return true;
             }
 
-            /* sticky peek pairs set to
-             * { NULL, 0 }      -> reset pair
-            */
             std::vector <size_t> getPath (size_t idA, size_t idB) {
+                savePeek();
+
                 peekSet (idA);
                 s_Node* nodeA = peekNode();
                 size_t levelA = peekLevel();
@@ -714,15 +729,16 @@ namespace Memory {
                 s_Node* nodeB = peekNode();
                 size_t levelB = peekLevel();
 
-                // reset peek pair
-                m_stickyPeek = { NULL, 0 };
-
                 // invalid ids
-                if (nodeA == NULL || nodeB == NULL)
+                if (nodeA == NULL || nodeB == NULL) {
+                    restorePeek();
                     return {  };
+                }
 
-                if (idA == idB) 
+                if (idA == idB) {
+                    restorePeek();
                     return { idA };
+                }
 
                 /* if A and B are on the same level : bubble up till we reach the same parent node;
                  * else, bubble up the lower level node till they are at the same level, and then bubble both of them up
@@ -767,15 +783,15 @@ namespace Memory {
                 for (auto const& id : higherPath) 
                     lowerPath.push_back (id);
 
+                restorePeek();
                 return lowerPath;
             }
 
-            /* sticky peek pairs set to
-             * { NULL, 0 }      -> end of tree reached
-            */
             std::vector <size_t> getTails (void) {
                 if (m_rootNode == NULL)
                     return { };
+
+                savePeek();
 
                 std::vector <size_t> tails;
                 peekSetRoot();
@@ -786,14 +802,16 @@ namespace Memory {
 
                     peekSetNext();
                 }
+
+                restorePeek();
                 return tails;
             }
 
             /* carefull when using this method since we are overwriting the root node of our tree and deleting any existing
              * nodes. This method is usually used to create a new tree using a node/tree 'adopted' from another tree
              *
-             * sticky peek pairs set to
-             * { NULL, 0 }      -> reset pair
+             * sticky peek pair set to
+             * { NULL, 0 }      -> reset peek
             */
             void importTree (s_Node* rootNode) {
                 peekSetRoot();
@@ -817,9 +835,6 @@ namespace Memory {
              *                  }                           <L3>
              *                  ...
              *      }                                       <L1>
-             * 
-             * sticky peek pairs set to
-             * { NULL, 0 }      -> end of tree reached
             */
             void dump (std::ostream& ost, 
                        void (*lambda) (T*, std::ostream&) = [](T* nodeData, std::ostream& ost) { 
@@ -839,6 +854,7 @@ namespace Memory {
                 ost << TAB_L2   << "depth : "       << getDepth()   << "\n";
                 ost << TAB_L2   << "nodes : "       << "\n";
             
+                savePeek();
                 // loop through all nodes level-wise
                 peekSetRoot();
                 while (!peekIsEnd()) {
@@ -848,6 +864,7 @@ namespace Memory {
                 }
 
                 ost << CLOSE_L1;
+                restorePeek();
             }
     };
 }   // namespace Memory
