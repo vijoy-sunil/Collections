@@ -45,7 +45,7 @@
 #define TREE_REMOVE                             remove()
 #define TREE_ADOPT                              remove (true)
 
-// utils
+// 'utils' operations
 #define TREE_SIZE                               getSize()
 #define TREE_DEPTH                              getDepth()
 #define TREE_SWAP(idA, idB)                     swap (idA, idB)
