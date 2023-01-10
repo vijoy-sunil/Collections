@@ -258,7 +258,6 @@ LIB_TEST_CASE (17, "peek pair validation") {
     */
 
     // peek set root test
-
     auto emptyTree = TREE_INIT (18, int);
 
     emptyTree-> TREE_PEEK_SET_ROOT;
@@ -274,28 +273,27 @@ LIB_TEST_CASE (17, "peek pair validation") {
         return Quality::Test::FAIL;   
 
     // peek set test
-
     std::pair <size_t, size_t> validPair    = { 5, 4 };
-    std::pair <size_t, size_t> invalidPair  = { 9, 7 };
+    size_t invalidId                        = 99;
+    size_t depth                            = 7;
 
     myTree-> TREE_PEEK_SET (validPair.first);
     if (myTree-> TREE_PEEK_NODE-> id    != validPair.first  ||
         myTree-> TREE_PEEK_LEVEL        != validPair.second)
         return Quality::Test::FAIL;
 
-    myTree-> TREE_PEEK_SET (invalidPair.first);
+    myTree-> TREE_PEEK_SET (invalidId);
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != invalidPair.second)
+        myTree-> TREE_PEEK_LEVEL        != depth)
         return Quality::Test::FAIL;    
 
     // peek set next test
-
     std::pair <size_t, size_t> lastPair     = { 8, 6 }; 
 
     myTree-> TREE_PEEK_SET (lastPair.first);  
     myTree-> TREE_PEEK_SET_NEXT; 
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != invalidPair.second)
+        myTree-> TREE_PEEK_LEVEL        != depth)
         return Quality::Test::FAIL; 
 
     myTree-> TREE_PEEK_SET_NEXT;
@@ -304,13 +302,15 @@ LIB_TEST_CASE (17, "peek pair validation") {
         return Quality::Test::FAIL;  
 
     // add parent test
-
-    size_t peekIds[] = { 1, 3 };
-    std::pair <size_t, int> newParents[] = { { 100, 0 }, 
-                                             { 101, 0 } };
+    size_t peekIds[]                        = { 1, 3 };
+    std::pair <size_t, int> newParents[]    = { { 100, 0 }, 
+                                                { 101, 0 } };
 
     myTree-> TREE_PEEK_SET (peekIds[0]);
     myTree-> TREE_ADD_PARENT (newParents[0].first, newParents[0].second);
+
+    rootPair = { 100, 1 };
+    
     if (myTree-> TREE_PEEK_NODE-> id    != rootPair.first   ||
         myTree-> TREE_PEEK_LEVEL        != rootPair.second)
         return Quality::Test::FAIL;
@@ -344,14 +344,14 @@ LIB_TEST_CASE (17, "peek pair validation") {
     */
 
     // remove/adopt node test
-
-    rootPair = { 100, 1 };
-    size_t removeIds[] = { 100, 101, 3 };
+    size_t removeIds[]                      = { 100, 101, 3 };
 
     myTree-> TREE_PEEK_SET (removeIds[0]);
+    std::pair <size_t, size_t> lastPeekPair = { 100, 1 };
+
     myTree-> TREE_REMOVE_NODE;
-    if (myTree-> TREE_PEEK_NODE-> id    != rootPair.first   ||
-        myTree-> TREE_PEEK_LEVEL        != rootPair.second)
+    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
         return Quality::Test::FAIL; 
 
     myTree-> TREE_PEEK_SET (removeIds[1]);
@@ -382,7 +382,6 @@ LIB_TEST_CASE (17, "peek pair validation") {
     */
 
     // remove test
-    
     myTree-> TREE_PEEK_SET (removeIds[2]);
     myTree-> TREE_REMOVE;
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
@@ -411,92 +410,64 @@ LIB_TEST_CASE (17, "peek pair validation") {
     */
 
     // depth test
-
+    myTree-> TREE_PEEK_SET (2);
+    lastPeekPair                            = { 2, 3 };
+    
     myTree-> TREE_DEPTH;
-    if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != 8)   // depth is 8
-        return Quality::Test::FAIL;    
+    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+        return Quality::Test::FAIL;   
 
     // swap test
-
     std::pair <size_t, size_t> swapIds[] = { { 5, 5 },
                                              { 0, 9 },
                                              { 7, 8 },
                                              { 1, 4 } };
 
-    for (auto i : { 0, 1, 2 }) {
-        myTree-> TREE_SWAP (swapIds[i].first, swapIds[i].second);
-        if (myTree-> TREE_PEEK_NODE     != NULL             ||
-            myTree-> TREE_PEEK_LEVEL    != 0)
-            return Quality::Test::FAIL;        
+    for (auto i : swapIds) {
+        myTree-> TREE_SWAP (i.first, i.second);
+        if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+            myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+            return Quality::Test::FAIL;       
     }
 
-    myTree-> TREE_SWAP (swapIds[3].first, swapIds[3].second);
-    if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != 8)   // depth is 8
-        return Quality::Test::FAIL;      
-
-    /*                                  {100, 0}
-     *                                  |
-     *                                  {4, 40}
-     *                                  |
-     *                          ---------------------
-     *                          |                   |
-     *                          {2, 20}             {NULL}
-     *                          |                   
-     *                          {1, 10}             
-     *                          |                   
-     *                  ---------------------       
-     *                  |                   |       
-     *               {5, 50}             {6, 60}    
-     *                  |                   |
-     *               {8, 80}             {NULL}
-     *                  |
-     *               {7, 70}  
-     *                  |
-     *               {NULL}                 
-    */
-
     // path test
-
     std::pair <size_t, size_t> pathPairs[]  = { { 5, 2 },
                                                 { 4, 9 },
                                                 { 3, 3 } };
 
     for (auto i : pathPairs) {
         myTree-> TREE_PATH (i.first, i.second);
-        if (myTree-> TREE_PEEK_NODE     != NULL             ||
-            myTree-> TREE_PEEK_LEVEL    != 0)
-            return Quality::Test::FAIL;   
+        if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+            myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+            return Quality::Test::FAIL; 
     }
 
     // tail ids test
-
     myTree-> TREE_TAILS;
-    if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != 0)
-        return Quality::Test::FAIL;      
+    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+        return Quality::Test::FAIL;  
 
     // import/reset test
-
     myTree-> TREE_RESET;
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
         myTree-> TREE_PEEK_LEVEL        != 0)
         return Quality::Test::FAIL;  
 
     // dump test
-
     myTree-> TREE_ADD_ROOT (1, 1);
     myTree-> TREE_PEEK_SET_ROOT;
+    lastPeekPair = { 1, 1 };
 
     /*                                  {1, 1}
      *                                  |
     */
 
     myTree-> TREE_DUMP;
-    if (myTree-> TREE_PEEK_NODE         != NULL             ||
-        myTree-> TREE_PEEK_LEVEL        != 0)
-        return Quality::Test::FAIL;     
+    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+        return Quality::Test::FAIL;    
 
     TREE_CLOSE (17);
     TREE_CLOSE (18);
