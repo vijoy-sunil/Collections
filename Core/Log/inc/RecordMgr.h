@@ -56,7 +56,10 @@ namespace Log {
 
                     delete c_record;
                     // remove from map, so you are able to reuse the instance id
-                    m_instancePool.erase (instanceId);       
+                    m_instancePool.erase (instanceId);   
+
+                    // close log buffer    
+                    BUFFER_CLOSE (RESERVED_2 + instanceId);
                 }
                 // closing a record instance that doesn't exist, do nothing
                 else
@@ -71,6 +74,7 @@ namespace Log {
                         c_record-> flushBufferToFile();
 
                     delete m_instancePool[key];
+                    BUFFER_CLOSE (RESERVED_2 + key);
                 }
                 m_instancePool.clear();
             }

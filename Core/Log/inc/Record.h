@@ -146,8 +146,8 @@ namespace Log {
                     // if capacity is invalid
                     assert (bufferCapacity != 0);
 
-                    // buffer and the log will share the same instance ids
-                    BUFFER_INIT (m_instanceId, 
+                    // buffer instance id will be offset from log instance id
+                    BUFFER_INIT (RESERVED_2 + m_instanceId, 
                                  Memory::WITH_OVERFLOW, 
                                  std::string, 
                                  bufferCapacity);   
@@ -203,7 +203,7 @@ namespace Log {
             // write buffered data to file, only used when sink is a buffered sink
             void flushBufferToFile (void) {
                 if (m_saveFile_buffered.is_open()) {
-                    auto logBuffer = GET_BUFFER (m_instanceId, std::string);
+                    auto logBuffer = GET_BUFFER (RESERVED_2 + m_instanceId, std::string);
                     logBuffer-> BUFFER_FLUSH (m_saveFile_buffered);
                 }
             }
@@ -218,7 +218,7 @@ namespace Log {
                 
                 // for buffered sink, instead of inserting a new line we push the log entry into the buffer
                 if (m_sink & TO_FILE_BUFFER_CIRCULAR) {
-                    auto logBuffer = GET_BUFFER (m_instanceId, std::string);
+                    auto logBuffer = GET_BUFFER (RESERVED_2 + m_instanceId, std::string);
                     logBuffer-> BUFFER_PUSH (m_bufferedSinkHolder);
                     // clear after flush
                     m_bufferedSinkHolder = "";
