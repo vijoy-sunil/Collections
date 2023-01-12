@@ -112,18 +112,22 @@ LIB_TEST_CASE (16, "empty tree tests") {
         return Quality::Test::FAIL;
 
     /* test all available methods on an empty tree
-     *
+     * 
+     * [mgr]
+     * TREE_MGR_DUMP
+     * 
      * [set]
      * TREE_PEEK_SET
      * TREE_PEEK_SET_ROOT
      * TREE_PEEK_SET_NEXT
      * 
-     * [execute]
+     * [peek]
      * TREE_PEEK_NODE
      * TREE_PEEK_LEVEL
      * TREE_PEEK_CHILD_COUNT
      * TREE_PEEK_IS_END
      * 
+     * [update]
      * TREE_ADD_CHILD
      * TREE_ADD_NULL_CHILD
      * TREE_APPEND
@@ -133,21 +137,19 @@ LIB_TEST_CASE (16, "empty tree tests") {
      * TREE_REMOVE
      * TREE_ADOPT
      * 
-     * [utils]
+     * [stand-alone]
      * TREE_SWAP
-     * TREE_PATH
-     * TREE_TAILS
      * TREE_IMPORT
      * TREE_RESET
      * 
-     * [dump]
-     * TREE_MGR_DUMP
+     * [utils]
+     * TREE_PATH
+     * TREE_TAILS
      * TREE_DUMP
     */
 
-    // set peek to root and move next
-    myTree-> TREE_PEEK_SET_ROOT;
-    myTree-> TREE_PEEK_SET_NEXT;
+    // seek peek to id
+    myTree-> TREE_PEEK_SET (2);
 
     if (myTree-> TREE_PEEK_NODE             != NULL     ||
         myTree-> TREE_PEEK_LEVEL            != 0        ||
@@ -155,8 +157,9 @@ LIB_TEST_CASE (16, "empty tree tests") {
         myTree-> TREE_PEEK_IS_END           != true)
         return Quality::Test::FAIL; 
 
-    // seek peek to id
-    myTree-> TREE_PEEK_SET (2);
+    // set peek to root and move next
+    myTree-> TREE_PEEK_SET_ROOT;
+    myTree-> TREE_PEEK_SET_NEXT;
 
     if (myTree-> TREE_PEEK_NODE             != NULL     ||
         myTree-> TREE_PEEK_LEVEL            != 0        ||
@@ -190,9 +193,9 @@ LIB_TEST_CASE (16, "empty tree tests") {
     // importing/resetting an empty tree to an empty tree shouldn't change anything
     myTree-> TREE_IMPORT (NULL);
     myTree-> TREE_RESET;
-
+    myTree-> TREE_DUMP; 
+       
     TREE_MGR_DUMP;
-    myTree-> TREE_DUMP;    
 
     TREE_CLOSE (16);
     return Quality::Test::PASS;
@@ -257,26 +260,14 @@ LIB_TEST_CASE (17, "peek pair validation") {
      * { node, level }      otherwise
     */
 
-    // peek set root test
-    auto emptyTree = TREE_INIT (18, int);
-
-    emptyTree-> TREE_PEEK_SET_ROOT;
-    if (emptyTree-> TREE_PEEK_NODE      != NULL             ||
-        emptyTree-> TREE_PEEK_LEVEL     != 0)
-        return Quality::Test::FAIL;  
-
+    auto emptyTree                          = TREE_INIT (18, int);
     std::pair <size_t, size_t> rootPair     = { 1, 1 };
-
-    myTree-> TREE_PEEK_SET_ROOT;
-    if (myTree-> TREE_PEEK_NODE-> id    != rootPair.first   ||
-        myTree-> TREE_PEEK_LEVEL        != rootPair.second)
-        return Quality::Test::FAIL;   
-
-    // peek set test
     std::pair <size_t, size_t> validPair    = { 5, 4 };
+    std::pair <size_t, size_t> lastPair     = { 8, 6 }; 
     size_t invalidId                        = 99;
     size_t depth                            = 7;
 
+    // peek set test
     myTree-> TREE_PEEK_SET (validPair.first);
     if (myTree-> TREE_PEEK_NODE-> id    != validPair.first  ||
         myTree-> TREE_PEEK_LEVEL        != validPair.second)
@@ -285,11 +276,20 @@ LIB_TEST_CASE (17, "peek pair validation") {
     myTree-> TREE_PEEK_SET (invalidId);
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
         myTree-> TREE_PEEK_LEVEL        != depth)
-        return Quality::Test::FAIL;    
+        return Quality::Test::FAIL;  
+
+    // peek set root test
+    emptyTree-> TREE_PEEK_SET_ROOT;
+    if (emptyTree-> TREE_PEEK_NODE      != NULL             ||
+        emptyTree-> TREE_PEEK_LEVEL     != 0)
+        return Quality::Test::FAIL;  
+
+    myTree-> TREE_PEEK_SET_ROOT;
+    if (myTree-> TREE_PEEK_NODE-> id    != rootPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != rootPair.second)
+        return Quality::Test::FAIL;   
 
     // peek set next test
-    std::pair <size_t, size_t> lastPair     = { 8, 6 }; 
-
     myTree-> TREE_PEEK_SET (lastPair.first);  
     myTree-> TREE_PEEK_SET_NEXT; 
     if (myTree-> TREE_PEEK_NODE         != NULL             ||
@@ -303,23 +303,20 @@ LIB_TEST_CASE (17, "peek pair validation") {
 
     // add parent test
     size_t peekIds[]                        = { 1, 3 };
+    rootPair                                = { 100, 1 };
     std::pair <size_t, int> newParents[]    = { { 100, 0 }, 
                                                 { 101, 0 } };
 
     myTree-> TREE_PEEK_SET (peekIds[0]);
     myTree-> TREE_ADD_PARENT (newParents[0].first, newParents[0].second);
-
-    rootPair = { 100, 1 };
-    
     if (myTree-> TREE_PEEK_NODE-> id    != rootPair.first   ||
         myTree-> TREE_PEEK_LEVEL        != rootPair.second)
         return Quality::Test::FAIL;
 
     myTree-> TREE_PEEK_SET (peekIds[1]);
     myTree-> TREE_ADD_PARENT (newParents[1].first, newParents[1].second);
-
     if (myTree-> TREE_PEEK_NODE-> id    != newParents[1].first   ||
-        myTree-> TREE_PEEK_LEVEL        != 3)   // the new parent (id# 101 is at level 3) 
+        myTree-> TREE_PEEK_LEVEL        != 3)
         return Quality::Test::FAIL;
 
     /*                                  {100, 0}
@@ -345,10 +342,9 @@ LIB_TEST_CASE (17, "peek pair validation") {
 
     // remove/adopt node test
     size_t removeIds[]                      = { 100, 101, 3 };
-
-    myTree-> TREE_PEEK_SET (removeIds[0]);
     std::pair <size_t, size_t> lastPeekPair = { 100, 1 };
 
+    myTree-> TREE_PEEK_SET (removeIds[0]);
     myTree-> TREE_REMOVE_NODE;
     if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
         myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
@@ -409,16 +405,10 @@ LIB_TEST_CASE (17, "peek pair validation") {
      *               {NULL}                 
     */
 
-    // depth test
-    myTree-> TREE_PEEK_SET (2);
-    lastPeekPair                            = { 2, 3 };
-    
-    myTree-> TREE_DEPTH;
-    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
-        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
-        return Quality::Test::FAIL;   
-
     // swap test
+    lastPeekPair                            = { 2, 3 };
+
+    myTree-> TREE_PEEK_SET (2);    
     std::pair <size_t, size_t> swapIds[] = { { 5, 5 },
                                              { 0, 9 },
                                              { 7, 8 },
@@ -430,6 +420,12 @@ LIB_TEST_CASE (17, "peek pair validation") {
             myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
             return Quality::Test::FAIL;       
     }
+
+    // depth test
+    myTree-> TREE_DEPTH;
+    if (myTree-> TREE_PEEK_NODE-> id    != lastPeekPair.first   ||
+        myTree-> TREE_PEEK_LEVEL        != lastPeekPair.second)
+        return Quality::Test::FAIL;   
 
     // path test
     std::pair <size_t, size_t> pathPairs[]  = { { 5, 2 },
@@ -456,9 +452,10 @@ LIB_TEST_CASE (17, "peek pair validation") {
         return Quality::Test::FAIL;  
 
     // dump test
+    lastPeekPair                            = { 1, 1 };
+
     myTree-> TREE_ADD_ROOT (1, 1);
     myTree-> TREE_PEEK_SET_ROOT;
-    lastPeekPair = { 1, 1 };
 
     /*                                  {1, 1}
      *                                  |

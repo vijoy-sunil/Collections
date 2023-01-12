@@ -16,7 +16,16 @@
 
 #include "TreeMgr.h"
 
-// tree mgr methods
+/* types of methods                             tree update                 pre-run
+ * (1) mgr                                      n/a                         n/a
+ * (2) set                                      no                          n/a
+ * (3) peek                                     no                          set
+ * (4) update                                   yes                         set
+ * (5) stand-alone                              yes                         no
+ * (6) utils                                    no                          no
+*/
+
+// 'mgr' methods
 #define TREE_INIT(id, dataType)                 Memory::treeMgr.initTree <dataType> (id)
 #define GET_TREE(id, dataType)                  dynamic_cast <Memory::Tree <dataType> *>                        \
                                                 (Memory::treeMgr.getInstance (id))  
@@ -24,18 +33,18 @@
 #define TREE_CLOSE_ALL                          Memory::treeMgr.closeAllInstances()
 #define TREE_MGR_DUMP                           Memory::treeMgr.dump (std::cout)
 
-// 'set' operations
+// 'set' methods
 #define TREE_PEEK_SET(id)                       peekSet (id)
 #define TREE_PEEK_SET_ROOT                      peekSetRoot()
 #define TREE_PEEK_SET_NEXT                      peekSetNext()
 
-// 'execute' operations (these need to be executed after a 'set' operation)
+// 'peek' methods
 #define TREE_PEEK_NODE                          peekNode()
 #define TREE_PEEK_LEVEL                         peekLevel()
 #define TREE_PEEK_CHILD_COUNT                   peekChildCount()
 #define TREE_PEEK_IS_END                        peekIsEnd()
 
-#define TREE_ADD_ROOT(id, data)                 addRoot (id, data)
+// 'update' methods
 #define TREE_ADD_CHILD(id, data)                addChild (id, data)
 #define TREE_ADD_NULL_CHILD                     addNullChild()
 #define TREE_APPEND(node)                       appendTree (node)
@@ -45,14 +54,17 @@
 #define TREE_REMOVE                             remove()
 #define TREE_ADOPT                              remove (true)
 
-// 'utils' operations
-#define TREE_SIZE                               getSize()
-#define TREE_DEPTH                              getDepth()
+// 'stand-alone' methods
+#define TREE_ADD_ROOT(id, data)                 addRoot (id, data)
 #define TREE_SWAP(idA, idB)                     swap (idA, idB)
-#define TREE_PATH(idA, idB)                     getPath (idA, idB)
-#define TREE_TAILS                              getTails()
 #define TREE_IMPORT(node)                       importTree (node)
 #define TREE_RESET                              importTree (NULL)
+
+// 'utils' methods
+#define TREE_SIZE                               getSize()
+#define TREE_DEPTH                              getDepth()
+#define TREE_PATH(idA, idB)                     getPath (idA, idB)
+#define TREE_TAILS                              getTails()
 #define TREE_DUMP                               dump (std::cout)
 #define TREE_DUMP_CUSTOM(lambda)                dump (std::cout, lambda)                                  
 #endif  // TREE_H

@@ -61,47 +61,8 @@ namespace Memory {
                     return parentNode-> child[child];
             }
           
-            /* sticky peek pair set to
-             * { root, 1 }      -> at new root
-            */
-            void addRoot (size_t id, const T& data) {
-                /* if first node in the tree
-                 *                          {root}
-                 *                          |
-                 *                  -----------------
-                 *                  |               |
-                 *                  {NULL}          {NULL}
-                */
-                if (Tree <T>::m_rootNode == NULL) {
-                    Tree <T>::addRoot (id, data);
-
-                    // set left and right child to NULL
-                    Tree <T>::peekSetRoot();
-                    Tree <T>::addNullChild();
-                    Tree <T>::addNullChild();
-                }
-
-                /* if addRoot() is called on an existing tree
-                 *                          {new root}
-                 *                          |
-                 *                  -----------------
-                 *                  |               |
-                 *                  {old root}      {NULL}
-                 *                  |
-                 *          -----------------
-                 *          |               |
-                 *          {NULL}          {NULL}
-                */
-                else {
-                    Tree <T>::addRoot (id, data);
-
-                    // set right child to NULL
-                    Tree <T>::peekSetRoot();
-                    Tree <T>::addNullChild();
-                }
-            }
-
             bool addLeft (size_t id, const T& data) {
+                Tree <T>::savePeek();
                 m_Node* parenttNode = Tree <T>::peekNode();
                 // invalid peek id
                 if (parenttNode == NULL)
@@ -137,8 +98,7 @@ namespace Memory {
                     Tree <T>::addNullChild();
                     Tree <T>::addNullChild();
 
-                    // restore peek
-                    Tree <T>::peekSet (parenttNode-> id);
+                    Tree <T>::restorePeek();
                     return true;                    
                 }
                 else
@@ -146,6 +106,7 @@ namespace Memory {
             }
 
             bool addRight (size_t id, const T& data) {
+                Tree <T>::savePeek();
                 m_Node* parenttNode = Tree <T>::peekNode();
                 // invalid peek id
                 if (parenttNode == NULL)
@@ -175,8 +136,7 @@ namespace Memory {
                     Tree <T>::addNullChild();
                     Tree <T>::addNullChild();
 
-                    // restore peek
-                    Tree <T>::peekSet (parenttNode-> id);
+                    Tree <T>::restorePeek();
                     return true;
                 }
                 else
@@ -215,7 +175,10 @@ namespace Memory {
                         break;
                 }
 
-                // restore peek
+                /* restore peek to the parent (instead of the last set peek), note that we are not using the save and 
+                 * restore methods since the calls to addLeft() or addRight() would overwrite the saved peek with the 
+                 * current node (we should be careful when nesting methods with save-restore statements)
+                */
                 Tree <T>::peekSet (parentNode-> id);
                 return true;
             }
@@ -225,10 +188,8 @@ namespace Memory {
             */
             bool addParent (size_t id, const T& data) {
                 if (Tree <T>::addParent (id, data) == true) {
-                    // set right child to NULL
-                    Tree <T>::peekSet (id);
-                    Tree <T>::addNullChild();
-                    
+                    // peek is at the newly added parent, you can add NULL child now
+                    Tree <T>::addNullChild();                   
                     return true;
                 }
                 
@@ -302,17 +263,59 @@ namespace Memory {
                 return Tree <T>::remove (adopt);
             }
 
-            /* sticky peek pair set to
-             * { node, level }  -> deepest node, if it exists
-            */
+            void addRoot (size_t id, const T& data) {
+                Tree <T>::savePeek();
+                /* if first node in the tree
+                 *                          {root}
+                 *                          |
+                 *                  -----------------
+                 *                  |               |
+                 *                  {NULL}          {NULL}
+                */
+                if (Tree <T>::m_rootNode == NULL) {
+                    Tree <T>::addRoot (id, data);
+
+                    // set left and right child to NULL
+                    Tree <T>::peekSetRoot();
+                    Tree <T>::addNullChild();
+                    Tree <T>::addNullChild();
+                }
+
+                /* if addRoot() is called on an existing tree
+                 *                          {new root}
+                 *                          |
+                 *                  -----------------
+                 *                  |               |
+                 *                  {old root}      {NULL}
+                 *                  |
+                 *          -----------------
+                 *          |               |
+                 *          {NULL}          {NULL}
+                */
+                else {
+                    Tree <T>::addRoot (id, data);
+
+                    // set right child to NULL
+                    Tree <T>::peekSetRoot();
+                    Tree <T>::addNullChild();
+                }
+
+                Tree <T>::restorePeek();
+            }
+
             m_Node* getDeepest (void) {
                 if (Tree <T>::m_rootNode == NULL)
                     return NULL;
 
                 // the last element in the tail vector will be the deepest (right most) node
                 else {
+                    Tree <T>::savePeek();
                     Tree <T>::peekSet (Tree <T>::getTails().back());
-                    return Tree <T>::peekNode();
+
+                    m_Node* deepestNode = Tree <T>::peekNode();
+
+                    Tree <T>::restorePeek();
+                    return deepestNode;
                 }
             }
     };

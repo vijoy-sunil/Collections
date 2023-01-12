@@ -34,12 +34,52 @@ namespace Memory {
             s_Node* m_rootNode;
 
             inline void savePeek (void) {
-                m_savePeekNode = peekNode();
+                m_savePeek = m_stickyPeek;
             }
 
+            /* these are the peek states that we will be restoring
+             * (1) { node, level }      -> valid id
+             * (2) { NULL, level }      -> valid(?) id, but node is a null child
+             * (3) { NULL, 0 }          -> end of tree
+             * (4) { NULL, depth}       -> invalid id
+             * 
+             * Note that restoring to a NULL node may result in an incorrect peek state, this is because, when a tree
+             * has been updated, the stepper methods become aware of the update only when we traverse again from the root
+             * to a non-NULL node. 
+             * 
+             * Therefore, it is recommended to not update the tree using a stand-alone operation which also does a save-
+             * restore peek when you are at a NULL node. An example where this combination may yield unsafe or incorrect
+             * results is shown below
+             *                                  {1, 10}
+             *                                  |
+             *                          ---------------------------------
+             *                          |               |               |
+             *                          {2, 20}         {NULL}*         {3, 30}
+             *                          |
+             *                          {4, 40}
+             * 
+             * Assume that our peek node is at {NULL} (level = 2). Now, if we execute a swap operation (which does a save-
+             * restore, and is a stand-alone operation), the tree now becomes
+             *                                  {1, 10}
+             *                                  |
+             *                          ---------------------------------
+             *                          |               |               |
+             *                          {3, 30}         {NULL}*         {2, 20}
+             *                          |
+             *                          {4, 40}
+             * 
+             * At this point, the stepper methods (peek methods) are not aware of the tree update, and the queue may have
+             * been updated or reset, calling peekSetNext() now and retreiving peekNode() would yeild unsafe results
+            */
             void restorePeek (void) {
-                if (m_savePeekNode != NULL)
-                    peekSet (m_savePeekNode-> id);
+                s_Node* node = m_savePeek.first;
+                // restore node and (refreshed) level
+                if (node != NULL)
+                    peekSet (node-> id);
+
+                // restore to a NULL node
+                else 
+                    m_stickyPeek = m_savePeek;
             }
 
             inline void resetPeek (void) {
@@ -51,7 +91,7 @@ namespace Memory {
             std::pair <s_Node*, size_t> m_stickyPeek;
             
             // save and restore peek using this
-            s_Node* m_savePeekNode;
+            std::pair <s_Node*, size_t> m_savePeek;
 
             // these two members are necessary to perform efficient tree traversal
             std::queue <s_Node*> m_stepperQueue;
@@ -223,11 +263,11 @@ namespace Memory {
 
         public:
             Tree (size_t instanceId) {
-                m_instanceId   = instanceId;
                 m_rootNode     = NULL;
+                m_instanceId   = instanceId;
                 
                 resetPeek();
-                m_savePeekNode = NULL;
+                m_savePeek     = { NULL, 0 };
                 m_nodesInLevel = 0;
             }
 
@@ -276,10 +316,33 @@ namespace Memory {
              * { NULL, 0 }      -> end of tree reached
              * { node, level}   -> otherwise (node could be a NULL child)
              *
-             * if the tree has been updated, calling peekSetNext() may result in wrong result since the stepper queue may
-             * not reflect the changes made during the tree update. (updates that effect this method involves any change
-             * in the child vector or the node itself, or any other method that changes the peek position will also effect
-             * this method). To combat this, either set peek again to parent or to the root 
+             * Note that, if the tree is updated after peek was already set, calling peekSetNext() may result in incorrect 
+             * result since the stepper queue may not reflect the changes made during the tree update. To combat this, 
+             * either set the peek again to a parent (who can see the change made to the tree) or to the root itself which
+             * see all the changes by nature
+             * 
+             * An example, where this yields incorrect results is shown below
+             *                                  {1, 10}
+             *                                  |
+             *                          ---------------------------------
+             *                          |               |               |
+             *                          {2, 20}         {NULL}          {3, 30}*
+             *                          |
+             *                          {4, 40}
+             * 
+             * Assume that our peek node is at {3, 30} (level = 2), now, if we add a new root to the tree, or add a new
+             * child to the current peek node, the stepper methods (peek methods) would not be aware of the tree update.
+             *                                  {0, 100}      
+             *                                  |
+             *                                  {1, 10}
+             *                                  |
+             *                          ---------------------------------
+             *                          |               |               |
+             *                          {2, 20}         {NULL}          {3, 30}*
+             *                          |
+             *                          {4, 40}
+             * 
+             * {3, 30} is now at level=3 which would be different from the results from peek methods
             */
             void peekSetNext (void) {
                 /* ret could be either of the following:
@@ -326,19 +389,6 @@ namespace Memory {
             inline bool peekIsEnd (void) {
                 return (m_stickyPeek.first  == NULL && 
                         m_stickyPeek.second == 0) ? true : false;
-            }
-
-            void addRoot (size_t id, const T& data) {
-                s_Node* newNode = createNode (id, data);
-                // a root node already exists
-                if (m_rootNode != NULL) {
-                    newNode-> numDescendants = m_rootNode-> numDescendants + 1;
-                    newNode-> child.push_back (m_rootNode);
-                    m_rootNode-> parent = newNode;
-                }
-
-                // update root node
-                m_rootNode = newNode;
             }
 
             bool addChild (size_t id, const T& data) {
@@ -587,19 +637,17 @@ namespace Memory {
                 }
             }
 
-            inline size_t getSize (void) {
-                return (m_rootNode == NULL) ? 0 : m_rootNode-> numDescendants + 1;
-            }
+            void addRoot (size_t id, const T& data) {
+                s_Node* newNode = createNode (id, data);
+                // a root node already exists
+                if (m_rootNode != NULL) {
+                    newNode-> numDescendants = m_rootNode-> numDescendants + 1;
+                    newNode-> child.push_back (m_rootNode);
+                    m_rootNode-> parent = newNode;
+                }
 
-            // pass an id that doesn't exist (reserved id) in tree to get depth
-            size_t getDepth (void) {
-                savePeek();
-
-                peekSet (RESERVED_0);
-                size_t depth = peekLevel();
-
-                restorePeek();
-                return depth;
+                // update root node
+                m_rootNode = newNode;
             }
 
             bool swap (size_t idA, size_t idB) {
@@ -718,6 +766,33 @@ namespace Memory {
                 return true;
             }
 
+            /* carefull when using this method since we are overwriting the root node of our tree and deleting any existing
+             * nodes. This method is usually used to create a new tree using a node/tree 'adopted' from another tree
+             *
+             * sticky peek pair set to
+             * { NULL, 0 }      -> reset peek
+            */
+            void importTree (s_Node* rootNode) {
+                peekSetRoot();
+                remove();
+                m_rootNode = rootNode;
+            }
+
+            inline size_t getSize (void) {
+                return (m_rootNode == NULL) ? 0 : m_rootNode-> numDescendants + 1;
+            }
+
+            // pass an id that doesn't exist (reserved id) in tree to get depth
+            size_t getDepth (void) {
+                savePeek();
+
+                peekSet (RESERVED_0);
+                size_t depth = peekLevel();
+
+                restorePeek();
+                return depth;
+            }
+
             std::vector <size_t> getPath (size_t idA, size_t idB) {
                 savePeek();
 
@@ -805,18 +880,6 @@ namespace Memory {
 
                 restorePeek();
                 return tails;
-            }
-
-            /* carefull when using this method since we are overwriting the root node of our tree and deleting any existing
-             * nodes. This method is usually used to create a new tree using a node/tree 'adopted' from another tree
-             *
-             * sticky peek pair set to
-             * { NULL, 0 }      -> reset peek
-            */
-            void importTree (s_Node* rootNode) {
-                peekSetRoot();
-                remove();
-                m_rootNode = rootNode;
             }
 
             /* tree is displayed in the following format

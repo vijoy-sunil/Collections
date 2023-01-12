@@ -15,8 +15,9 @@
 #define BTREE_H
 
 #include "BTreeMgr.h"
+// more info on the different types of methods can be found in Tree.h
 
-// mgr methods
+// 'mgr' methods
 #define BTREE_INIT(id, dataType)                Memory::bTreeMgr.initBTree <dataType> (id)
 #define GET_BTREE(id, dataType)                 dynamic_cast <Memory::BTree <dataType> *>                       \
                                                 (Memory::bTreeMgr.getInstance (id))  
@@ -24,12 +25,12 @@
 #define BTREE_CLOSE_ALL                         Memory::bTreeMgr.closeAllInstances()
 #define BTREE_MGR_DUMP                          Memory::bTreeMgr.dump (std::cout)
 
-// 'set' operations
+// 'set' methods
 #define BTREE_PEEK_SET(id)                      peekSet (id)
 #define BTREE_PEEK_SET_ROOT                     peekSetRoot()
 #define BTREE_PEEK_SET_NEXT                     peekSetNext()
 
-// 'execute' operations (these need to be executed after a 'set' operation)
+// 'peek' methods
 #define BTREE_PEEK_NODE                         peekNode()
 #define BTREE_PEEK_LEVEL                        peekLevel()
 #define BTREE_PEEK_CHILD_COUNT                  peekChildCount()
@@ -37,7 +38,7 @@
 #define BTREE_PEEK_LEFT                         peekChild (static_cast <Memory::e_child> (0))
 #define BTREE_PEEK_RIGHT                        peekChild (static_cast <Memory::e_child> (1))
 
-#define BTREE_ADD_ROOT(id, data)                addRoot (id, data)
+// 'update' methods
 #define BTREE_ADD_LEFT(id, data)                addLeft (id, data)
 #define BTREE_ADD_RIGHT(id, data)               addRight (id, data)
 #define BTREE_ADD_TAIL(id, data)                addTail (id, data)
@@ -47,15 +48,18 @@
 #define BTREE_REMOVE                            remove()
 #define BTREE_ADOPT                             remove (true)
 
-// 'utils' operations
+// 'stand-alone' methods
+#define BTREE_ADD_ROOT(id, data)                addRoot (id, data)
+#define BTREE_SWAP(idA, idB)                    swap (idA, idB)
+#define BTREE_IMPORT(node)                      importTree (node)
+#define BTREE_RESET                             importTree (NULL)
+
+// 'utils' methods
 #define BTREE_SIZE                              getSize()
 #define BTREE_DEPTH                             getDepth()
 #define BTREE_DEEPEST                           getDeepest()
-#define BTREE_SWAP(idA, idB)                    swap (idA, idB)
 #define BTREE_PATH(idA, idB)                    getPath (idA, idB)
 #define BTREE_TAILS                             getTails()
-#define BTREE_IMPORT(node)                      importTree (node)
-#define BTREE_RESET                             importTree (NULL)
 #define BTREE_DUMP                              dump (std::cout)
 #define BTREE_DUMP_CUSTOM(lambda)               dump (std::cout, lambda)                                  
 #endif  // BTREE_H
