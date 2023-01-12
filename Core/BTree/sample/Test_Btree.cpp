@@ -13,68 +13,9 @@
  */
 #include "../inc/BTree.h"
 #include "../../../Common/LibTest/inc/LibTest.h"
+#include "../../../Common/Tree/sample/Test_Helper.h"
 
 using namespace Collections;
-
-// test params to verify tree structure
-typedef struct {
-    size_t  numNodes;
-    size_t  depth;
-    size_t* levels;
-    size_t* numChildren;
-
-    size_t* ids;
-    size_t* numDescendants;
-    size_t* parents;
-
-    size_t* nullPos;
-}s_groundTruth;
-
-template <typename T>
-bool verifyTree (Memory::BTree <T>* tree, s_groundTruth params) {
-    if (tree-> BTREE_SIZE   != params.numNodes ||   
-        tree-> BTREE_DEPTH  != params.depth)
-        return false;
-
-    int idx = 0;
-    tree-> BTREE_PEEK_SET_ROOT;
-
-    // loop till end of tree
-    while (!tree-> BTREE_PEEK_IS_END) {
-
-        if (tree-> BTREE_PEEK_LEVEL                         != params.levels[idx] ||
-            tree-> BTREE_PEEK_CHILD_COUNT                   != params.numChildren[idx])
-            return false;
-
-        if (tree-> BTREE_PEEK_NODE                          != NULL) {
-            if (tree-> BTREE_PEEK_NODE-> id                 != params.ids[idx] ||
-                tree-> BTREE_PEEK_NODE-> numDescendants     != params.numDescendants[idx])
-                return false;
-
-            // skip checking the parent of the root node
-            if (tree-> BTREE_PEEK_NODE-> parent             != NULL) {
-                if (tree-> BTREE_PEEK_NODE-> parent-> id    != params.parents[idx])
-                    return false;
-            }
-
-            // verify node at this position is not NULL
-            if (params.nullPos[idx] != 0)
-                return false;
-        }
-
-        // NULL node position validate
-        else {
-            if (params.nullPos[idx] != 1)
-                return false;
-        }
-            
-        // move to next node (level-wise traversal)
-        tree-> BTREE_PEEK_SET_NEXT;
-        // ground truth array index
-        idx++;
-    }
-    return true;
-}
 
 LIB_TEST_CASE (0, "empty tree tests") {
     auto myTree = BTREE_INIT (0, int);
