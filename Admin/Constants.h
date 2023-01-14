@@ -16,9 +16,20 @@
 
 #include <string>
 
-// output dirs
-const std::string LOG_SAVE_DIR      =   "./LogSaves";
-const std::string LIBTEST_SAVE_DIR  =   "./LibTestSaves";
+/*  build directory structure
+ *  Build/
+ *  |-- Bin/
+ *      |-- Objs/
+ *      |-- ...
+ *  |-- Save/
+ *      |-- saveDir/                (provided by user)
+ *          |-- LIBTEST_SAVE_DIR/   (if libtest module is used)
+ *              |-- ...
+ *          |-- LOG_SAVE_DIR/       (if log module is used)
+ *              |-- ...
+*/
+const std::string LIBTEST_SAVE_DIR  =   "LibTestSaves/";
+const std::string LOG_SAVE_DIR      =   "LogSaves/";
 
 // dump formatting
 #define TAB_L1                          "\t"

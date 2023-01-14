@@ -24,6 +24,7 @@ namespace Log {
             Record* initRecord (size_t instanceId, 
                                 e_level level, 
                                 e_sink sink,
+                                std::string saveDir = "",
                                 size_t bufferCapacity = 0,
                                 std::string format = ".txt") {
             
@@ -32,6 +33,7 @@ namespace Log {
                     Record* c_record = new Record (instanceId, 
                                                    level, 
                                                    sink, 
+                                                   saveDir,
                                                    bufferCapacity,
                                                    format);
 

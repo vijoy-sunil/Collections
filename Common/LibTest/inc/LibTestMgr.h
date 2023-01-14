@@ -64,7 +64,7 @@ namespace Test {
                                  m_pendingTests;
             
             std::ofstream m_saveFile;
-            std::string m_saveFileName = LIBTEST_SAVE_DIR + "/libtest_log";
+            std::string m_saveFileName;
 
             // map to store fn pointers to test cases
             std::map <size_t, e_status (*) (void)> m_tests;
@@ -191,15 +191,19 @@ namespace Test {
             }
 
             void initLibTestMgr (e_sink sink,
+                                 std::string saveDir = "",
                                  std::string format = ".txt") {
                 m_sink = sink;
 
-                // append format to file name
-                m_saveFileName += format;
-                // create dir
-                std::filesystem::create_directories (LIBTEST_SAVE_DIR);
                 // open file, overwrite on every test run
                 if (m_sink & TO_FILE) { 
+                    // create dir
+                    std::string dirHierarchy = saveDir + LIBTEST_SAVE_DIR;
+                    std::filesystem::create_directories (dirHierarchy);
+                    
+                    // create file name
+                    m_saveFileName = dirHierarchy + "libtest_log" + format;
+                    
                     m_saveFile.open (m_saveFileName, 
                                      std::ios_base::out);
 

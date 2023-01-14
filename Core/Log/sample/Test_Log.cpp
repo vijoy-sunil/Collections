@@ -57,11 +57,11 @@ LIB_TEST_CASE (0, "multiple log instances") {
 }
 
 LIB_TEST_CASE (1, "filter log level test") {
-    auto myLog2 = LOG_INIT (2, Quality::Log::NONE, Quality::Log::TO_FILE_IMMEDIATE);
-    auto myLog3 = LOG_INIT (3, Quality::Log::INFO, Quality::Log::TO_FILE_IMMEDIATE);
-    auto myLog4 = LOG_INIT (4, Quality::Log::WARNING, Quality::Log::TO_FILE_IMMEDIATE);
-    auto myLog5 = LOG_INIT (5, Quality::Log::ERROR, Quality::Log::TO_FILE_IMMEDIATE);
-    LOG_INIT (6, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
+    auto myLog2 = LOG_INIT (2, Quality::Log::NONE,    Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
+    auto myLog3 = LOG_INIT (3, Quality::Log::INFO,    Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
+    auto myLog4 = LOG_INIT (4, Quality::Log::WARNING, Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
+    auto myLog5 = LOG_INIT (5, Quality::Log::ERROR,   Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
+    LOG_INIT (6, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
 
     // or use GET_ to get instance
     auto myLog6 = GET_LOG (6);
@@ -92,10 +92,10 @@ LIB_TEST_CASE (1, "filter log level test") {
 }
 
 LIB_TEST_CASE (2, "sink test") {
-    auto myLog7 = LOG_INIT (7, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE);
+    auto myLog7 = LOG_INIT (7, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE, "./Build/Save/Log/");
     auto myLog8 = LOG_INIT (8, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
     // you need to specify buffer capacity for circular buffer sink
-    auto myLog9 = LOG_INIT (9, Quality::Log::VERBOSE, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 10);
+    auto myLog9 = LOG_INIT (9, Quality::Log::VERBOSE, Quality::Log::TO_FILE_BUFFER_CIRCULAR, "./Build/Save/Log/", 10);
 
     int numMessages = 15;
     while (numMessages != 0) {
@@ -112,7 +112,7 @@ LIB_TEST_CASE (2, "sink test") {
 
 LIB_TEST_CASE (3, "mgr dump") {
     LOG_INIT (10, Quality::Log::VERBOSE, Quality::Log::TO_CONSOLE);
-    LOG_INIT (11, Quality::Log::INFO, Quality::Log::TO_FILE_BUFFER_CIRCULAR, 100);
+    LOG_INIT (11, Quality::Log::INFO, Quality::Log::TO_FILE_BUFFER_CIRCULAR, "./Build/Save/Log/", 100);
 
     LOG_MGR_DUMP;
 
@@ -122,7 +122,9 @@ LIB_TEST_CASE (3, "mgr dump") {
 }
 
 LIB_TEST_CASE (4, "special messages") {
-    auto myLog = LOG_INIT (12, Quality::Log::VERBOSE, Quality::Log::TO_FILE_IMMEDIATE | Quality::Log::TO_CONSOLE);
+    auto myLog = LOG_INIT (12, Quality::Log::VERBOSE, 
+                               Quality::Log::TO_FILE_IMMEDIATE | Quality::Log::TO_CONSOLE, 
+                               "./Build/Save/Log/");
   
     int input_0 = 1000;
     char input_1 = 'a';
@@ -143,7 +145,8 @@ LIB_TEST_CASE (4, "special messages") {
     auto mySecondLog = LOG_INIT (13, Quality::Log::VERBOSE, 
                                      Quality::Log::TO_FILE_IMMEDIATE | 
                                      Quality::Log::TO_FILE_BUFFER_CIRCULAR | 
-                                     Quality::Log::TO_CONSOLE, 5);
+                                     Quality::Log::TO_CONSOLE, 
+                                     "./Build/Save/Log/", 5);
 
     /* for all sinks except circular buffer, when you omit std::endl at the end of a log message and start another message
      * it is considered as different log entries (indicated by headers that are appended to the beginning of each message)
@@ -166,7 +169,7 @@ LIB_TEST_CASE (4, "special messages") {
 }
 
 int main(void) {
-    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE, "./Build/Save/Log/");
 
     LIB_TEST_RUN_ALL;
     return 0;

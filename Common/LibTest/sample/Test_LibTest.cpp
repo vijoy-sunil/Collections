@@ -17,7 +17,7 @@ using namespace Collections;
 
 int main (void) {
     // init the test
-    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE, "./Build/Save/LibTest/");
 
     // you can either run individual tests by specifying test ids
     LIB_TEST_RUN (2);

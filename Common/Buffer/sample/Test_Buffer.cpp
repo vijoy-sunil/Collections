@@ -438,7 +438,7 @@ LIB_TEST_CASE (14, "buffer as queue") {
 }
 
 int main (void) {
-    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE, "./Build/Save/Buffer/");
     // run all tests
     LIB_TEST_RUN_ALL;
 

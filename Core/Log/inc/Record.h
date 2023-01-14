@@ -64,9 +64,9 @@ namespace Log {
             // variable to hold entry in buffered sink
             std::string m_bufferedSinkHolder;
 
-            // file name without instance id + format
-            std::string m_saveFileName_immediate = LOG_SAVE_DIR + "/immediate_log_";
-            std::string m_saveFileName_buffered  = LOG_SAVE_DIR + "/buffered_log_";
+            // file names
+            std::string m_saveFileName_immediate;
+            std::string m_saveFileName_buffered;
 
             std::string levelToString (e_level level) {
                 std::string result;
@@ -118,6 +118,7 @@ namespace Log {
             Record (size_t instanceId, 
                     e_level level, 
                     e_sink sink, 
+                    std::string saveDir,
                     size_t bufferCapacity,
                     std::string format) {
 
@@ -127,11 +128,16 @@ namespace Log {
                 m_sink = sink;
 
                 // create dir
-                std::filesystem::create_directories (LOG_SAVE_DIR);
+                if ((m_sink & TO_FILE_IMMEDIATE) || (m_sink & TO_FILE_BUFFER_CIRCULAR)) {
+                    std::string dirHierarchy = saveDir + LOG_SAVE_DIR;
+                    std::filesystem::create_directories (dirHierarchy);
 
-                // set file names
-                m_saveFileName_immediate += std::to_string (m_instanceId) + format;
-                m_saveFileName_buffered  += std::to_string (m_instanceId) + format;
+                    m_saveFileName_immediate = dirHierarchy + "immediate_log_" + 
+                                               std::to_string (m_instanceId) + format;
+
+                    m_saveFileName_buffered  = dirHierarchy + "buffered_log_" + 
+                                               std::to_string (m_instanceId) + format;
+                }
 
                 // open file, note that for this sink we are in append mode
                 if (m_sink & TO_FILE_IMMEDIATE) { 

@@ -1662,7 +1662,7 @@ LIB_TEST_CASE (13, "add parent") {
 }
 
 int main (void) {
-    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE);
+    LIB_TEST_INIT (Quality::Test::TO_CONSOLE | Quality::Test::TO_FILE, "./Build/Save/BTree/");
     LIB_TEST_RUN_ALL;
 
     return 0;
