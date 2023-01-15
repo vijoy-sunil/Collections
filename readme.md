@@ -13,6 +13,7 @@ using namespace Collections;
         |-- LibTest
         |-- Tree                
     |-- Core          
+        |-- BTree
         |-- List
         |-- Log
 </pre>
@@ -24,6 +25,7 @@ using namespace Collections;
         |-- <i>Buffer</i>
         |-- <i>List</i>
         |-- <i>Tree</i>
+        |-- <i>BTree</i>
     |-- Quality
         |-- Test
             |-- <i>LibTest</i>
@@ -65,7 +67,8 @@ using namespace Collections;
 
     // create a test and specify where to dump the test output
     LIB_TEST_INIT (Quality::Test::TO_CONSOLE |                      // dump to console 
-                   Quality::Test::TO_FILE);                         // dump to file (./LibTestSaves/libtest_log.txt)
+                   Quality::Test::TO_FILE,                          // dump to file
+                   "./Build/Save/LibTest/");                        // file save location   
 
     // run all tests that have been defined
     LIB_TEST_RUN_ALL;
@@ -84,6 +87,18 @@ using namespace Collections;
 
     // close this tree using its instance id
     TREE_CLOSE (0);
+</pre>
+
+## BTree (Binary Tree)
+<pre>
+    #include "Core/BTree/inc/BTree.h"
+
+    // create a new binary tree ('myTree' is a pointer to the binary tree instance created)
+    auto myTree = BTREE_INIT (0,                                    // instance id 
+                              int);                                 // holds integer
+
+    // close this tree using its instance id
+    BTREE_CLOSE (0);
 </pre>
 
 ### List
@@ -107,9 +122,10 @@ using namespace Collections;
     // create log instance
     auto myLog = LOG_INIT (0,                                       // instance id 
                            Quality::Log::INFO,                      // only log INFO level messages
-                           Quality::Log::TO_FILE_IMMEDIATE |        // dump log to file (in ./LogSaves/)
+                           Quality::Log::TO_FILE_IMMEDIATE |        // dump log to file
                            Quality::Log::TO_FILE_BUFFER_CIRCULAR |  // dump log to circular buffered file with capacity
                            Quality::Log::TO_CONSOLE,                // dump log to console
+                           "./Build/Save/Log/"                      // file save location
                            5);                                      // circular buffered log file capacity
 
     // log an info level message
