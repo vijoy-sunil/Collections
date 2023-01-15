@@ -77,7 +77,7 @@ using namespace Collections;
     LIB_TEST_RUN (2);
 </pre>
 
-## Tree
+### Tree
 <pre>
     #include "Common/Tree/inc/Tree.h"
 
@@ -89,7 +89,7 @@ using namespace Collections;
     TREE_CLOSE (0);
 </pre>
 
-## BTree (Binary Tree)
+### BTree (Binary Tree)
 <pre>
     #include "Core/BTree/inc/BTree.h"
 
